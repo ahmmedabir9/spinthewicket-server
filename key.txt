@@ -1,0 +1,24 @@
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyCvAhDUZyfdySCF7Zva2cmWQ3UbwrpmXn4",
+    authDomain: "spin-the-wicket.firebaseapp.com",
+    databaseURL: "https://spin-the-wicket.firebaseio.com",
+    projectId: "spin-the-wicket",
+    storageBucket: "spin-the-wicket.appspot.com",
+    messagingSenderId: "266369111079",
+    appId: "1:266369111079:web:a97c5d94689c8018e0ea02",
+    measurementId: "G-D35GYBXCGJ"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
