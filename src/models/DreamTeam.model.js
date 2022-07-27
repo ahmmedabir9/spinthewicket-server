@@ -1,6 +1,6 @@
 const { Schema, model, SchemaTypes } = require("mongoose");
 
-const LeagueTeamSchema = new Schema(
+const DreamTeamSchema = new Schema(
   {
     title: {
       type: String,
@@ -20,7 +20,7 @@ const LeagueTeamSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
     captain: {
-      ref: "league_player",
+      ref: "dream_player",
       type: SchemaTypes.ObjectId,
     },
     manager: {
@@ -72,6 +72,6 @@ const LeagueTeamSchema = new Schema(
   { timestamps: true }
 );
 
-const LeagueTeam = model("league_team", LeagueTeamSchema);
+const DreamTeam = model("league_team", DreamTeamSchema);
 
-module.exports = { LeagueTeam };
+module.exports = { DreamTeam };

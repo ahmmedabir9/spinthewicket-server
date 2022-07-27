@@ -63,11 +63,13 @@ try {
 // const leagueRoute = require("./src/routes/league.routes");
 const userRoute = require("./src/routes/user.routes");
 const themeRoute = require("./src/routes/theme.routes");
+const playerRoute = require("./src/routes/player.routes");
 // const leagueInvitationRoute = require("./src/routes/leagueInvitation.routes");
 // const { addPlayer } = require("./src/utils/addPlayer");
 
 // app.use("/playMatch", playMatch);
 // app.use("/league-invitation", leagueInvitationRoute);
+app.use("/player", playerRoute);
 app.use("/theme", themeRoute);
 app.use("/user", userRoute);
 // app.use("/league", leagueRoute);
