@@ -108,13 +108,13 @@ const getRandomCaptains = async (req, res) => {
 
     let allrounders = await PlayerInfo.find({ role: "All-Rounder" })
       .where({
-        bowlingLevel: { $gte: 70 },
+        bowlingLevel: { $gte: 65 },
       })
       .where({
         bowlingLevel: { $lte: 75 },
       })
       .where({
-        battingLevel: { $gte: 70 },
+        battingLevel: { $gte: 65 },
       })
       .where({
         battingLevel: { $lte: 75 },
