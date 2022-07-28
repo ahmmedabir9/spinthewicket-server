@@ -58,24 +58,15 @@ try {
 //     });
 // };
 
-// const playMatch = require("./API/playMatch/playMatch");
-// const fileRoute = require("./src/routes/file.routes");
-// const leagueRoute = require("./src/routes/league.routes");
 const userRoute = require("./src/routes/user.routes");
 const themeRoute = require("./src/routes/theme.routes");
 const playerRoute = require("./src/routes/player.routes");
-// const leagueInvitationRoute = require("./src/routes/leagueInvitation.routes");
-// const { addPlayer } = require("./src/utils/addPlayer");
+const dreamTeamRoute = require("./src/routes/dreamTeam.routes");
 
-// app.use("/playMatch", playMatch);
-// app.use("/league-invitation", leagueInvitationRoute);
+app.use("/dream-team", dreamTeamRoute);
 app.use("/player", playerRoute);
 app.use("/theme", themeRoute);
 app.use("/user", userRoute);
-// app.use("/league", leagueRoute);
-// app.use("/file", fileRoute);
-// app.get("/getData", getData);
-// app.post("/addPlayer", addPlayer);
 
 app.get("/", (req, res) => {
   res.send("<div><h1>The Server is Running</h1></div>");

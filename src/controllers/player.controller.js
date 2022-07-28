@@ -192,4 +192,4 @@ const shufflePlayers = (players) => {
   return players;
 };
 
-module.exports = { getRandomCaptains };
+module.exports = { getRandomCaptains, shufflePlayers };

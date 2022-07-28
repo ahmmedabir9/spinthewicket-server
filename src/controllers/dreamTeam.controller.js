@@ -1,6 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
+const { DreamPlayer } = require("../models/DreamPlayer.model");
 const { DreamTeam } = require("../models/DreamTeam.model");
+const { PlayerInfo } = require("../models/PlayerInfo.model");
+const { initialPlayerData, initialTeamData } = require("../utils/constants");
 const { response } = require("../utils/response");
+const { shufflePlayers } = require("./player.controller");
 
 const createDreamTeam = async (req, res) => {
   const { title, code, theme, manager, captain } = req.body;
@@ -11,11 +15,7 @@ const createDreamTeam = async (req, res) => {
   }
 
   try {
-    var teamId = title
-      .replace(/\s+/g, "-")
-      .replace(/\//g, "-")
-      .replace(/&/g, "n")
-      .toLowerCase();
+    var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
     const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
 
@@ -29,13 +29,9 @@ const createDreamTeam = async (req, res) => {
       title,
       code,
       teamId,
-      country,
       theme,
       manager,
-      xp: 0,
-      level: 0,
-      trophies: [],
-      achivements: [],
+      ...initialTeamData,
     });
 
     if (!team) {
@@ -43,7 +39,29 @@ const createDreamTeam = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(res, StatusCodes.ACCEPTED, true, { team: team }, null);
+    const captainPlayer = await createSquad(captain, team?._id);
+
+    const newTeam = await DreamTeam.findByIdAndUpdate(
+      team?._id,
+      {
+        captain: captainPlayer,
+      },
+      { new: true }
+    ).populate([{ path: "theme" }, { path: "manager" }, { path: "captaian" }]);
+
+    const squad = await DreamPlayer.find({ team: team?._id }).populate([
+      {
+        path: "playerInfo",
+      },
+    ]);
+
+    return response(
+      res,
+      StatusCodes.ACCEPTED,
+      true,
+      { team: newTeam, squad },
+      null
+    );
   } catch (error) {
     return response(
       res,
@@ -54,3 +72,99 @@ const createDreamTeam = async (req, res) => {
     );
   }
 };
+
+const createSquad = async (captain, team) => {
+  try {
+    let allrounders = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "All-Rounder",
+    })
+      .where({
+        bowlingLevel: { $gte: 50 },
+      })
+      .where({
+        bowlingLevel: { $lte: 75 },
+      })
+      .where({
+        battingLevel: { $gte: 50 },
+      })
+      .where({
+        battingLevel: { $lte: 75 },
+      })
+      .select("_id");
+
+    let batsmen = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Batsman",
+    })
+      .where({
+        battingLevel: { $gte: 60 },
+      })
+      .where({
+        battingLevel: { $lte: 80 },
+      })
+      .select("_id");
+
+    let keepers = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Wicket-Keeper",
+    })
+      .where({
+        battingLevel: { $gte: 60 },
+      })
+      .where({
+        battingLevel: { $lte: 80 },
+      })
+      .select("_id");
+
+    let bowlers = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Bowler",
+    })
+      .where({
+        bowlingLevel: { $gte: 60 },
+      })
+      .where({
+        bowlingLevel: { $lte: 80 },
+      })
+      .select("_id");
+
+    shufflePlayers(allrounders);
+    shufflePlayers(batsmen);
+    shufflePlayers(bowlers);
+    shufflePlayers(keepers);
+
+    const players = [
+      ...batsmen.slice(0, 5),
+      ...allrounders.slice(0, 4),
+      ...bowlers.slice(0, 4),
+      ...keepers.slice(0, 1),
+    ].map((item) => item._id);
+
+    const captainPlayer = await DreamPlayer.create({
+      playerInfo: captain,
+      team: team,
+      ...initialPlayerData,
+    });
+
+    for (let index = 0; index < players.length; index++) {
+      await DreamPlayer.create({
+        playerInfo: players[index],
+        team: team,
+        ...initialPlayerData,
+      });
+    }
+
+    return captainPlayer._id;
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+module.exports = { createDreamTeam };

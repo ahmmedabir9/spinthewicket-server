@@ -66,12 +66,10 @@ const DreamTeamSchema = new Schema(
       },
       nRR: { type: Number, default: 0 },
     },
-    xp: { type: Number, default: 0 },
-    level: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-const DreamTeam = model("league_team", DreamTeamSchema);
+const DreamTeam = model("dream_team", DreamTeamSchema);
 
 module.exports = { DreamTeam };
