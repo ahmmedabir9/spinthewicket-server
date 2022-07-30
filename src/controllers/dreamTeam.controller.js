@@ -6,6 +6,29 @@ const { initialPlayerData, initialTeamData } = require("../utils/constants");
 const { response } = require("../utils/response");
 const { shufflePlayers } = require("./player.controller");
 
+const teamPopulate = [
+  { path: "theme" },
+  { path: "manager" },
+  {
+    path: "captaian",
+    populate: {
+      path: "playerInfo",
+    },
+  },
+  {
+    path: "playingXI",
+    populate: {
+      path: "playerInfo",
+    },
+  },
+];
+
+const playerPopulate = [
+  {
+    path: "playerInfo",
+  },
+];
+
 const createDreamTeam = async (req, res) => {
   const { title, code, theme, manager, captain } = req.body;
 
@@ -77,16 +100,9 @@ const getUserDreamTeam = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const dreamTeam = await DreamTeam.findOne({ manager: id }).populate([
-      { path: "theme" },
-      { path: "manager" },
-      {
-        path: "captaian",
-        populate: {
-          path: "playerInfo",
-        },
-      },
-    ]);
+    const dreamTeam = await DreamTeam.findOne({ manager: id }).populate(
+      teamPopulate
+    );
 
     if (!dreamTeam) {
       return response(
@@ -95,6 +111,118 @@ const getUserDreamTeam = async (req, res) => {
         false,
         null,
         "You Do not Have Dream Team!"
+      );
+    }
+
+    return response(res, StatusCodes.OK, true, dreamTeam, null);
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+const getDreamTeamById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const dreamTeam = await DreamTeam.findById(id).populate(teamPopulate);
+
+    if (!dreamTeam) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        "No Team Found!"
+      );
+    }
+
+    return response(res, StatusCodes.OK, true, dreamTeam, null);
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+const getDreamTeamSquad = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const dreamPlayers = await DreamPlayer.find({ team: id }).populate(
+      playerPopulate
+    );
+
+    if (!dreamPlayers || dreamPlayers?.length === 0) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        "No Players Found!"
+      );
+    }
+
+    return response(res, StatusCodes.OK, true, dreamPlayers, null);
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+const updateTeam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { playingXI, title, code, captain, theme } = req.body;
+
+    let dataToUpdate = {};
+
+    if (title) {
+      var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+
+      const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
+
+      if (oldTeam) {
+        const teamCount = await DreamTeam.countDocuments();
+
+        teamId = teamId + "-" + teamCount.toString();
+      }
+
+      dataToUpdate.title = title;
+      dataToUpdate.teamId = teamId;
+    }
+
+    if (code) dataToUpdate.code = code;
+    if (captain) dataToUpdate.captain = captain;
+    if (theme) dataToUpdate.theme = theme;
+    if (playingXI) dataToUpdate.playingXI = playingXI;
+
+    const dreamTeam = await DreamTeam.findByIdAndUpdate(id, dataToUpdate, {
+      new: true,
+    }).populate(teamPopulate);
+
+    if (!dreamTeam) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        "Could Not Update Squad!"
       );
     }
 
@@ -204,4 +332,10 @@ const createSquad = async (captain, team) => {
   }
 };
 
-module.exports = { createDreamTeam, getUserDreamTeam };
+module.exports = {
+  createDreamTeam,
+  getUserDreamTeam,
+  getDreamTeamById,
+  updateTeam,
+  getDreamTeamSquad,
+};

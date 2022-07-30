@@ -37,6 +37,12 @@ const DreamTeamSchema = new Schema(
         date: Date,
       },
     ],
+    playingXI: [
+      {
+        ref: "dream_player",
+        type: SchemaTypes.ObjectId,
+      },
+    ],
     achivements: [
       {
         achivement: {
