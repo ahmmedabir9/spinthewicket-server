@@ -31,6 +31,7 @@ const UserSchema = new Schema(
     ],
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 0 },
+    balance: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
