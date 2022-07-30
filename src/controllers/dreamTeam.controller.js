@@ -73,6 +73,43 @@ const createDreamTeam = async (req, res) => {
   }
 };
 
+const getUserDreamTeam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const dreamTeam = await DreamTeam.findOne({ manager: id }).populate([
+      { path: "theme" },
+      { path: "manager" },
+      {
+        path: "captaian",
+        populate: {
+          path: "playerInfo",
+        },
+      },
+    ]);
+
+    if (!dreamTeam) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        "You Do not Have Dream Team!"
+      );
+    }
+
+    return response(res, StatusCodes.OK, true, dreamTeam, null);
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
 const createSquad = async (captain, team) => {
   try {
     let allrounders = await PlayerInfo.find({
@@ -167,4 +204,4 @@ const createSquad = async (captain, team) => {
   }
 };
 
-module.exports = { createDreamTeam };
+module.exports = { createDreamTeam, getUserDreamTeam };
