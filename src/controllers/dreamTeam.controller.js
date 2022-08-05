@@ -64,19 +64,23 @@ const createDreamTeam = async (req, res) => {
 
     const captainPlayer = await createSquad(captain, team?._id);
 
+    const squad = await DreamPlayer.find({ team: team?._id }).populate(
+      playerPopulate
+    );
+
+    const playingXI = await createPlayingXI(squad);
+
+    const teamRating = await calculateTeamRating(playingXI);
+
     const newTeam = await DreamTeam.findByIdAndUpdate(
       team?._id,
       {
+        rating: teamRating,
         captain: captainPlayer,
+        playigXI: playingXI.map((item) => item._id),
       },
       { new: true }
-    ).populate([{ path: "theme" }, { path: "manager" }, { path: "captaian" }]);
-
-    const squad = await DreamPlayer.find({ team: team?._id }).populate([
-      {
-        path: "playerInfo",
-      },
-    ]);
+    ).populate(teamPopulate);
 
     return response(
       res,
@@ -188,7 +192,7 @@ const updateTeam = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { playingXI, title, code, captain, theme } = req.body;
+    const { playingXI, title, code, captain, theme, rating } = req.body;
 
     let dataToUpdate = {};
 
@@ -211,6 +215,7 @@ const updateTeam = async (req, res) => {
     if (captain) dataToUpdate.captain = captain;
     if (theme) dataToUpdate.theme = theme;
     if (playingXI) dataToUpdate.playingXI = playingXI;
+    if (rating) dataToUpdate.rating = rating;
 
     const dreamTeam = await DreamTeam.findByIdAndUpdate(id, dataToUpdate, {
       new: true,
@@ -330,6 +335,45 @@ const createSquad = async (captain, team) => {
       error.message
     );
   }
+};
+
+const createPlayingXI = async (squad) => {
+  const bowlers = squad
+    .sort((a, b) =>
+      a.playerInfo?.bowlingLevel < b.playerInfo?.bowlingLevel ? 1 : -1
+    )
+    .slice(0, 5);
+
+  const batsmen = squad
+    .sort((a, b) =>
+      a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1
+    )
+    .filter(
+      (batsman) => !bowlers.find((bowler) => bowler?._id === batsman?._id)
+    )
+    .slice(0, 6);
+
+  const playingXI = [...batsmen, ...bowlers].sort((a, b) =>
+    a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1
+  );
+
+  return playingXI;
+};
+
+const calculateTeamRating = async (playingXI) => {
+  let totalRating = 0;
+
+  for (let index = 0; index < playingXI.length; index++) {
+    const player = playingXI[index];
+    totalRating =
+      totalRating +
+      (player.playerInfo?.battingLevel > player.playerInfo?.bowlingLevel
+        ? player.playerInfo?.battingLevel
+        : player.playerInfo?.bowlingLevel);
+  }
+
+  console.log(totalRating);
+  return totalRating / 11;
 };
 
 module.exports = {

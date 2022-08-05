@@ -43,6 +43,7 @@ const DreamTeamSchema = new Schema(
         type: SchemaTypes.ObjectId,
       },
     ],
+    rating: { type: Number, default: 0 },
     achivements: [
       {
         achivement: {
