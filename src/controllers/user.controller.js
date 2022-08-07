@@ -17,16 +17,7 @@ const createUserProfile = async (req, res) => {
     let user;
 
     if (oldUser) {
-      user = await User.findByIdAndUpdate(
-        oldUser?._id,
-        {
-          name,
-          email,
-          uid,
-          photo,
-        },
-        { new: true }
-      );
+      user = oldUser;
     } else {
       var username = name.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
