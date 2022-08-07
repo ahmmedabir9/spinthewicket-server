@@ -33,6 +33,7 @@ const createUserProfile = async (req, res) => {
 
       user = await User.create({
         name,
+        username,
         email,
         uid,
         photo,

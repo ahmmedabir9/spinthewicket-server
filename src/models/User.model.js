@@ -8,6 +8,7 @@ const UserSchema = new Schema(
     },
     username: {
       type: String,
+      unique: true,
     },
     nationality: {
       ref: "country",
