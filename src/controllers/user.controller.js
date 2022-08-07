@@ -30,12 +30,12 @@ const createUserProfile = async (req, res) => {
     } else {
       var username = name.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
-      const dupUsername = await DreamTeam.findOne({
+      const dupUsername = await User.findOne({
         username: username,
       }).select("_id");
 
       if (dupUsername) {
-        const userCount = await DreamTeam.countDocuments();
+        const userCount = await User.countDocuments();
 
         username = username + userCount.toString();
       }
