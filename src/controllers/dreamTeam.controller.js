@@ -45,7 +45,7 @@ const createDreamTeam = async (req, res) => {
     if (oldTeam) {
       const teamCount = await DreamTeam.countDocuments();
 
-      teamId = teamId + "-" + teamCount.toString();
+      teamId = teamId + teamCount.toString();
     }
 
     const team = await DreamTeam.create({

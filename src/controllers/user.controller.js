@@ -28,6 +28,18 @@ const createUserProfile = async (req, res) => {
         { new: true }
       );
     } else {
+      var username = name.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+
+      const dupUsername = await DreamTeam.findOne({
+        username: username,
+      }).select("_id");
+
+      if (dupUsername) {
+        const userCount = await DreamTeam.countDocuments();
+
+        username = username + userCount.toString();
+      }
+
       user = await User.create({
         name,
         email,
