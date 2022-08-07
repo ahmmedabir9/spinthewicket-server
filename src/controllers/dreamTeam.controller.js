@@ -10,7 +10,7 @@ const teamPopulate = [
   { path: "theme" },
   { path: "manager" },
   {
-    path: "captaian",
+    path: "captain",
     populate: {
       path: "playerInfo",
     },
@@ -77,7 +77,7 @@ const createDreamTeam = async (req, res) => {
       {
         rating: teamRating,
         captain: captainPlayer,
-        playigXI: playingXI.map((item) => item._id),
+        playingXI: playingXI.map((item) => item._id),
       },
       { new: true }
     ).populate(teamPopulate);
