@@ -253,6 +253,77 @@ const updateTeam = async (req, res) => {
   }
 };
 
+const createBotTeam = async (req, res) => {
+  const { title, code, theme, captain, rating } = req.body;
+
+  if (!title || !code || !theme || !captain || !rating) {
+    let msg = "provide all informations!";
+    return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
+  }
+
+  try {
+    var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+
+    const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
+
+    if (oldTeam) {
+      const teamCount = await DreamTeam.countDocuments();
+
+      teamId = teamId + teamCount.toString();
+    }
+
+    const team = await DreamTeam.create({
+      title,
+      code,
+      teamId,
+      theme,
+      isBot: true,
+      ...initialTeamData,
+    });
+
+    if (!team) {
+      let msg = "could not create team!";
+      return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
+    }
+
+    const captainPlayer = await createBotSquad(captain, team?._id, rating);
+
+    const squad = await DreamPlayer.find({ team: team?._id }).populate(
+      playerPopulate
+    );
+
+    const playingXI = await createPlayingXI(squad);
+
+    const teamRating = await calculateTeamRating(playingXI);
+
+    const newTeam = await DreamTeam.findByIdAndUpdate(
+      team?._id,
+      {
+        rating: teamRating,
+        captain: captainPlayer,
+        playingXI: playingXI.map((item) => item._id),
+      },
+      { new: true }
+    ).populate(teamPopulate);
+
+    return response(
+      res,
+      StatusCodes.ACCEPTED,
+      true,
+      { team: newTeam, squad },
+      null
+    );
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
 const createSquad = async (captain, team) => {
   try {
     let allrounders = await PlayerInfo.find({
@@ -347,6 +418,102 @@ const createSquad = async (captain, team) => {
   }
 };
 
+const createBotSquad = async (captain, team, rating) => {
+  try {
+    let allrounders = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "All-Rounder",
+    })
+      .where({
+        bowlingLevel: { $gte: rating - 20 },
+      })
+      .where({
+        bowlingLevel: { $lte: rating + 5 },
+      })
+      .where({
+        battingLevel: { $gte: rating - 20 },
+      })
+      .where({
+        battingLevel: { $lte: rating + 5 },
+      })
+      .select("_id");
+
+    let batsmen = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Batsman",
+    })
+      .where({
+        battingLevel: { $gte: rating - 10 },
+      })
+      .where({
+        battingLevel: { $lte: rating + 10 },
+      })
+      .select("_id");
+
+    let keepers = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Wicket-Keeper",
+    })
+      .where({
+        battingLevel: { $gte: rating - 10 },
+      })
+      .where({
+        battingLevel: { $lte: rating + 10 },
+      })
+      .select("_id");
+
+    let bowlers = await PlayerInfo.find({
+      _id: { $ne: captain },
+      role: "Bowler",
+    })
+      .where({
+        bowlingLevel: { $gte: rating - 10 },
+      })
+      .where({
+        bowlingLevel: { $lte: rating + 10 },
+      })
+      .select("_id");
+
+    shufflePlayers(allrounders);
+    shufflePlayers(batsmen);
+    shufflePlayers(bowlers);
+    shufflePlayers(keepers);
+
+    const players = [
+      ...batsmen.slice(0, 5),
+      ...allrounders.slice(0, 4),
+      ...bowlers.slice(0, 4),
+      ...keepers.slice(0, 1),
+    ].map((item) => item._id);
+
+    const captainPlayer = await DreamPlayer.create({
+      playerInfo: captain,
+      team: team,
+      isBot: true,
+      ...initialPlayerData,
+    });
+
+    for (let index = 0; index < players.length; index++) {
+      await DreamPlayer.create({
+        playerInfo: players[index],
+        team: team,
+        isBot: true,
+        ...initialPlayerData,
+      });
+    }
+
+    return captainPlayer._id;
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
 const createPlayingXI = async (squad) => {
   const bowlers = squad
     .sort((a, b) =>
@@ -392,4 +559,5 @@ module.exports = {
   getDreamTeamById,
   updateTeam,
   getDreamTeamSquad,
+  createBotTeam,
 };

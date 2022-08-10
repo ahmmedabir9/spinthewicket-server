@@ -73,6 +73,7 @@ const DreamTeamSchema = new Schema(
       },
       nRR: { type: Number, default: 0 },
     },
+    isBot: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

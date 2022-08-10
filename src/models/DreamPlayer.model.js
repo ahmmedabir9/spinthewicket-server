@@ -78,6 +78,7 @@ const DreamPlayerSchema = new Schema(
         date: Date,
       },
     ],
+    isBot: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
