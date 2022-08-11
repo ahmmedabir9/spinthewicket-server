@@ -1,9 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
 const { DreamTeam } = require("../models/DreamTeam.model");
 const { response } = require("../utils/response");
-const firebase = require("firebase-admin");
+const { CreateQuickMatch } = require("../services/firebase");
+const { v4: uuidv4 } = require("uuid");
 // const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
-const firestore = firebase.firestore();
 
 const teamPopulate = [
   { path: "theme" },
@@ -75,6 +75,11 @@ const startQuickMatch = async (req, res) => {
 
     //prepare match data
 
+    var battingTeam = null,
+      bowlingTeam = null,
+      battingScorer = null,
+      bowlingScorer = null,
+      now = null;
     const tossResult = Math.floor(Math.random() * 10000) % 2;
     var toss;
 
@@ -88,7 +93,81 @@ const startQuickMatch = async (req, res) => {
         team: opponentTeam?._id?.toString(),
         selected: choosen === 0 ? "bat" : "bowl",
       };
+      battingTeam =
+        choosen === 0
+          ? opponentTeam?._id?.toString()
+          : dreamTeam?._id?.toString();
+      bowlingTeam =
+        choosen === 1
+          ? opponentTeam?._id?.toString()
+          : dreamTeam?._id?.toString();
+      battingScorer = choosen === 0 ? null : user;
+      bowlingScorer = choosen === 1 ? null : user;
+      now = {
+        inning: 1,
+        battingTeam: battingTeam,
+        bowlingTeam: bowlingTeam,
+        battingScorer: battingScorer,
+        bowlingScorer: bowlingScorer,
+        batsman: {},
+        bowler: null,
+        overs: 0,
+        balls: 0,
+        runs: 0,
+        wickets: 0,
+        runRate: 0,
+        extra: 0,
+        partnership: {
+          balls: 0,
+          runs: 0,
+          batsman1: null,
+          batsman2: null,
+        },
+        freeHit: false,
+        history: [],
+        spinning: false,
+        lastSpinPosition: 0,
+      };
     }
+
+    const innings = {
+      first: {
+        battingTeam: battingTeam,
+        bowlingTeam: bowlingTeam,
+        battingScorer: battingScorer,
+        bowlingScorer: bowlingScorer,
+        battingOrder: [],
+        bowlingOrder: [],
+        partnerships: [],
+        fallOfWickets: [],
+        overHistory: [],
+        overs: 0,
+        balls: 0,
+        runs: 0,
+        wickets: 0,
+        runRate: 0,
+        extra: 0,
+      },
+      second: {
+        battingTeam: bowlingTeam,
+        bowlingTeam: battingTeam,
+        battingScorer: bowlingScorer,
+        bowlingScorer: battingScorer,
+        battingOrder: [],
+        bowlingOrder: [],
+        partnerships: [],
+        fallOfWickets: [],
+        overHistory: [],
+        overs: 0,
+        balls: 0,
+        runs: 0,
+        wickets: 0,
+        runRate: 0,
+        extra: 0,
+      },
+    };
+
+    const createdAt = new Date();
 
     const matchData = {
       type: "quick",
@@ -99,7 +178,7 @@ const startQuickMatch = async (req, res) => {
       scorers: { a: user, b: null },
       overs: parseInt(overs),
       status: toss.team === dreamTeam?._id?.toString() ? "toss" : "live",
-      createdAt: new Date(),
+      createdAt: createdAt.toString(),
       playingXI: {
         [dreamTeam?._id?.toString()]: dreamTeam?.playingXI?.map((player) =>
           player?._id?.toString()
@@ -111,16 +190,16 @@ const startQuickMatch = async (req, res) => {
       ready: { a: false, b: true },
       users: [user],
       toss: toss,
+      now,
+      innings,
     };
 
+    const matchID = uuidv4();
+
     //save match data
-    const docRef = firestore.doc("quick_matches/123");
+    const quickMatch = await CreateQuickMatch(`quick_matches`, matchData);
 
-    const matchSnapshot = await docRef.set(matchData);
-
-    console.log(matchSnapshot);
-
-    return response(res, StatusCodes.ACCEPTED, true, matchSnapshot, null);
+    return response(res, StatusCodes.ACCEPTED, true, quickMatch, null);
   } catch (error) {
     return response(
       res,
