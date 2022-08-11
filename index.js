@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require("cors");
 // const { firestore } = require("firebase");
-// var admin = require("firebase-admin");
+var admin = require("firebase-admin");
 const router = express.Router();
 const { connect } = require("mongoose");
 const { mongoURI } = require("./src/config/database");
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 // var admin = require("firebase-admin");
 
-// var serviceAccount = require("./spin-the-wicket-firebase-adminsdk-xobgj-21a901be7b.json");
+var serviceAccount = require("./spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json");
 
 try {
   connect(
@@ -35,10 +35,10 @@ try {
   console.log("Database Connection Error", err);
 }
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   databaseURL: "https://spin-the-wicket.firebaseio.com",
-// });
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://spin-the-wicket.firebaseio.com",
+});
 
 // const managerRoute = require("./api/routes/managerRoute");
 // const firestoreDB = admin.firestore();
@@ -62,7 +62,9 @@ const userRoute = require("./src/routes/user.routes");
 const themeRoute = require("./src/routes/theme.routes");
 const playerRoute = require("./src/routes/player.routes");
 const dreamTeamRoute = require("./src/routes/dreamTeam.routes");
+const quickMatchRoute = require("./src/routes/quickMatch.routes");
 
+app.use("/quick-match", quickMatchRoute);
 app.use("/dream-team", dreamTeamRoute);
 app.use("/player", playerRoute);
 app.use("/theme", themeRoute);

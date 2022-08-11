@@ -1,6 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
 const { DreamTeam } = require("../models/DreamTeam.model");
 const { response } = require("../utils/response");
+const firebase = require("firebase-admin");
+// const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
+const firestore = firebase.firestore();
 
 const teamPopulate = [
   { path: "theme" },
@@ -19,13 +22,13 @@ const teamPopulate = [
   },
 ];
 
-const createQuickMatch = async (req, res) => {
+const startQuickMatch = async (req, res) => {
   try {
     const { team, overs, user } = req.body;
 
     if (!team || !overs || !user) {
       let msg = "provide all informations!";
-      return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
+      return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
     //verify and get team
@@ -77,34 +80,47 @@ const createQuickMatch = async (req, res) => {
 
     if (tossResult === 0) {
       toss = {
-        team: dreamTeam?._id,
+        team: dreamTeam?._id?.toString(),
       };
     } else {
       const choosen = Math.floor(Math.random() * 10000) % 2;
       toss = {
-        team: opponentTeam?._id,
+        team: opponentTeam?._id?.toString(),
         selected: choosen === 0 ? "bat" : "bowl",
       };
     }
 
     const matchData = {
       type: "quick",
-      teams: { a: dreamTeam?._id, b: opponentTeam?._id },
+      teams: {
+        a: dreamTeam?._id?.toString(),
+        b: opponentTeam?._id?.toString(),
+      },
       scorers: { a: user, b: null },
       overs: parseInt(overs),
-      status: toss.team === dreamTeam?._id ? "toss" : "live",
+      status: toss.team === dreamTeam?._id?.toString() ? "toss" : "live",
       createdAt: new Date(),
       playingXI: {
-        [dreamTeam?._id]: dreamTeam?.playingXI?.map((player) => player?._id),
-        [opponentTeam?._id]: opponentTeam?.playingXI?.map(
-          (player) => player?._id
+        [dreamTeam?._id?.toString()]: dreamTeam?.playingXI?.map((player) =>
+          player?._id?.toString()
+        ),
+        [opponentTeam?._id?.toString()]: opponentTeam?.playingXI?.map(
+          (player) => player?._id?.toString()
         ),
       },
       ready: { a: false, b: true },
       users: [user],
+      toss: toss,
     };
 
     //save match data
+    const docRef = firestore.doc("quick_matches/123");
+
+    const matchSnapshot = await docRef.set(matchData);
+
+    console.log(matchSnapshot);
+
+    return response(res, StatusCodes.ACCEPTED, true, matchSnapshot, null);
   } catch (error) {
     return response(
       res,
@@ -115,3 +131,5 @@ const createQuickMatch = async (req, res) => {
     );
   }
 };
+
+module.exports = { startQuickMatch };
