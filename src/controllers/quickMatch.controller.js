@@ -1,8 +1,14 @@
 const { StatusCodes } = require("http-status-codes");
 const { DreamTeam } = require("../models/DreamTeam.model");
 const { response } = require("../utils/response");
-const { CreateQuickMatch } = require("../services/firebase");
+const {
+  CreateQuickMatch,
+  GetQuickMatch,
+  UpdateQuickMatch,
+} = require("../services/firebase");
 const { v4: uuidv4 } = require("uuid");
+const { ballResult } = require("../functions/playMatch/ballResult");
+const { ballValidation } = require("../functions/playMatch/ballValidation");
 // const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
 
 const teamPopulate = [
@@ -194,10 +200,8 @@ const startQuickMatch = async (req, res) => {
       innings,
     };
 
-    const matchID = uuidv4();
-
     //save match data
-    const quickMatch = await CreateQuickMatch(`quick_matches`, matchData);
+    const quickMatch = await CreateQuickMatch(matchData);
 
     return response(res, StatusCodes.ACCEPTED, true, quickMatch, null);
   } catch (error) {
@@ -211,4 +215,96 @@ const startQuickMatch = async (req, res) => {
   }
 };
 
-module.exports = { startQuickMatch };
+const playQuickMatch = async (req, res) => {
+  try {
+    const { match, bat, bowl } = req.body;
+
+    const matchData = await GetQuickMatch(match);
+
+    if (!matchData) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        "No Match Found!"
+      );
+    }
+
+    var inning;
+    if (matchData.now.inning === 1) {
+      inning = "first";
+    } else if (matchData.now.inning === 2) {
+      inning = "second";
+    } else if (matchData.now.inning === 3) {
+      inning = "super_1";
+    } else if (matchData.now.inning === 4) {
+      inning = "super_2";
+    }
+
+    const ballAction = ballResult(bat, bowl);
+
+    var pointed;
+    if (ballAction === "ONE") pointed = 154;
+    else if (ballAction === "BOWLED") pointed = 244;
+    else if (ballAction === "SIX") pointed = 34;
+    else if (ballAction === "WIDE") pointed = 4;
+    else if (ballAction === "RUN_OUT") pointed = 334;
+    else if (ballAction === "TWO") pointed = 94;
+    else if (ballAction === "THREE") pointed = 274;
+    else if (ballAction === "LBW") pointed = 124;
+    else if (ballAction === "NO_BALL") pointed = 64;
+    else if (ballAction === "FOUR") pointed = 304;
+    else if (ballAction === "CATCH") pointed = 184;
+    else if (ballAction === "DOT") pointed = 214;
+
+    const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22));
+
+    if (ballValidation(matchData)) {
+      const handler = async () => {
+        if (ballAction === "DOT") await dotBall(matchData, inning);
+        else if (ballAction === "ONE") await oneRun(matchData, inning);
+        else if (ballAction === "TWO") await twoRuns(matchData, inning);
+        else if (ballAction === "THREE") await threeRuns(matchData, inning);
+        else if (ballAction === "FOUR") await fourRuns(matchData, inning);
+        else if (ballAction === "SIX") await sixRuns(matchData, inning);
+        else if (ballAction === "WIDE") await wideBall(matchData, inning);
+        else if (ballAction === "NO_BALL") await noBall(matchData, inning);
+        else if (ballAction === "BOWLED") await bowled(matchData, inning);
+        else if (ballAction === "LBW") await lbw(matchData, inning);
+        else if (ballAction === "CATCH") await catchOut(matchData, inning);
+        else if (ballAction === "RUN_OUT") await runOut(matchData, inning);
+
+        const updateData = {
+          "now.lastSpinPosition": lastSpinPosition,
+          "now.spinning": false,
+        };
+
+        await UpdateQuickMatch(match, updateData);
+        return response(res, StatusCodes.ACCEPTED, true, null, null);
+      };
+
+      setTimeout(() => {
+        handler();
+      }, 3000);
+    } else {
+      return response(
+        res,
+        StatusCodes.BAD_REQUEST,
+        false,
+        null,
+        "SOMETHING WENT WRONG"
+      );
+    }
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+module.exports = { startQuickMatch, playQuickMatch };
