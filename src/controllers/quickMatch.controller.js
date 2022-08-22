@@ -9,6 +9,8 @@ const {
 const { v4: uuidv4 } = require("uuid");
 const { ballResult } = require("../functions/playMatch/ballResult");
 const { ballValidation } = require("../functions/playMatch/ballValidation");
+const prepareBallData = require("../functions/playMatch/prepareBallData");
+const dotBall = require("../functions/playMatch/runs/dotBall");
 // const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
 
 const teamPopulate = [
@@ -260,20 +262,32 @@ const playQuickMatch = async (req, res) => {
 
     const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22));
 
+    const ballData = prepareBallData(matchData, ballAction);
+
     if (ballValidation(matchData)) {
       const handler = async () => {
-        if (ballAction === "DOT") await dotBall(matchData, inning);
-        else if (ballAction === "ONE") await oneRun(matchData, inning);
-        else if (ballAction === "TWO") await twoRuns(matchData, inning);
-        else if (ballAction === "THREE") await threeRuns(matchData, inning);
-        else if (ballAction === "FOUR") await fourRuns(matchData, inning);
-        else if (ballAction === "SIX") await sixRuns(matchData, inning);
-        else if (ballAction === "WIDE") await wideBall(matchData, inning);
-        else if (ballAction === "NO_BALL") await noBall(matchData, inning);
-        else if (ballAction === "BOWLED") await bowled(matchData, inning);
-        else if (ballAction === "LBW") await lbw(matchData, inning);
-        else if (ballAction === "CATCH") await catchOut(matchData, inning);
-        else if (ballAction === "RUN_OUT") await runOut(matchData, inning);
+        if (ballAction === "DOT") await dotBall(matchData, ballData, inning);
+        else if (ballAction === "ONE")
+          await oneRun(matchData, ballData, inning);
+        else if (ballAction === "TWO")
+          await twoRuns(matchData, ballData, inning);
+        else if (ballAction === "THREE")
+          await threeRuns(matchData, ballData, inning);
+        else if (ballAction === "FOUR")
+          await fourRuns(matchData, ballData, inning);
+        else if (ballAction === "SIX")
+          await sixRuns(matchData, ballData, inning);
+        else if (ballAction === "WIDE")
+          await wideBall(matchData, ballData, inning);
+        else if (ballAction === "NO_BALL")
+          await noBall(matchData, ballData, inning);
+        else if (ballAction === "BOWLED")
+          await bowled(matchData, ballData, inning);
+        else if (ballAction === "LBW") await lbw(matchData, ballData, inning);
+        else if (ballAction === "CATCH")
+          await catchOut(matchData, ballData, inning);
+        else if (ballAction === "RUN_OUT")
+          await runOut(matchData, ballData, inning);
 
         const updateData = {
           "now.lastSpinPosition": lastSpinPosition,

@@ -1,17 +1,17 @@
 const firebase = require("firebase-admin");
 const endOfOver = require("../end/endOfOver");
 
-const dotBall = async (matchData, docRef, inning) => {
-  const ball = {
-    wickets: matchData.now.wickets,
-    totalRuns: matchData.now.runs,
-    run: 0,
-    bowler: matchData.now.bowler.name,
-    batsman: matchData.now.batsman.striker.name,
-    status: "dot",
-    ballNO: matchData.now.balls + 1,
-    overNO: matchData.now.overs,
-  };
+const dotBall = async (matchData, ballData, inning) => {
+  // const ball = {
+  //   wickets: matchData.now.wickets,
+  //   totalRuns: matchData.now.runs,
+  //   run: 0,
+  //   bowler: matchData.now.bowler.name,
+  //   batsman: matchData.now.batsman.striker.name,
+  //   status: "dot",
+  //   ballNO: matchData.now.balls + 1,
+  //   overNO: matchData.now.overs,
+  // };
 
   await docRef.update({
     "now.batsman.striker.balls": firebase.firestore.FieldValue.increment(1),
@@ -43,9 +43,8 @@ const dotBall = async (matchData, docRef, inning) => {
     "now.freeHit": false,
     [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(0),
     [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
-    [`innings.${inning}.ballByBall`]: firebase.firestore.FieldValue.arrayUnion(
-      ball
-    ),
+    [`innings.${inning}.ballByBall`]:
+      firebase.firestore.FieldValue.arrayUnion(ball),
     [`innings.${inning}.runRate`]:
       matchData.now.runs /
       ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
