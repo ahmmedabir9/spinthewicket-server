@@ -1,5 +1,6 @@
-const firebase = require("firebase-admin");
-const endOfOver = require("../end/endOfOver");
+const firebase = require('firebase-admin')
+const { UpdateQuickMatch } = require('../../../services/firebase')
+// const endOfOver = require('../end/endOfOver')
 
 const dotBall = async (matchData, ballData, inning) => {
   // const ball = {
@@ -13,52 +14,66 @@ const dotBall = async (matchData, ballData, inning) => {
   //   overNO: matchData.now.overs,
   // };
 
-  await docRef.update({
-    "now.batsman.striker.balls": firebase.firestore.FieldValue.increment(1),
-    "now.batsman.striker.strikeRate":
-      (matchData.now.batsman.striker.runs /
-        (matchData.now.batsman.striker.balls + 1)) *
-      100,
-    "now.bowler.balls": firebase.firestore.FieldValue.increment(1),
-    "now.bowler.economy":
-      matchData.now.bowler.runs /
-      ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) / 6),
-    "now.balls": firebase.firestore.FieldValue.increment(1),
-    "now.runs": firebase.firestore.FieldValue.increment(0),
-    "now.runRate":
-      matchData.now.runs /
-      ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
-    "now.thisOver": firebase.firestore.FieldValue.arrayUnion({
-      ball: ball.ballNO,
-      status: ball.status,
-      run: ball.run,
-    }),
+  try {
+    let updateData = {
+      'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
+      'now.batsman.striker.strikeRate':
+        (matchData.now.batsman.striker.runs /
+          (matchData.now.batsman.striker.balls + 1)) *
+        100,
+      'now.bowler.balls': firebase.firestore.FieldValue.increment(1),
+      'now.bowler.economy':
+        matchData.now.bowler.runs /
+        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) /
+          6),
+      'now.balls': firebase.firestore.FieldValue.increment(1),
+      'now.runs': firebase.firestore.FieldValue.increment(0),
+      'now.runRate':
+        matchData.now.runs /
+        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+      'now.thisOver': firebase.firestore.FieldValue.arrayUnion({
+        ball: ball.ballNO,
+        status: ball.status,
+        run: ball.run,
+      }),
 
-    "now.partnership": {
-      runs: matchData.now.partnership.runs,
-      balls: matchData.now.partnership.balls + 1,
-      batsman1: matchData.now.batsman.striker.name,
-      batsman2: matchData.now.batsman.nonStriker.name,
-    },
-    "now.freeHit": false,
-    [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(0),
-    [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
-    [`innings.${inning}.ballByBall`]:
-      firebase.firestore.FieldValue.arrayUnion(ball),
-    [`innings.${inning}.runRate`]:
-      matchData.now.runs /
-      ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
-  });
+      'now.partnership': {
+        runs: matchData.now.partnership.runs,
+        balls: matchData.now.partnership.balls + 1,
+        batsman1: matchData.now.batsman.striker.id,
+        batsman2: matchData.now.batsman.nonStriker.id,
+      },
+      'now.freeHit': false,
+      [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(0),
+      [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
+      [`innings.${inning}.ballByBall`]: firebase.firestore.FieldValue.arrayUnion(
+        ballData,
+      ),
+      [`innings.${inning}.runRate`]:
+        matchData.now.runs /
+        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+    }
 
-  if (matchData.now.inning === 2) {
-    await docRef.update({
-      "now.from": matchData.now.from - 1,
-      "now.reqRR": matchData.now.need / ((matchData.now.from - 1) / 6),
-    });
+    if (matchData.now.inning === 2 || matchData.now.inning === 4) {
+      dataToUpdate = {
+        ...dataToUpdate,
+        'now.from': matchData.now.from - 1,
+        'now.reqRR': matchData.now.need / ((matchData.now.from - 1) / 6),
+      }
+    }
+
+    await UpdateQuickMatch(matchData.id, updateData)
+
+    // await docRef.update()
+
+    // if (matchData.now.balls >= 5) {
+    //   endOfOver(matchData, docRef, inning)
+    // }
+
+    return 'OK'
+  } catch (error) {
+    return error
   }
-  if (matchData.now.balls >= 5) {
-    endOfOver(matchData, docRef, inning);
-  }
-};
+}
 
-module.exports = dotBall;
+module.exports = dotBall
