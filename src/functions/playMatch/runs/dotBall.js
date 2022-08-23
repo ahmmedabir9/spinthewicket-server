@@ -16,7 +16,7 @@ const dotBall = async (matchData, ballData, inning) => {
   // };
 
   try {
-    let updateData = {
+    let dataToUpdate = {
       'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
       'now.batsman.striker.strikeRate':
         (matchData.now.batsman.striker.runs /
@@ -63,7 +63,7 @@ const dotBall = async (matchData, ballData, inning) => {
       }
     }
 
-    const updateMatch = await UpdateQuickMatch(matchData.id, updateData)
+    const updateMatch = await UpdateQuickMatch(matchData.id, dataToUpdate)
 
     // await docRef.update()
 
