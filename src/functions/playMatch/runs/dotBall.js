@@ -1,5 +1,6 @@
 const firebase = require('firebase-admin')
 const { UpdateQuickMatch } = require('../../../services/firebase')
+const endOfOver = require('../end/endOfOver')
 // const endOfOver = require('../end/endOfOver')
 
 const dotBall = async (matchData, ballData, inning) => {
@@ -62,13 +63,13 @@ const dotBall = async (matchData, ballData, inning) => {
       }
     }
 
-    await UpdateQuickMatch(matchData.id, updateData)
+    const updateMatch = await UpdateQuickMatch(matchData.id, updateData)
 
     // await docRef.update()
 
-    // if (matchData.now.balls >= 5) {
-    //   endOfOver(matchData, docRef, inning)
-    // }
+    if (updateMatch.now.balls === 6) {
+      await endOfOver(updateMatch, inning)
+    }
 
     return 'OK'
   } catch (error) {
