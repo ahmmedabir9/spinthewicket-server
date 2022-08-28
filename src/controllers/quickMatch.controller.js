@@ -10,6 +10,8 @@ const { v4: uuidv4 } = require("uuid");
 const { ballResult } = require("../functions/playMatch/ballResult");
 const { ballValidation } = require("../functions/playMatch/ballValidation");
 const prepareBallData = require("../functions/playMatch/prepareBallData");
+const { DreamPlayer } = require("../models/DreamPlayer.model");
+const { User } = require("../models/User.model");
 // const {
 //   twoRuns,
 //   threeRuns,
@@ -41,6 +43,12 @@ const teamPopulate = [
     populate: {
       path: "playerInfo",
     },
+  },
+];
+
+const playerPopulate = [
+  {
+    path: "playerInfo",
   },
 ];
 
@@ -211,7 +219,9 @@ const startQuickMatch = async (req, res) => {
           (player) => player?._id?.toString()
         ),
       },
-      ready: { a: false, b: true },
+      ready: {
+        [user?.toString()]: false,
+      },
       users: [user],
       toss: toss,
       now,
@@ -222,6 +232,57 @@ const startQuickMatch = async (req, res) => {
     const quickMatch = await CreateQuickMatch(matchData);
 
     return response(res, StatusCodes.ACCEPTED, true, quickMatch, null);
+  } catch (error) {
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      null,
+      error.message
+    );
+  }
+};
+
+const getMatchData = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const matchData = await GetQuickMatch(id);
+
+    // fetch teams
+    const teamA = await DreamTeam.findById(matchData?.teams?.a).populate(
+      teamPopulate
+    );
+    const teamB = await DreamTeam.findById(matchData?.teams?.b).populate(
+      teamPopulate
+    );
+
+    // fetch players
+    const players = await DreamPlayer.find()
+      .where({
+        $or: [
+          {
+            _id: { $in: matchData.playingXI[matchData?.teams?.a] },
+          },
+          {
+            _id: { $in: matchData.playingXI[matchData?.teams?.b] },
+          },
+        ],
+      })
+      .populate(playerPopulate);
+
+    // fetch users
+    const users = await User.find().where({
+      _id: { $in: matchData.users },
+    });
+
+    return response(
+      res,
+      StatusCodes.ACCEPTED,
+      true,
+      { teams: [teamA, teamB], players, users },
+      null
+    );
   } catch (error) {
     return response(
       res,
@@ -349,4 +410,4 @@ const playQuickMatch = async (req, res) => {
   }
 };
 
-module.exports = { startQuickMatch, playQuickMatch };
+module.exports = { startQuickMatch, getMatchData, playQuickMatch };
