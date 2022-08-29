@@ -71,12 +71,12 @@ const oneRun = async (matchData, ballData, inning) => {
 
     // await docRef.update()
 
-    if (updateMatch.now.need <= 0) {
-      runChased(matchData, docRef, inning)
-    }
-
     if (updateMatch.now.balls === 6) {
       await endOfOver(updateMatch, inning)
+    }
+
+    if (updateMatch.now.need <= 0) {
+      await runChased(updateMatch, inning)
     }
 
     return 'OK'
