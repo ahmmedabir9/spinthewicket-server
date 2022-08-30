@@ -1,17 +1,17 @@
-const { StatusCodes } = require("http-status-codes");
-const { DreamTeam } = require("../models/DreamTeam.model");
-const { response } = require("../utils/response");
+const { StatusCodes } = require('http-status-codes')
+const { DreamTeam } = require('../models/DreamTeam.model')
+const { response } = require('../utils/response')
 const {
   CreateQuickMatch,
   GetQuickMatch,
   UpdateQuickMatch,
-} = require("../services/firebase");
-const { v4: uuidv4 } = require("uuid");
-const { ballResult } = require("../functions/playMatch/ballResult");
-const { ballValidation } = require("../functions/playMatch/ballValidation");
-const prepareBallData = require("../functions/playMatch/prepareBallData");
-const { DreamPlayer } = require("../models/DreamPlayer.model");
-const { User } = require("../models/User.model");
+} = require('../services/firebase')
+const { v4: uuidv4 } = require('uuid')
+const { ballResult } = require('../functions/playMatch/ballResult')
+const { ballValidation } = require('../functions/playMatch/ballValidation')
+const prepareBallData = require('../functions/playMatch/prepareBallData')
+const { DreamPlayer } = require('../models/DreamPlayer.model')
+const { User } = require('../models/User.model')
 // const {
 //   twoRuns,
 //   threeRuns,
@@ -30,39 +30,39 @@ const { User } = require("../models/User.model");
 // const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
 
 const teamPopulate = [
-  { path: "theme" },
-  { path: "manager" },
+  { path: 'theme' },
+  { path: 'manager' },
   {
-    path: "captain",
+    path: 'captain',
     populate: {
-      path: "playerInfo",
+      path: 'playerInfo',
     },
   },
   {
-    path: "playingXI",
+    path: 'playingXI',
     populate: {
-      path: "playerInfo",
+      path: 'playerInfo',
     },
   },
-];
+]
 
 const playerPopulate = [
   {
-    path: "playerInfo",
+    path: 'playerInfo',
   },
-];
+]
 
 const startQuickMatch = async (req, res) => {
   try {
-    const { team, overs, user } = req.body;
+    const { team, overs, user } = req.body
 
     if (!team || !overs || !user) {
-      let msg = "provide all informations!";
-      return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
+      let msg = 'provide all informations!'
+      return response(res, StatusCodes.BAD_REQUEST, false, null, msg)
     }
 
     //verify and get team
-    const dreamTeam = await DreamTeam.findById(team).populate(teamPopulate);
+    const dreamTeam = await DreamTeam.findById(team).populate(teamPopulate)
 
     if (!dreamTeam) {
       return response(
@@ -70,8 +70,8 @@ const startQuickMatch = async (req, res) => {
         StatusCodes.NOT_FOUND,
         false,
         null,
-        "Dream Team Not Found"
-      );
+        'Dream Team Not Found',
+      )
     }
 
     if (dreamTeam?.manager?._id?.toString() !== user?.toString()) {
@@ -80,8 +80,8 @@ const startQuickMatch = async (req, res) => {
         StatusCodes.FORBIDDEN,
         false,
         null,
-        "You dont have permission to play with this team!"
-      );
+        'You dont have permission to play with this team!',
+      )
     }
 
     //find opponent
@@ -89,7 +89,7 @@ const startQuickMatch = async (req, res) => {
       rating: { $gte: dreamTeam.rating - 5 },
       rating: { $lte: dreamTeam.rating + 5 },
       isBot: true,
-    });
+    })
 
     if (!botTeams || !botTeams?.length === 0) {
       return response(
@@ -97,11 +97,11 @@ const startQuickMatch = async (req, res) => {
         StatusCodes.NOT_FOUND,
         false,
         null,
-        "No Opponent Found"
-      );
+        'No Opponent Found',
+      )
     }
 
-    const opponentTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
+    const opponentTeam = botTeams[Math.floor(Math.random() * botTeams.length)]
 
     //prepare match data
 
@@ -109,30 +109,30 @@ const startQuickMatch = async (req, res) => {
       bowlingTeam = null,
       battingScorer = null,
       bowlingScorer = null,
-      now = null;
-    const tossResult = Math.floor(Math.random() * 10000) % 2;
-    var toss;
+      now = null
+    const tossResult = Math.floor(Math.random() * 10000) % 2
+    var toss
 
     if (tossResult === 0) {
       toss = {
         team: dreamTeam?._id?.toString(),
-      };
+      }
     } else {
-      const choosen = Math.floor(Math.random() * 10000) % 2;
+      const choosen = Math.floor(Math.random() * 10000) % 2
       toss = {
         team: opponentTeam?._id?.toString(),
-        selected: choosen === 0 ? "bat" : "bowl",
-      };
+        selected: choosen === 0 ? 'bat' : 'bowl',
+      }
       battingTeam =
         choosen === 0
           ? opponentTeam?._id?.toString()
-          : dreamTeam?._id?.toString();
+          : dreamTeam?._id?.toString()
       bowlingTeam =
         choosen === 1
           ? opponentTeam?._id?.toString()
-          : dreamTeam?._id?.toString();
-      battingScorer = choosen === 0 ? null : user;
-      bowlingScorer = choosen === 1 ? null : user;
+          : dreamTeam?._id?.toString()
+      battingScorer = choosen === 0 ? null : user
+      bowlingScorer = choosen === 1 ? null : user
       now = {
         inning: 1,
         battingTeam: battingTeam,
@@ -157,7 +157,7 @@ const startQuickMatch = async (req, res) => {
         history: [],
         spinning: false,
         lastSpinPosition: 0,
-      };
+      }
     }
 
     const innings = {
@@ -197,26 +197,26 @@ const startQuickMatch = async (req, res) => {
         runRate: 0,
         extra: 0,
       },
-    };
+    }
 
-    const createdAt = new Date();
+    const createdAt = new Date()
 
     const matchData = {
-      type: "quick",
+      type: 'quick',
       teams: {
         a: dreamTeam?._id?.toString(),
         b: opponentTeam?._id?.toString(),
       },
       scorers: { a: user, b: null },
       overs: parseInt(overs),
-      status: toss.team === dreamTeam?._id?.toString() ? "toss" : "live",
+      status: toss.team === dreamTeam?._id?.toString() ? 'toss' : 'live',
       createdAt: createdAt.toString(),
       playingXI: {
         [dreamTeam?._id?.toString()]: dreamTeam?.playingXI?.map((player) =>
-          player?._id?.toString()
+          player?._id?.toString(),
         ),
         [opponentTeam?._id?.toString()]: opponentTeam?.playingXI?.map(
-          (player) => player?._id?.toString()
+          (player) => player?._id?.toString(),
         ),
       },
       ready: {
@@ -226,36 +226,36 @@ const startQuickMatch = async (req, res) => {
       toss: toss,
       now,
       innings,
-    };
+    }
 
     //save match data
-    const quickMatch = await CreateQuickMatch(matchData);
+    const quickMatch = await CreateQuickMatch(matchData)
 
-    return response(res, StatusCodes.ACCEPTED, true, quickMatch, null);
+    return response(res, StatusCodes.ACCEPTED, true, quickMatch, null)
   } catch (error) {
     return response(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
       false,
       null,
-      error.message
-    );
+      error.message,
+    )
   }
-};
+}
 
 const getMatchData = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id
 
-    const matchData = await GetQuickMatch(id);
+    const matchData = await GetQuickMatch(id)
 
     // fetch teams
     const teamA = await DreamTeam.findById(matchData?.teams?.a).populate(
-      teamPopulate
-    );
+      teamPopulate,
+    )
     const teamB = await DreamTeam.findById(matchData?.teams?.b).populate(
-      teamPopulate
-    );
+      teamPopulate,
+    )
 
     // fetch players
     const players = await DreamPlayer.find()
@@ -269,36 +269,36 @@ const getMatchData = async (req, res) => {
           },
         ],
       })
-      .populate(playerPopulate);
+      .populate(playerPopulate)
 
     // fetch users
     const users = await User.find().where({
       _id: { $in: matchData.users },
-    });
+    })
 
     return response(
       res,
       StatusCodes.ACCEPTED,
       true,
       { teams: [teamA, teamB], players, users },
-      null
-    );
+      null,
+    )
   } catch (error) {
     return response(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
       false,
       null,
-      error.message
-    );
+      error.message,
+    )
   }
-};
+}
 
 const playQuickMatch = async (req, res) => {
   try {
-    const { match, bat, bowl } = req.body;
+    const { match, bat, bowl } = req.body
 
-    const matchData = await GetQuickMatch(match);
+    const matchData = await GetQuickMatch(match)
 
     if (!matchData) {
       return response(
@@ -306,98 +306,110 @@ const playQuickMatch = async (req, res) => {
         StatusCodes.NOT_FOUND,
         false,
         null,
-        "No Match Found!"
-      );
+        'No Match Found!',
+      )
     }
 
-    var inning;
+    var inning
     if (matchData.now.inning === 1) {
-      inning = "first";
+      inning = 'first'
     } else if (matchData.now.inning === 2) {
-      inning = "second";
+      inning = 'second'
     } else if (matchData.now.inning === 3) {
-      inning = "super_1";
+      inning = 'super_1'
     } else if (matchData.now.inning === 4) {
-      inning = "super_2";
+      inning = 'super_2'
     }
 
-    const ballAction = ballResult(bat, bowl);
+    const ballAction = ballResult(bat, bowl)
 
-    var pointed;
-    if (ballAction === "ONE") pointed = 154;
-    else if (ballAction === "BOWLED") pointed = 244;
-    else if (ballAction === "SIX") pointed = 34;
-    else if (ballAction === "WIDE") pointed = 4;
-    else if (ballAction === "RUN_OUT") pointed = 334;
-    else if (ballAction === "TWO") pointed = 94;
-    else if (ballAction === "THREE") pointed = 274;
-    else if (ballAction === "LBW") pointed = 124;
-    else if (ballAction === "NO_BALL") pointed = 64;
-    else if (ballAction === "FOUR") pointed = 304;
-    else if (ballAction === "CATCH") pointed = 184;
-    else if (ballAction === "DOT") pointed = 214;
+    var pointed
+    if (ballAction === 'ONE') pointed = 154
+    else if (ballAction === 'BOWLED') pointed = 244
+    else if (ballAction === 'SIX') pointed = 34
+    else if (ballAction === 'WIDE') pointed = 4
+    else if (ballAction === 'RUN_OUT') pointed = 334
+    else if (ballAction === 'TWO') pointed = 94
+    else if (ballAction === 'THREE') pointed = 274
+    else if (ballAction === 'LBW') pointed = 124
+    else if (ballAction === 'NO_BALL') pointed = 64
+    else if (ballAction === 'FOUR') pointed = 304
+    else if (ballAction === 'CATCH') pointed = 184
+    else if (ballAction === 'DOT') pointed = 214
 
-    const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22));
+    const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22))
 
-    const ballData = prepareBallData(matchData, ballAction);
+    const ballData = prepareBallData(matchData, ballAction)
 
     if (ballValidation(matchData)) {
       const handler = async () => {
-        let ballResponse;
-        // if (ballAction === "DOT")
-        //   ballResponse = await dotBall(matchData, ballData, inning);
-        // else if (ballAction === "ONE")
-        //   await oneRun(matchData, ballData, inning);
-        // else if (ballAction === "TWO")
-        //   await twoRuns(matchData, ballData, inning);
-        // else if (ballAction === "THREE")
-        //   await threeRuns(matchData, ballData, inning);
-        // else if (ballAction === "FOUR")
-        //   await fourRuns(matchData, ballData, inning);
-        // else if (ballAction === "SIX")
-        //   await sixRuns(matchData, ballData, inning);
-        // else if (ballAction === "WIDE")
-        //   await wideBall(matchData, ballData, inning);
-        // else if (ballAction === "NO_BALL")
-        //   await noBall(matchData, ballData, inning);
-        // else if (ballAction === "BOWLED")
-        //   await bowled(matchData, ballData, inning);
-        // else if (ballAction === "LBW") await lbw(matchData, ballData, inning);
-        // else if (ballAction === "CATCH")
-        //   await catchOut(matchData, ballData, inning);
-        // else if (ballAction === "RUN_OUT")
-        //   await runOut(matchData, ballData, inning);
+        let ballResponse
+        if (ballAction === 'DOT')
+          ballResponse = await dotBall(matchData, ballData, inning)
+        else if (ballAction === 'ONE') await oneRun(matchData, ballData, inning)
+        else if (ballAction === 'TWO')
+          await twoRuns(matchData, ballData, inning)
+        else if (ballAction === 'THREE')
+          await threeRuns(matchData, ballData, inning)
+        else if (ballAction === 'FOUR')
+          await fourRuns(matchData, ballData, inning)
+        else if (ballAction === 'SIX')
+          await sixRuns(matchData, ballData, inning)
+        else if (ballAction === 'WIDE')
+          await wideBall(matchData, ballData, inning)
+        else if (ballAction === 'NO_BALL')
+          await noBall(matchData, ballData, inning)
+        else if (ballAction === 'BOWLED') {
+          if (matchData?.now?.freeHit) {
+            await dotBall(matchData, ballData, inning)
+          } else {
+            await bowled(matchData, ballData, inning)
+          }
+        } else if (ballAction === 'LBW') {
+          if (matchData?.now?.freeHit) {
+            await dotBall(matchData, ballData, inning)
+          } else {
+            await lbw(matchData, ballData, inning)
+          }
+        } else if (ballAction === 'CATCH') {
+          if (matchData?.now?.freeHit) {
+            await dotBall(matchData, ballData, inning)
+          } else {
+            await catchOut(matchData, ballData, inning)
+          }
+        } else if (ballAction === 'RUN_OUT')
+          await runOut(matchData, ballData, inning)
 
-        if (ballResponse !== "OK") {
+        if (ballResponse !== 'OK') {
           return response(
             res,
             StatusCodes.BAD_REQUEST,
             false,
             ballResponse,
-            "Something went wrong!"
-          );
+            'Something went wrong!',
+          )
         }
 
         const updateData = {
-          "now.lastSpinPosition": lastSpinPosition,
-          "now.spinning": false,
-        };
+          'now.lastSpinPosition': lastSpinPosition,
+          'now.spinning': false,
+        }
 
-        await UpdateQuickMatch(match, updateData);
-        return response(res, StatusCodes.ACCEPTED, true, null, null);
-      };
+        await UpdateQuickMatch(match, updateData)
+        return response(res, StatusCodes.ACCEPTED, true, null, null)
+      }
 
       setTimeout(() => {
-        handler();
-      }, 3000);
+        handler()
+      }, 3000)
     } else {
       return response(
         res,
         StatusCodes.BAD_REQUEST,
         false,
         null,
-        "SOMETHING WENT WRONG"
-      );
+        'SOMETHING WENT WRONG',
+      )
     }
   } catch (error) {
     return response(
@@ -405,9 +417,9 @@ const playQuickMatch = async (req, res) => {
       StatusCodes.INTERNAL_SERVER_ERROR,
       false,
       null,
-      error.message
-    );
+      error.message,
+    )
   }
-};
+}
 
-module.exports = { startQuickMatch, getMatchData, playQuickMatch };
+module.exports = { startQuickMatch, getMatchData, playQuickMatch }

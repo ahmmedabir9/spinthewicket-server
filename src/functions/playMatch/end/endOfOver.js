@@ -1,4 +1,5 @@
 const firebase = require('firebase-admin')
+const { UpdateQuickMatch } = require('../../../services/firebase')
 const endOfInnings = require('./endOfInnings')
 
 const endOfOver = async (matchData, inning) => {
