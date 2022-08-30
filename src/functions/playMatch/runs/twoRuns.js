@@ -15,9 +15,9 @@ const twoRuns = async (matchData, ballData, inning) => {
       ballData,
     ),
     'now.thisOver': firebase.firestore.FieldValue.arrayUnion({
-      ball: ball.ballNO,
-      status: ball.status,
-      run: ball.run,
+      ball: ballData.ballNO,
+      status: ballData.status,
+      run: ballData.run,
     }),
 
     'now.partnership': {

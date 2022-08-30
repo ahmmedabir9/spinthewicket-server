@@ -33,9 +33,9 @@ const dotBall = async (matchData, ballData, inning) => {
         matchData.now.runs /
         ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
       'now.thisOver': firebase.firestore.FieldValue.arrayUnion({
-        ball: ball.ballNO,
-        status: ball.status,
-        run: ball.run,
+        ball: ballData.ballNO,
+        status: ballData.status,
+        run: ballData.run,
       }),
 
       'now.partnership': {

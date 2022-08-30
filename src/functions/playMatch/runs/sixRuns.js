@@ -9,9 +9,9 @@ const sixRuns = async (matchData, ballData, inning) => {
     'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
     'now.batsman.striker.sixes': firebase.firestore.FieldValue.increment(1),
     'now.thisOver': firebase.firestore.FieldValue.arrayUnion({
-      ball: ball.ballNO,
-      status: ball.status,
-      run: ball.run,
+      ball: ballData.ballNO,
+      status: ballData.status,
+      run: ballData.run,
     }),
 
     'now.partnership': {
