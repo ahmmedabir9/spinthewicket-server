@@ -38,6 +38,7 @@ const wideBall = async (matchData, ballData, inning) => {
 
     if (matchData.now.inning === 2 || matchData.now.inning === 4) {
       dataToUpdate = {
+        ...dataToUpdate,
         'now.need': matchData.now.need - 1,
         'now.reqRR': (matchData.now.need - 1) / (matchData.now.from / 6),
       }

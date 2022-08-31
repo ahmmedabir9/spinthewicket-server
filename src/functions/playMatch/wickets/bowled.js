@@ -77,6 +77,7 @@ const bowled = async (matchData, ballData, inning) => {
 
   if (matchData.now.inning === 2 || matchData.now.inning === 4) {
     dataToUpdate = {
+      ...dataToUpdate,
       'now.from': matchData.now.from - 1,
       'now.reqRR': matchData.now.need / ((matchData.now.from - 1) / 6),
     }
@@ -84,9 +85,10 @@ const bowled = async (matchData, ballData, inning) => {
 
   const updateMatch = await UpdateQuickMatch(matchData.id, dataToUpdate)
 
-  if (updateMatch.now.wickets === 10) {
-    await allOut(updateMatch, inning)
-  } else if (updateMatch.superOver && updateMatch.now.wickets === 1) {
+  if (
+    updateMatch.now.wickets === 10 ||
+    (updateMatch.superOver && updateMatch.now.wickets === 1)
+  ) {
     await allOut(updateMatch, inning)
   }
 

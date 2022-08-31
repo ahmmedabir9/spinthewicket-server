@@ -4,24 +4,7 @@ const endOfOver = require('../end/endOfOver')
 
 const catchOut = async (matchData, ballData, inning) => {
   const index = Math.floor(Math.random() * 100) % 11
-  let fielder
-  if (matchData.now.inning === 1) {
-    if (
-      matchData.innings.first.bowlingTeam.id === matchData.squad.teamA.teamID
-    ) {
-      fielder = matchData.squad.teamA.playingXI[index].name
-    } else {
-      fielder = matchData.squad.teamB.playingXI[index].name
-    }
-  } else {
-    if (
-      matchData.innings.second.bowlingTeam.id === matchData.squad.teamA.teamID
-    ) {
-      fielder = matchData.squad.teamA.playingXI[index].name
-    } else {
-      fielder = matchData.squad.teamB.playingXI[index].name
-    }
-  }
+  let fielder = matchData.playingXI[matchData.now.bowlingTeam][index]
 
   const batsman = {
     balls: matchData.now.batsman.striker.balls + 1,
@@ -76,7 +59,7 @@ const catchOut = async (matchData, ballData, inning) => {
         runs: matchData.now.runs,
         overs: matchData.now.overs,
         balls: matchData.now.balls,
-        player: matchData.now.batsman.striker.name,
+        player: matchData.now.batsman.striker.id,
       },
     ),
     'now.bowler.economy':
@@ -98,6 +81,7 @@ const catchOut = async (matchData, ballData, inning) => {
 
   if (matchData.now.inning === 2 || matchData.now.inning === 4) {
     dataToUpdate = {
+      ...dataToUpdate,
       'now.from': matchData.now.from - 1,
       'now.reqRR': matchData.now.need / ((matchData.now.from - 1) / 6),
     }
@@ -105,9 +89,10 @@ const catchOut = async (matchData, ballData, inning) => {
 
   const updateMatch = await UpdateQuickMatch(matchData.id, dataToUpdate)
 
-  if (updateMatch.now.wickets === 10) {
-    await allOut(updateMatch, inning)
-  } else if (updateMatch.superOver && updateMatch.now.wickets === 1) {
+  if (
+    updateMatch.now.wickets === 10 ||
+    (updateMatch.superOver && updateMatch.now.wickets === 1)
+  ) {
     await allOut(updateMatch, inning)
   }
 
