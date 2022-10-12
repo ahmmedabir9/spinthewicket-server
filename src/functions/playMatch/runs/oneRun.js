@@ -1,5 +1,6 @@
 const firebase = require('firebase-admin')
-const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
+const { UpdateQuickMatch } = require('../../../services/firebase')
+// const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
 const endOfOver = require('../end/endOfOver')
 const runChased = require('../end/runChased')
 
@@ -40,8 +41,8 @@ const oneRun = async (matchData, ballData, inning) => {
       'now.partnership': {
         runs: matchData.now.partnership.runs + 1,
         balls: matchData.now.partnership.balls + 1,
-        batsman1: matchData.now.batsman.striker.name,
-        batsman2: matchData.now.batsman.nonStriker.name,
+        batsman1: matchData.now.batsman.striker?.id,
+        batsman2: matchData.now.batsman.nonStriker?.id,
       },
       'now.bowler.runs': firebase.firestore.FieldValue.increment(1),
       'now.bowler.balls': firebase.firestore.FieldValue.increment(1),
@@ -67,6 +68,11 @@ const oneRun = async (matchData, ballData, inning) => {
       }
     }
 
+    // console.log('====================================')
+    // console.log(dataToUpdate)
+    // console.log(matchData.id)
+    // console.log('====================================')
+
     const updateMatch = await UpdateQuickMatch(matchData.id, dataToUpdate)
 
     // await docRef.update()
@@ -79,9 +85,9 @@ const oneRun = async (matchData, ballData, inning) => {
       await runChased(updateMatch, inning)
     }
 
-    return 'OK'
+    return { success: true }
   } catch (error) {
-    return error
+    return { error, success: false }
   }
 }
 

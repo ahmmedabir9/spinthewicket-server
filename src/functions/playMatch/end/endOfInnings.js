@@ -1,5 +1,5 @@
 const firebase = require('firebase-admin')
-const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
+// const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
 const endOfMatch = require('./endOfMatch')
 
 const endOfInnings = async (matchData, docRef, inning) => {

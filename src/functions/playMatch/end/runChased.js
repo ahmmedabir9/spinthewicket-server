@@ -1,5 +1,5 @@
 const firebase = require('firebase-admin')
-const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
+// const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
 const { UpdateQuickMatch } = require('../../../services/firebase')
 const endOfMatch = require('./endOfMatch')
 

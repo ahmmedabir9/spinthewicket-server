@@ -42,6 +42,8 @@ const prepareBallData = (matchData, ballAction) => {
   } else if (ballAction === 'CATCH') {
     ball.wickets = matchData?.now?.wickets + (!matchData.now.freeHit ? 1 : 0)
   }
+
+  return ball
 }
 
 module.exports = prepareBallData

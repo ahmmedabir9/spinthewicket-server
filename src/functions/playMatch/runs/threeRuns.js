@@ -1,5 +1,5 @@
 const firebase = require('firebase-admin')
-const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
+// const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
 const endOfOver = require('../end/endOfOver')
 const runChased = require('../end/runChased')
 

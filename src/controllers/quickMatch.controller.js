@@ -12,20 +12,20 @@ const { ballValidation } = require('../functions/playMatch/ballValidation')
 const prepareBallData = require('../functions/playMatch/prepareBallData')
 const { DreamPlayer } = require('../models/DreamPlayer.model')
 const { User } = require('../models/User.model')
-// const {
-//   twoRuns,
-//   threeRuns,
-//   fourRuns,
-//   sixRuns,
-//   noBall,
-//   wideBall,
-//   oneRun,
-//   dotBall,
-//   catchOut,
-//   lbw,
-//   runOut,
-//   bowled,
-// } = require("../functions/playMatch");
+const {
+  twoRuns,
+  threeRuns,
+  fourRuns,
+  sixRuns,
+  noBall,
+  wideBall,
+  oneRun,
+  dotBall,
+  catchOut,
+  lbw,
+  runOut,
+  bowled,
+} = require('../functions/playMatch')
 
 // const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
 
@@ -298,6 +298,16 @@ const playQuickMatch = async (req, res) => {
   try {
     const { match, bat, bowl } = req.body
 
+    if (!match || !bat || !bowl) {
+      return response(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        null,
+        'match, bat, bowl are required field!',
+      )
+    }
+
     const matchData = await GetQuickMatch(match)
 
     if (!matchData) {
@@ -321,7 +331,8 @@ const playQuickMatch = async (req, res) => {
       inning = 'super_2'
     }
 
-    const ballAction = ballResult(bat, bowl)
+    const ballAction = 'ONE'
+    // const ballAction = ballResult(bat, bowl)
 
     var pointed
     if (ballAction === 'ONE') pointed = 154
@@ -341,46 +352,51 @@ const playQuickMatch = async (req, res) => {
 
     const ballData = prepareBallData(matchData, ballAction)
 
+    console.log('====================================')
+    console.log({ ballData })
+    console.log('====================================')
+
     if (ballValidation(matchData)) {
       const handler = async () => {
         let ballResponse
         if (ballAction === 'DOT')
           ballResponse = await dotBall(matchData, ballData, inning)
-        else if (ballAction === 'ONE') await oneRun(matchData, ballData, inning)
+        else if (ballAction === 'ONE')
+          ballResponse = await oneRun(matchData, ballData, inning)
         else if (ballAction === 'TWO')
-          await twoRuns(matchData, ballData, inning)
+          ballResponse = await twoRuns(matchData, ballData, inning)
         else if (ballAction === 'THREE')
-          await threeRuns(matchData, ballData, inning)
+          ballResponse = await threeRuns(matchData, ballData, inning)
         else if (ballAction === 'FOUR')
-          await fourRuns(matchData, ballData, inning)
+          ballResponse = await fourRuns(matchData, ballData, inning)
         else if (ballAction === 'SIX')
-          await sixRuns(matchData, ballData, inning)
+          ballResponse = await sixRuns(matchData, ballData, inning)
         else if (ballAction === 'WIDE')
-          await wideBall(matchData, ballData, inning)
+          ballResponse = await wideBall(matchData, ballData, inning)
         else if (ballAction === 'NO_BALL')
-          await noBall(matchData, ballData, inning)
+          ballResponse = await noBall(matchData, ballData, inning)
         else if (ballAction === 'BOWLED') {
           if (matchData?.now?.freeHit) {
-            await dotBall(matchData, ballData, inning)
+            ballResponse = await dotBall(matchData, ballData, inning)
           } else {
-            await bowled(matchData, ballData, inning)
+            ballResponse = await bowled(matchData, ballData, inning)
           }
         } else if (ballAction === 'LBW') {
           if (matchData?.now?.freeHit) {
-            await dotBall(matchData, ballData, inning)
+            ballResponse = await dotBall(matchData, ballData, inning)
           } else {
-            await lbw(matchData, ballData, inning)
+            ballResponse = await lbw(matchData, ballData, inning)
           }
         } else if (ballAction === 'CATCH') {
           if (matchData?.now?.freeHit) {
-            await dotBall(matchData, ballData, inning)
+            ballResponse = await dotBall(matchData, ballData, inning)
           } else {
-            await catchOut(matchData, ballData, inning)
+            ballResponse = await catchOut(matchData, ballData, inning)
           }
         } else if (ballAction === 'RUN_OUT')
-          await runOut(matchData, ballData, inning)
+          ballResponse = await runOut(matchData, ballData, inning)
 
-        if (ballResponse !== 'OK') {
+        if (!ballResponse?.success) {
           return response(
             res,
             StatusCodes.BAD_REQUEST,
@@ -396,12 +412,12 @@ const playQuickMatch = async (req, res) => {
         }
 
         await UpdateQuickMatch(match, updateData)
-        return response(res, StatusCodes.ACCEPTED, true, null, null)
+        return response(res, StatusCodes.ACCEPTED, true, ballResponse, null)
       }
 
-      setTimeout(() => {
-        handler()
-      }, 3000)
+      // setTimeout(() => {
+      handler()
+      // }, 3000)
     } else {
       return response(
         res,

@@ -4,17 +4,6 @@ const endOfOver = require('../end/endOfOver')
 // const endOfOver = require('../end/endOfOver')
 
 const dotBall = async (matchData, ballData, inning) => {
-  // const ball = {
-  //   wickets: matchData.now.wickets,
-  //   totalRuns: matchData.now.runs,
-  //   run: 0,
-  //   bowler: matchData.now.bowler.name,
-  //   batsman: matchData.now.batsman.striker.name,
-  //   status: "dot",
-  //   ballNO: matchData.now.balls + 1,
-  //   overNO: matchData.now.overs,
-  // };
-
   try {
     let dataToUpdate = {
       'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
