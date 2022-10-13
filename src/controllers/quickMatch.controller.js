@@ -331,7 +331,7 @@ const playQuickMatch = async (req, res) => {
       inning = "super_2";
     }
 
-    const ballAction = "BOWLED";
+    const ballAction = "TWO";
     // const ballAction = ballResult(bat, bowl)
 
     var pointed;
@@ -351,10 +351,6 @@ const playQuickMatch = async (req, res) => {
     const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22));
 
     const ballData = prepareBallData(matchData, ballAction);
-
-    console.log("====================================");
-    console.log({ ballData });
-    console.log("====================================");
 
     if (ballValidation(matchData)) {
       const handler = async () => {
