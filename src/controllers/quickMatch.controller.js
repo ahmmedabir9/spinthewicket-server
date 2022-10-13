@@ -331,7 +331,7 @@ const playQuickMatch = async (req, res) => {
       inning = "super_2";
     }
 
-    const ballAction = "FOUR";
+    const ballAction = "SIX";
     // const ballAction = ballResult(bat, bowl)
 
     var pointed;
