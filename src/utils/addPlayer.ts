@@ -1,6 +1,7 @@
+import { Request, Response } from "express";
+
 const firebase = require("firebase-admin");
 const firestore = firebase.firestore();
-import { Request, Response } from "express";
 
 const addPlayer = async (req: Request, res: Response) => {
   const { battingStyle, bowlingStyle, name, nationality, photoURL, role, teams } = req.body;

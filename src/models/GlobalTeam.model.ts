@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IGlobalTeam_ } from "./_ModelTypes_";
 
 const GlobalTeamSchema = new Schema<_IGlobalTeam_>(

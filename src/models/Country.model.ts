@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+
 import { _ICountry_ } from "./_ModelTypes_";
 
 const CountrySchema = new Schema<_ICountry_>(

@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import {
   _ILeagueTournamentPlayerStat_,
   _ILeagueTournamentPointTable_,

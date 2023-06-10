@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { _IUser_ } from "../models/_ModelTypes_";
 import { StatusCodes } from "http-status-codes";
+
 import User from "../models/User.model";
+import { _IUser_ } from "../models/_ModelTypes_";
 import { response } from "../utils/response";
 
 //create user profile

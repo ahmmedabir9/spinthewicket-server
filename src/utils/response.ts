@@ -1,5 +1,5 @@
-import { getReasonPhrase } from "http-status-codes";
 import { Response } from "express";
+import { getReasonPhrase } from "http-status-codes";
 
 const response = async (res: Response, code: any, status: boolean, data: any, message: string) => {
   if (!message) {

@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IInning_, _IMatch_ } from "./_ModelTypes_";
 
 const InningSchema = new Schema<_IInning_>(

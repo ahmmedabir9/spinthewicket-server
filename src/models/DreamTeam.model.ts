@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IDreamTeam_ } from "./_ModelTypes_";
 
 const DreamTeamSchema = new Schema<_IDreamTeam_>(

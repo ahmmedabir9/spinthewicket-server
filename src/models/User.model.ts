@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IUser_ } from "./_ModelTypes_";
 
 const UserSchema = new Schema<_IUser_>(

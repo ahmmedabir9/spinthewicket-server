@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _ITrophy_ } from "./_ModelTypes_";
 
 const TrophySchema = new Schema<_ITrophy_>(

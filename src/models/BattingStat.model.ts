@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IBattingStat_ } from "./_ModelTypes_";
 
 const BattingStatSchema = new Schema<_IBattingStat_>(

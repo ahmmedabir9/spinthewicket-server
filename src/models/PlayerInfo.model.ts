@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IPlayerInfo_ } from "./_ModelTypes_";
 
 const PlayerInfoSchema = new Schema<_IPlayerInfo_>(

@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _ILeaguePlayer_ } from "./_ModelTypes_";
 
 const LeaguePlayerSchema = new Schema<_ILeaguePlayer_>(

@@ -1,10 +1,11 @@
+import { Response } from "express";
+
 const { StatusCodes } = require("http-status-codes");
 const { verify } = require("jsonwebtoken");
 const { User } = require("../models/User.model");
 const { Admin } = require("../models/Admin.model");
 const { config } = require("./config");
 const { response } = require("./response");
-import { Response } from "express";
 
 //verify token of user request
 const verifyToken = async (token: string) => {

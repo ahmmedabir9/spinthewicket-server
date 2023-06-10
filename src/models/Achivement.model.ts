@@ -1,4 +1,5 @@
-import { Schema, model, SchemaTypes } from "mongoose";
+import { Schema, SchemaTypes, model } from "mongoose";
+
 import { _IAchievement_ } from "./_ModelTypes_";
 
 const AchievementSchema = new Schema<_IAchievement_>(
