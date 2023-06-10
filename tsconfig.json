@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": ["es2016", "es2017.object"],
     "rootDir": "./src",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es2017",
     "outDir": "./dist",
     "downlevelIteration": true,
@@ -14,7 +14,7 @@
     "skipLibCheck": true, //added to speed up tsc
     "emitDecoratorMetadata": true, // added as per typeorm docs
     "experimentalDecorators": true, // added as per typeorm docs
-    "strict": true
+    "strict": false
   },
   "ts-node": {
     "esm": true
