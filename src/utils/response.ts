@@ -1,4 +1,4 @@
-const { getReasonPhrase } = require("http-status-codes");
+import { getReasonPhrase } from "http-status-codes";
 import { Response } from "express";
 
 const response = async (res: Response, code: any, status: boolean, data: any, message: string) => {
@@ -12,4 +12,4 @@ const response = async (res: Response, code: any, status: boolean, data: any, me
   });
 };
 
-module.exports = { response };
+export { response };
