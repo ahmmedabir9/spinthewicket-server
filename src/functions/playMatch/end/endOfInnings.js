@@ -76,7 +76,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
         if (inning === "second") {
           if (matchData.innings.first.runs === matchData.innings.second.runs) {
             const innings = {
-              super_1: {
+              firstSuper: {
                 battingTeam: matchData.innings.second.battingTeam,
                 bowlingTeam: matchData.innings.first.battingTeam,
                 battingScorer: matchData.innings.second.battingScorer,
@@ -93,7 +93,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
                 runRate: 0,
                 extra: 0,
               },
-              super_2: {
+              secondSuper: {
                 battingTeam: matchData.innings.first.battingTeam,
                 bowlingTeam: matchData.innings.second.battingTeam,
                 battingScorer: matchData.innings.first.battingScorer,
@@ -121,17 +121,17 @@ const endOfInnings = async (matchData, docRef, inning) => {
               "now.need": null,
               "now.from": null,
               "now.reqRR": null,
-              "innings.super_1": innings.super_1,
-              "innings.super_2": innings.super_2,
+              "innings.firstSuper": innings.firstSuper,
+              "innings.secondSuper": innings.secondSuper,
               superOver: true,
             });
           } else {
             endOfMatch(matchData, docRef, inning);
           }
-        } else if (inning === "super_2") {
-          if (matchData.innings.super_1.runs === matchData.innings.super_2.runs) {
+        } else if (inning === "secondSuper") {
+          if (matchData.innings.firstSuper.runs === matchData.innings.secondSuper.runs) {
             const innings = {
-              super_1: {
+              firstSuper: {
                 battingTeam: matchData.innings.second.battingTeam,
                 bowlingTeam: matchData.innings.first.battingTeam,
                 battingScorer: matchData.innings.second.battingScorer,
@@ -148,7 +148,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
                 runRate: 0,
                 extra: 0,
               },
-              super_2: {
+              secondSuper: {
                 battingTeam: matchData.innings.first.battingTeam,
                 bowlingTeam: matchData.innings.second.battingTeam,
                 battingScorer: matchData.innings.first.battingScorer,
@@ -176,8 +176,8 @@ const endOfInnings = async (matchData, docRef, inning) => {
               "now.need": null,
               "now.from": null,
               "now.reqRR": null,
-              "innings.super_1": innings.super_1,
-              "innings.super_2": innings.super_2,
+              "innings.firstSuper": innings.firstSuper,
+              "innings.secondSuper": innings.secondSuper,
               superOver: true,
             });
           } else {
@@ -228,7 +228,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
         if (inning === "second") {
           if (matchData.innings.first.runs === matchData.innings.second.runs) {
             const innings = {
-              super_1: {
+              firstSuper: {
                 battingTeam: matchData.innings.second.battingTeam,
                 bowlingTeam: matchData.innings.first.battingTeam,
                 battingScorer: matchData.innings.second.battingScorer,
@@ -245,7 +245,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
                 runRate: 0,
                 extra: 0,
               },
-              super_2: {
+              secondSuper: {
                 battingTeam: matchData.innings.first.battingTeam,
                 bowlingTeam: matchData.innings.second.battingTeam,
                 battingScorer: matchData.innings.first.battingScorer,
@@ -274,17 +274,17 @@ const endOfInnings = async (matchData, docRef, inning) => {
               "now.need": null,
               "now.from": null,
               "now.reqRR": null,
-              "innings.super_1": innings.super_1,
-              "innings.super_2": innings.super_2,
+              "innings.firstSuper": innings.firstSuper,
+              "innings.secondSuper": innings.secondSuper,
               superOver: true,
             });
           } else {
             endOfMatch(matchData, docRef, inning);
           }
-        } else if (inning === "super_2") {
-          if (matchData.innings.super_1.runs === matchData.innings.super_2.runs) {
+        } else if (inning === "secondSuper") {
+          if (matchData.innings.firstSuper.runs === matchData.innings.secondSuper.runs) {
             const innings = {
-              super_1: {
+              firstSuper: {
                 battingTeam: matchData.innings.second.battingTeam,
                 bowlingTeam: matchData.innings.first.battingTeam,
                 battingScorer: matchData.innings.second.battingScorer,
@@ -301,7 +301,7 @@ const endOfInnings = async (matchData, docRef, inning) => {
                 runRate: 0,
                 extra: 0,
               },
-              super_2: {
+              secondSuper: {
                 battingTeam: matchData.innings.first.battingTeam,
                 bowlingTeam: matchData.innings.second.battingTeam,
                 battingScorer: matchData.innings.first.battingScorer,
@@ -330,8 +330,8 @@ const endOfInnings = async (matchData, docRef, inning) => {
               "now.need": null,
               "now.from": null,
               "now.reqRR": null,
-              "innings.super_1": innings.super_1,
-              "innings.super_2": innings.super_2,
+              "innings.firstSuper": innings.firstSuper,
+              "innings.secondSuper": innings.secondSuper,
               superOver: true,
             });
           } else {

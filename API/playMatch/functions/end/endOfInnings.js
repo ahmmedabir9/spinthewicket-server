@@ -17,10 +17,7 @@ const endOfInnings = (matchData, docRef, inning) => {
           photoURL: newData.now.batsman.striker.photoURL,
           runs: newData.now.batsman.striker.runs,
           sixes: newData.now.batsman.striker.sixes,
-          strikeRate:
-            (newData.now.batsman.striker.runs /
-              newData.now.batsman.striker.balls) *
-            100,
+          strikeRate: (newData.now.batsman.striker.runs / newData.now.batsman.striker.balls) * 100,
           status: "not out",
         };
         batsman = [...batsman, striker];
@@ -36,9 +33,7 @@ const endOfInnings = (matchData, docRef, inning) => {
           runs: newData.now.batsman.nonStriker.runs,
           sixes: newData.now.batsman.nonStriker.sixes,
           strikeRate:
-            (newData.now.batsman.nonStriker.runs /
-              newData.now.batsman.nonStriker.balls) *
-            100,
+            (newData.now.batsman.nonStriker.runs / newData.now.batsman.nonStriker.balls) * 100,
           status: "not out",
         };
         batsman = [...batsman, nonStriker];
@@ -73,22 +68,20 @@ const endOfInnings = (matchData, docRef, inning) => {
             "now.from": newData.overs * 6,
             "now.reqRR": (newData.now.runs + 1) / newData.overs,
             [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(
-              batsman[0]
+              batsman[0],
             ),
-            [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion(
-              {
-                runs: newData.now.partnership.runs,
-                balls: newData.now.partnership.balls,
-                batsman1: newData.now.partnership.batsman1,
-                batsman2: newData.now.partnership.batsman2,
-              }
-            ),
+            [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion({
+              runs: newData.now.partnership.runs,
+              balls: newData.now.partnership.balls,
+              batsman1: newData.now.partnership.batsman1,
+              batsman2: newData.now.partnership.batsman2,
+            }),
           })
           .then(() => {
             if (inning === "second") {
               if (newData.innings.first.runs === newData.innings.second.runs) {
                 const innings = {
-                  super_1: {
+                  firstSuper: {
                     battingTeam: newData.innings.second.battingTeam,
                     bowlingTeam: newData.innings.first.battingTeam,
                     battingScorer: newData.innings.second.battingScorer,
@@ -105,7 +98,7 @@ const endOfInnings = (matchData, docRef, inning) => {
                     runRate: 0,
                     extra: 0,
                   },
-                  super_2: {
+                  secondSuper: {
                     battingTeam: newData.innings.first.battingTeam,
                     bowlingTeam: newData.innings.second.battingTeam,
                     battingScorer: newData.innings.first.battingScorer,
@@ -133,19 +126,17 @@ const endOfInnings = (matchData, docRef, inning) => {
                   "now.need": null,
                   "now.from": null,
                   "now.reqRR": null,
-                  "innings.super_1": innings.super_1,
-                  "innings.super_2": innings.super_2,
+                  "innings.firstSuper": innings.firstSuper,
+                  "innings.secondSuper": innings.secondSuper,
                   superOver: true,
                 });
               } else {
                 endOfMatch(newData, docRef, inning);
               }
-            } else if (inning === "super_2") {
-              if (
-                newData.innings.super_1.runs === newData.innings.super_2.runs
-              ) {
+            } else if (inning === "secondSuper") {
+              if (newData.innings.firstSuper.runs === newData.innings.secondSuper.runs) {
                 const innings = {
-                  super_1: {
+                  firstSuper: {
                     battingTeam: newData.innings.second.battingTeam,
                     bowlingTeam: newData.innings.first.battingTeam,
                     battingScorer: newData.innings.second.battingScorer,
@@ -162,7 +153,7 @@ const endOfInnings = (matchData, docRef, inning) => {
                     runRate: 0,
                     extra: 0,
                   },
-                  super_2: {
+                  secondSuper: {
                     battingTeam: newData.innings.first.battingTeam,
                     bowlingTeam: newData.innings.second.battingTeam,
                     battingScorer: newData.innings.first.battingScorer,
@@ -190,8 +181,8 @@ const endOfInnings = (matchData, docRef, inning) => {
                   "now.need": null,
                   "now.from": null,
                   "now.reqRR": null,
-                  "innings.super_1": innings.super_1,
-                  "innings.super_2": innings.super_2,
+                  "innings.firstSuper": innings.firstSuper,
+                  "innings.secondSuper": innings.secondSuper,
                   superOver: true,
                 });
               } else {
@@ -229,22 +220,20 @@ const endOfInnings = (matchData, docRef, inning) => {
             "now.reqRR": (newData.now.runs + 1) / newData.overs,
             [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(
               batsman[0],
-              batsman[1]
+              batsman[1],
             ),
-            [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion(
-              {
-                runs: newData.now.partnership.runs,
-                balls: newData.now.partnership.balls,
-                batsman1: newData.now.partnership.batsman1,
-                batsman2: newData.now.partnership.batsman2,
-              }
-            ),
+            [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion({
+              runs: newData.now.partnership.runs,
+              balls: newData.now.partnership.balls,
+              batsman1: newData.now.partnership.batsman1,
+              batsman2: newData.now.partnership.batsman2,
+            }),
           })
           .then(() => {
             if (inning === "second") {
               if (newData.innings.first.runs === newData.innings.second.runs) {
                 const innings = {
-                  super_1: {
+                  firstSuper: {
                     battingTeam: newData.innings.second.battingTeam,
                     bowlingTeam: newData.innings.first.battingTeam,
                     battingScorer: newData.innings.second.battingScorer,
@@ -261,7 +250,7 @@ const endOfInnings = (matchData, docRef, inning) => {
                     runRate: 0,
                     extra: 0,
                   },
-                  super_2: {
+                  secondSuper: {
                     battingTeam: newData.innings.first.battingTeam,
                     bowlingTeam: newData.innings.second.battingTeam,
                     battingScorer: newData.innings.first.battingScorer,
@@ -290,19 +279,17 @@ const endOfInnings = (matchData, docRef, inning) => {
                   "now.need": null,
                   "now.from": null,
                   "now.reqRR": null,
-                  "innings.super_1": innings.super_1,
-                  "innings.super_2": innings.super_2,
+                  "innings.firstSuper": innings.firstSuper,
+                  "innings.secondSuper": innings.secondSuper,
                   superOver: true,
                 });
               } else {
                 endOfMatch(newData, docRef, inning);
               }
-            } else if (inning === "super_2") {
-              if (
-                newData.innings.super_1.runs === newData.innings.super_2.runs
-              ) {
+            } else if (inning === "secondSuper") {
+              if (newData.innings.firstSuper.runs === newData.innings.secondSuper.runs) {
                 const innings = {
-                  super_1: {
+                  firstSuper: {
                     battingTeam: newData.innings.second.battingTeam,
                     bowlingTeam: newData.innings.first.battingTeam,
                     battingScorer: newData.innings.second.battingScorer,
@@ -319,7 +306,7 @@ const endOfInnings = (matchData, docRef, inning) => {
                     runRate: 0,
                     extra: 0,
                   },
-                  super_2: {
+                  secondSuper: {
                     battingTeam: newData.innings.first.battingTeam,
                     bowlingTeam: newData.innings.second.battingTeam,
                     battingScorer: newData.innings.first.battingScorer,
@@ -348,8 +335,8 @@ const endOfInnings = (matchData, docRef, inning) => {
                   "now.need": null,
                   "now.from": null,
                   "now.reqRR": null,
-                  "innings.super_1": innings.super_1,
-                  "innings.super_2": innings.super_2,
+                  "innings.firstSuper": innings.firstSuper,
+                  "innings.secondSuper": innings.secondSuper,
                   superOver: true,
                 });
               } else {

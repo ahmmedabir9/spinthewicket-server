@@ -1,17 +1,10 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _IDreamPlayer_ } from "./_ModelTypes_";
 
-const LeaguePlayerSchema = new Schema(
+const DreamPlayerSchema = new Schema<_IDreamPlayer_>(
   {
-    playerID: {
-      type: Number,
-      required: true,
-    },
     playerInfo: {
       ref: "player_info",
-      type: SchemaTypes.ObjectId,
-    },
-    league: {
-      ref: "league",
       type: SchemaTypes.ObjectId,
     },
     activePlayer: { type: Boolean, default: true },
@@ -19,12 +12,12 @@ const LeaguePlayerSchema = new Schema(
       ref: "batting_stat",
       type: SchemaTypes.ObjectId,
     },
-    bwlingStat: {
+    bowlingStat: {
       ref: "bowling_stat",
       type: SchemaTypes.ObjectId,
     },
     team: {
-      ref: "league_team",
+      ref: "dream_team",
       type: SchemaTypes.ObjectId,
     },
     trophies: [
@@ -33,22 +26,23 @@ const LeaguePlayerSchema = new Schema(
           ref: "trophy",
           type: SchemaTypes.ObjectId,
         },
-        date: Date,
+        date: { type: Date, default: Date.now },
       },
     ],
-    achivements: [
+    achievements: [
       {
-        achivement: {
-          ref: "achivement",
+        achievement: {
+          ref: "achievement",
           type: SchemaTypes.ObjectId,
         },
-        date: Date,
+        date: { type: Date, default: Date.now },
       },
     ],
+    isBot: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
-const LeaguePlayer = model("league_player", LeaguePlayerSchema);
+const DreamPlayer = model<_IDreamPlayer_>("dream_player", DreamPlayerSchema);
 
-module.exports = { LeaguePlayer };
+export { DreamPlayer };

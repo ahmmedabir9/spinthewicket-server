@@ -1,6 +1,7 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _IGlobalTeam_ } from "./_ModelTypes_";
 
-const GlobalTeamSchema = new Schema(
+const GlobalTeamSchema = new Schema<_IGlobalTeam_>(
   {
     title: {
       type: String,
@@ -23,6 +24,6 @@ const GlobalTeamSchema = new Schema(
   { timestamps: true },
 );
 
-const GlobalTeam = model("global_team", GlobalTeamSchema);
+const GlobalTeam = model<_IGlobalTeam_>("global_team", GlobalTeamSchema);
 
-module.exports = { GlobalTeam };
+export { GlobalTeam };

@@ -33,6 +33,7 @@
     "no-async-promise-executor": "off",
     "no-console": "off",
     "no-undef": "off", // Allow using require without errors
-    "@typescript-eslint/no-var-requires": "off" // Allow using require without errors in TypeScript
+    "@typescript-eslint/no-var-requires": "off",
+    "no-unused-vars": "warn"
   }
 }

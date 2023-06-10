@@ -11,9 +11,9 @@ const savePlayerData = (matchData, docRef) => {
   } else if (matchData.innings.first.runs < matchData.innings.second.runs) {
     teamBWinningPoint = 5;
   } else if (matchData.superOver) {
-    if (matchData.innings.super_2.runs > matchData.innings.super_1.runs) {
+    if (matchData.innings.secondSuper.runs > matchData.innings.firstSuper.runs) {
       teamAWinningPoint = 5;
-    } else if (matchData.innings.super_2.runs < matchData.innings.super_1.runs) {
+    } else if (matchData.innings.secondSuper.runs < matchData.innings.firstSuper.runs) {
       teamBWinningPoint = 5;
     }
   }

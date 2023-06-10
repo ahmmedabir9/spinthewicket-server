@@ -48,14 +48,18 @@ const ballValidation = (matchData) => {
       } else if (matchData.now.inning === 3) {
         if (
           matchData.now.balls !== 0 &&
-          matchData.innings.super_1.ballByBall[matchData.innings.super_1.ballByBall.length - 1]
-            .status === "run" &&
-          (matchData.innings.super_1.ballByBall[matchData.innings.super_1.ballByBall.length - 1]
-            .run === 1 ||
-            matchData.innings.super_1.ballByBall[matchData.innings.super_1.ballByBall.length - 1]
-              .run === 3) &&
-          matchData.innings.super_1.ballByBall[matchData.innings.super_1.ballByBall.length - 1]
-            .batsman === matchData.now.batsman.striker.name
+          matchData.innings.firstSuper.ballByBall[
+            matchData.innings.firstSuper.ballByBall.length - 1
+          ].status === "run" &&
+          (matchData.innings.firstSuper.ballByBall[
+            matchData.innings.firstSuper.ballByBall.length - 1
+          ].run === 1 ||
+            matchData.innings.firstSuper.ballByBall[
+              matchData.innings.firstSuper.ballByBall.length - 1
+            ].run === 3) &&
+          matchData.innings.firstSuper.ballByBall[
+            matchData.innings.firstSuper.ballByBall.length - 1
+          ].batsman === matchData.now.batsman.striker.name
         ) {
           return false;
         } else {
@@ -64,14 +68,18 @@ const ballValidation = (matchData) => {
       } else if (matchData.now.inning === 4) {
         if (
           matchData.now.balls !== 0 &&
-          matchData.innings.super_2.ballByBall[matchData.innings.super_2.ballByBall.length - 1]
-            .status === "run" &&
-          (matchData.innings.super_2.ballByBall[matchData.innings.super_2.ballByBall.length - 1]
-            .run === 1 ||
-            matchData.innings.super_2.ballByBall[matchData.innings.super_2.ballByBall.length - 1]
-              .run === 3) &&
-          matchData.innings.super_2.ballByBall[matchData.innings.super_2.ballByBall.length - 1]
-            .batsman === matchData.now.batsman.striker.name
+          matchData.innings.secondSuper.ballByBall[
+            matchData.innings.secondSuper.ballByBall.length - 1
+          ].status === "run" &&
+          (matchData.innings.secondSuper.ballByBall[
+            matchData.innings.secondSuper.ballByBall.length - 1
+          ].run === 1 ||
+            matchData.innings.secondSuper.ballByBall[
+              matchData.innings.secondSuper.ballByBall.length - 1
+            ].run === 3) &&
+          matchData.innings.secondSuper.ballByBall[
+            matchData.innings.secondSuper.ballByBall.length - 1
+          ].batsman === matchData.now.batsman.striker.name
         ) {
           return false;
         } else if (matchData.now.need + matchData.now.runs !== matchData.now.target) {

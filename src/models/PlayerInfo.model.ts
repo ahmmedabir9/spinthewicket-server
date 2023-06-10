@@ -1,6 +1,7 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _IPlayerInfo_ } from "./_ModelTypes_";
 
-const PlayerInfoSchema = new Schema(
+const PlayerInfoSchema = new Schema<_IPlayerInfo_>(
   {
     name: {
       type: String,
@@ -37,6 +38,6 @@ const PlayerInfoSchema = new Schema(
   { timestamps: true },
 );
 
-const PlayerInfo = model("player_info", PlayerInfoSchema);
+const PlayerInfo = model<_IPlayerInfo_>("player_info", PlayerInfoSchema);
 
-module.exports = { PlayerInfo };
+export { PlayerInfo };

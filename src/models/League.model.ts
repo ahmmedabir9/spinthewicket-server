@@ -1,6 +1,7 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _ILeague_ } from "./_ModelTypes_";
 
-const LeagueSchema = new Schema(
+const LeagueSchema = new Schema<_ILeague_>(
   {
     title: {
       type: String,
@@ -32,6 +33,6 @@ const LeagueSchema = new Schema(
   { timestamps: true },
 );
 
-const League = model("league", LeagueSchema);
+const League = model<_ILeague_>("league", LeagueSchema);
 
-module.exports = { League };
+export { League };

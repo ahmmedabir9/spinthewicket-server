@@ -22,11 +22,7 @@ router.post("/", async (req, res, next) => {
   const { status, league, match, lastSpinPosition } = req.body;
   var docRef;
   if (league) {
-    docRef = database
-      .collection("leagues")
-      .doc(league)
-      .collection("matches")
-      .doc(match);
+    docRef = database.collection("leagues").doc(league).collection("matches").doc(match);
   } else {
     docRef = database.collection("quickMatches").doc(match);
   }
@@ -40,9 +36,9 @@ router.post("/", async (req, res, next) => {
   } else if (matchData.now.inning === 2) {
     inning = "second";
   } else if (matchData.now.inning === 3) {
-    inning = "super_1";
+    inning = "firstSuper";
   } else if (matchData.now.inning === 4) {
-    inning = "super_2";
+    inning = "secondSuper";
   }
 
   if (ballValidation(matchData)) {
@@ -60,14 +56,14 @@ router.post("/", async (req, res, next) => {
         if (status === "LBW") await lbw(matchData, docRef, inning);
         if (status === "CATCH") await catchOut(matchData, docRef, inning);
         if (status === "RUN OUT") await runOut(matchData, docRef, inning);
-        
+
         docRef.update({
           "now.lastSpinPosition": lastSpinPosition,
           "now.spinning": false,
         });
-      }
+      };
 
-      handler()
+      handler();
     }, 4000);
     res.status(201).json({
       updated: true,

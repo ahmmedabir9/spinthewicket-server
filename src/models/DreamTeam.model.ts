@@ -1,27 +1,27 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _IDreamTeam_ } from "./_ModelTypes_";
 
-const LeagueTeamSchema = new Schema(
+const DreamTeamSchema = new Schema<_IDreamTeam_>(
   {
     title: {
       type: String,
       required: true,
     },
-    slug: {
+    teamId: {
       type: String,
       required: true,
     },
-    shortName: {
+    code: {
       type: String,
       required: true,
     },
     isActive: Boolean,
-    logo: String,
-    league: {
-      ref: "league",
+    theme: {
+      ref: "theme",
       type: SchemaTypes.ObjectId,
     },
     captain: {
-      ref: "league_player",
+      ref: "dream_player",
       type: SchemaTypes.ObjectId,
     },
     manager: {
@@ -29,7 +29,6 @@ const LeagueTeamSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
     points: { type: Number, default: 0 },
-    balance: { type: Number, default: 0 },
     trophies: [
       {
         trophy: {
@@ -39,10 +38,17 @@ const LeagueTeamSchema = new Schema(
         date: Date,
       },
     ],
-    achivements: [
+    playingXI: [
       {
-        achivement: {
-          ref: "achivement",
+        ref: "dream_player",
+        type: SchemaTypes.ObjectId,
+      },
+    ],
+    rating: { type: Number, default: 0 },
+    achievements: [
+      {
+        achievement: {
+          ref: "achievement",
           type: SchemaTypes.ObjectId,
         },
         date: Date,
@@ -68,12 +74,11 @@ const LeagueTeamSchema = new Schema(
       },
       nRR: { type: Number, default: 0 },
     },
-    xp: { type: Number, default: 0 },
-    level: { type: Number, default: 0 },
+    isBot: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
-const LeagueTeam = model("league_team", LeagueTeamSchema);
+const DreamTeam = model<_IDreamTeam_>("dream_team", DreamTeamSchema);
 
-module.exports = { LeagueTeam };
+export { DreamTeam };

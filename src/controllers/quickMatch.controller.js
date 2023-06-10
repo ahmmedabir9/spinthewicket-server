@@ -282,9 +282,9 @@ const playQuickMatch = async (req, res) => {
     } else if (matchData.now.inning === 2) {
       inning = "second";
     } else if (matchData.now.inning === 3) {
-      inning = "super_1";
+      inning = "firstSuper";
     } else if (matchData.now.inning === 4) {
-      inning = "super_2";
+      inning = "secondSuper";
     }
 
     const ballAction = "SIX";

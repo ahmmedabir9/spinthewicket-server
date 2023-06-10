@@ -16,14 +16,14 @@ const endOfMatch = async (matchData, inning) => {
       wickets: 10 - matchData.innings.second.wickets,
     };
   } else if (matchData.superOver) {
-    if (matchData.innings.super_1.runs > matchData.innings.super_2.runs) {
+    if (matchData.innings.firstSuper.runs > matchData.innings.secondSuper.runs) {
       result = {
-        winner: matchData.innings.super_1.battingTeam.name,
+        winner: matchData.innings.firstSuper.battingTeam.name,
         wonBy: "Super Over",
       };
-    } else if (matchData.innings.super_1.runs < matchData.innings.super_2.runs) {
+    } else if (matchData.innings.firstSuper.runs < matchData.innings.secondSuper.runs) {
       result = {
-        winner: matchData.innings.super_2.battingTeam.name,
+        winner: matchData.innings.secondSuper.battingTeam.name,
         wonBy: "Super Over",
       };
     }

@@ -1,6 +1,7 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _ITrophy_ } from "./_ModelTypes_";
 
-const TrophySchema = new Schema(
+const TrophySchema = new Schema<_ITrophy_>(
   {
     title: {
       type: String,
@@ -8,8 +9,9 @@ const TrophySchema = new Schema(
     },
     description: String,
     trophyType: {
-      type: String, //champion, runnerup, motm, mots, mostruns, mostwickets
+      type: String,
       required: true,
+      enum: ["champion", "runnerup", "motm", "mots", "mostruns", "others", "mostwickets"],
     },
     tournament: {
       ref: "league_tournament",
@@ -27,6 +29,6 @@ const TrophySchema = new Schema(
   { timestamps: true },
 );
 
-const Trophy = model("trophy", TrophySchema);
+const Trophy = model<_ITrophy_>("trophy", TrophySchema);
 
-module.exports = { Trophy };
+export { Trophy };

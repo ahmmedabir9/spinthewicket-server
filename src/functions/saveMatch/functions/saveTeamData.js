@@ -48,7 +48,7 @@ const saveTeamData = (matchData, docRef) => {
       tied: 0,
     };
   } else if (matchData.superOver) {
-    if (matchData.innings.super_2.runs > matchData.innings.super_1.runs) {
+    if (matchData.innings.secondSuper.runs > matchData.innings.firstSuper.runs) {
       teamA = {
         won: 1,
         points: 2,
@@ -61,7 +61,7 @@ const saveTeamData = (matchData, docRef) => {
         lost: 1,
         tied: 0,
       };
-    } else if (matchData.innings.super_2.runs < matchData.innings.super_1.runs) {
+    } else if (matchData.innings.secondSuper.runs < matchData.innings.firstSuper.runs) {
       teamA = {
         won: 0,
         points: 0,

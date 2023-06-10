@@ -1,6 +1,7 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
+import { _IBowlingStat_ } from "./_ModelTypes_";
 
-const BowlingStatSchema = new Schema(
+const BowlingStatSchema = new Schema<_IBowlingStat_>(
   {
     average: { type: Number, default: 0 },
     balls: { type: Number, default: 0 },
@@ -8,7 +9,7 @@ const BowlingStatSchema = new Schema(
       runs: { type: Number, default: 0 },
       wickets: { type: Number, default: 0 },
       match: {
-        ref: "match",
+        ref: "Match",
         type: SchemaTypes.ObjectId,
       },
     },
@@ -26,6 +27,6 @@ const BowlingStatSchema = new Schema(
   { timestamps: true },
 );
 
-const BowlingStat = model("bowling_stat", BowlingStatSchema);
+const BowlingStat = model<_IBowlingStat_>("bowling_stat", BowlingStatSchema);
 
-module.exports = { BowlingStat };
+export default BowlingStat;

@@ -5,10 +5,7 @@ const endOfMatch = require("./endOfMatch");
 const allOut = (matchData, docRef, inning) => {
   docRef.get().then((doc) => {
     const newData = collectIdsAndDocs(doc);
-    if (
-      newData.now.wickets === 10 ||
-      (newData.superOver && newData.now.wickets >= 2)
-    ) {
+    if (newData.now.wickets === 10 || (newData.superOver && newData.now.wickets >= 2)) {
       var bowler = {
         name: newData.now.bowler.name,
         balls: newData.now.bowler.balls,
@@ -50,9 +47,7 @@ const allOut = (matchData, docRef, inning) => {
           runs: newData.now.batsman.nonStriker.runs,
           sixes: newData.now.batsman.nonStriker.sixes,
           strikeRate:
-            (newData.now.batsman.nonStriker.runs /
-              newData.now.batsman.nonStriker.balls) *
-            100,
+            (newData.now.batsman.nonStriker.runs / newData.now.batsman.nonStriker.balls) * 100,
           status: "not out",
         };
       } else if (newData.now.batsman.striker) {
@@ -65,10 +60,7 @@ const allOut = (matchData, docRef, inning) => {
           photoURL: newData.now.batsman.striker.photoURL,
           runs: newData.now.batsman.striker.runs,
           sixes: newData.now.batsman.striker.sixes,
-          strikeRate:
-            (newData.now.batsman.striker.runs /
-              newData.now.batsman.striker.balls) *
-            100,
+          strikeRate: (newData.now.batsman.striker.runs / newData.now.batsman.striker.balls) * 100,
           status: "not out",
         };
       }
@@ -98,18 +90,14 @@ const allOut = (matchData, docRef, inning) => {
           "now.need": newData.now.runs + 1,
           "now.from": newData.overs * 6,
           "now.reqRR": (newData.now.runs + 1) / newData.overs,
-          [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(
-            notOut
-          ),
-          [`innings.${inning}.bowlingOrder`]: firebase.firestore.FieldValue.arrayUnion(
-            bowler
-          ),
+          [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(notOut),
+          [`innings.${inning}.bowlingOrder`]: firebase.firestore.FieldValue.arrayUnion(bowler),
         })
         .then(() => {
           if (inning === "second") {
             if (newData.innings.first.runs === newData.innings.second.runs) {
               const innings = {
-                super_1: {
+                firstSuper: {
                   battingTeam: newData.innings.second.battingTeam,
                   bowlingTeam: newData.innings.first.battingTeam,
                   battingScorer: newData.innings.second.battingScorer,
@@ -126,7 +114,7 @@ const allOut = (matchData, docRef, inning) => {
                   runRate: 0,
                   extra: 0,
                 },
-                super_2: {
+                secondSuper: {
                   battingTeam: newData.innings.first.battingTeam,
                   bowlingTeam: newData.innings.second.battingTeam,
                   battingScorer: newData.innings.first.battingScorer,
@@ -155,17 +143,17 @@ const allOut = (matchData, docRef, inning) => {
                 "now.need": null,
                 "now.from": null,
                 "now.reqRR": null,
-                "innings.super_1": innings.super_1,
-                "innings.super_2": innings.super_2,
+                "innings.firstSuper": innings.firstSuper,
+                "innings.secondSuper": innings.secondSuper,
                 superOver: true,
               });
             } else {
               endOfMatch(newData, docRef, inning);
             }
-          } else if (inning === "super_2") {
-            if (newData.innings.super_1.runs === newData.innings.super_2.runs) {
+          } else if (inning === "secondSuper") {
+            if (newData.innings.firstSuper.runs === newData.innings.secondSuper.runs) {
               const innings = {
-                super_1: {
+                firstSuper: {
                   battingTeam: newData.innings.second.battingTeam,
                   bowlingTeam: newData.innings.first.battingTeam,
                   battingScorer: newData.innings.second.battingScorer,
@@ -182,7 +170,7 @@ const allOut = (matchData, docRef, inning) => {
                   runRate: 0,
                   extra: 0,
                 },
-                super_2: {
+                secondSuper: {
                   battingTeam: newData.innings.first.battingTeam,
                   bowlingTeam: newData.innings.second.battingTeam,
                   battingScorer: newData.innings.first.battingScorer,
@@ -211,8 +199,8 @@ const allOut = (matchData, docRef, inning) => {
                 "now.need": null,
                 "now.from": null,
                 "now.reqRR": null,
-                "innings.super_1": innings.super_1,
-                "innings.super_2": innings.super_2,
+                "innings.firstSuper": innings.firstSuper,
+                "innings.secondSuper": innings.secondSuper,
                 superOver: true,
               });
             } else {
