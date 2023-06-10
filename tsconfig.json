@@ -13,7 +13,8 @@
     "sourceMap": true,
     "skipLibCheck": true, //added to speed up tsc
     "emitDecoratorMetadata": true, // added as per typeorm docs
-    "experimentalDecorators": true // added as per typeorm docs
+    "experimentalDecorators": true, // added as per typeorm docs
+    "strict": true
   },
   "ts-node": {
     "esm": true

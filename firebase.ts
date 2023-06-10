@@ -3,7 +3,7 @@ import "firebase/firestore";
 import "firebase/auth";
 import "firebase/storage";
 
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyCvAhDUZyfdySCF7Zva2cmWQ3UbwrpmXn4",
   authDomain: "spin-the-wicket.firebaseapp.com",
   databaseURL: "https://spin-the-wicket.firebaseio.com",
@@ -14,11 +14,5 @@ var firebaseConfig = {
   measurementId: "G-D35GYBXCGJ",
 };
 firebase.initializeApp(firebaseConfig);
-
-// window.firebase = firebase;
-
-export const firestore = firebase.firestore();
-// export const auth = firebase.auth();
-export const storage = firebase.storage();
 
 export default firebase;
