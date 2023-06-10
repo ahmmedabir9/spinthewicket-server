@@ -24,21 +24,9 @@ const createLeagueInvitation = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leagueInvitation: leagueInvitation },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leagueInvitation: leagueInvitation }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -54,21 +42,9 @@ const rejectLeagueInvitation = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { leagueInvitation: leagueInvitation },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { leagueInvitation: leagueInvitation }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -99,21 +75,9 @@ const getUserInvitations = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { leagueInvitations: leagueInvitations },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { leagueInvitations: leagueInvitations }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -144,21 +108,9 @@ const getLeagueInvitations = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { leagueInvitations: leagueInvitations },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { leagueInvitations: leagueInvitations }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

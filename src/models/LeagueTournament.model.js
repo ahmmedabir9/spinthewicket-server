@@ -90,7 +90,7 @@ const LeagueTournamentSchema = new Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LeagueTournament = model("league_tournament", LeagueTournamentSchema);

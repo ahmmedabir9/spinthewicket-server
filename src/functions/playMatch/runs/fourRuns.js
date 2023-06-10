@@ -22,28 +22,23 @@ const fourRuns = async (matchData, ballData, inning) => {
         batsman2: matchData.now.batsman.nonStriker.id,
       },
       "now.batsman.striker.strikeRate":
-        ((matchData.now.batsman.striker.runs + 4) /
-          (matchData.now.batsman.striker.balls + 1)) *
+        ((matchData.now.batsman.striker.runs + 4) / (matchData.now.batsman.striker.balls + 1)) *
         100,
-      [`innings.${inning}.ballByBall`]:
-        firebase.firestore.FieldValue.arrayUnion(ballData),
+      [`innings.${inning}.ballByBall`]: firebase.firestore.FieldValue.arrayUnion(ballData),
       "now.bowler.runs": firebase.firestore.FieldValue.increment(4),
       "now.bowler.balls": firebase.firestore.FieldValue.increment(1),
       "now.balls": firebase.firestore.FieldValue.increment(1),
       "now.runs": firebase.firestore.FieldValue.increment(4),
       "now.freeHit": false,
       "now.runRate":
-        (matchData.now.runs + 4) /
-        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+        (matchData.now.runs + 4) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
       [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(4),
       "now.bowler.economy":
         (matchData.now.bowler.runs + 4) /
-        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) /
-          6),
+        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) / 6),
       [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
       [`innings.${inning}.runRate`]:
-        (matchData.now.runs + 4) /
-        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+        (matchData.now.runs + 4) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
     };
 
     if (matchData.now.inning === 2 || matchData.now.inning === 4) {

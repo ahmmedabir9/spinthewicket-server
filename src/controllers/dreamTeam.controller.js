@@ -38,7 +38,7 @@ const createDreamTeam = async (req, res) => {
   }
 
   try {
-    var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+    let teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
     const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
 
@@ -64,9 +64,7 @@ const createDreamTeam = async (req, res) => {
 
     const captainPlayer = await createSquad(captain, team?._id);
 
-    const squad = await DreamPlayer.find({ team: team?._id }).populate(
-      playerPopulate
-    );
+    const squad = await DreamPlayer.find({ team: team?._id }).populate(playerPopulate);
 
     const playingXI = await createPlayingXI(squad);
 
@@ -79,24 +77,12 @@ const createDreamTeam = async (req, res) => {
         captain: captainPlayer,
         playingXI: playingXI.map((item) => item._id),
       },
-      { new: true }
+      { new: true },
     ).populate(teamPopulate);
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { team: newTeam, squad },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { team: newTeam, squad }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -104,39 +90,19 @@ const getUserDreamTeam = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const dreamTeam = await DreamTeam.findOne({ manager: id }).populate(
-      teamPopulate
-    );
+    const dreamTeam = await DreamTeam.findOne({ manager: id }).populate(teamPopulate);
 
     if (!dreamTeam) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "You Do not Have Dream Team!"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "You Do not Have Dream Team!");
     }
 
     const dreamPlayers = await DreamPlayer.find({
       team: dreamTeam?._id,
     }).populate(playerPopulate);
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { dreamTeam, dreamPlayers },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { dreamTeam, dreamPlayers }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -147,24 +113,12 @@ const getDreamTeamById = async (req, res) => {
     const dreamTeam = await DreamTeam.findById(id).populate(teamPopulate);
 
     if (!dreamTeam) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "No Team Found!"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "No Team Found!");
     }
 
     return response(res, StatusCodes.OK, true, dreamTeam, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -172,29 +126,15 @@ const getDreamTeamSquad = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const dreamPlayers = await DreamPlayer.find({ team: id }).populate(
-      playerPopulate
-    );
+    const dreamPlayers = await DreamPlayer.find({ team: id }).populate(playerPopulate);
 
     if (!dreamPlayers || dreamPlayers?.length === 0) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "No Players Found!"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "No Players Found!");
     }
 
     return response(res, StatusCodes.OK, true, dreamPlayers, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -207,7 +147,7 @@ const updateTeam = async (req, res) => {
     let dataToUpdate = {};
 
     if (title) {
-      var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+      let teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
       const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
 
@@ -232,24 +172,12 @@ const updateTeam = async (req, res) => {
     }).populate(teamPopulate);
 
     if (!dreamTeam) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "Could Not Update Squad!"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "Could Not Update Squad!");
     }
 
     return response(res, StatusCodes.OK, true, dreamTeam, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -262,7 +190,7 @@ const createBotTeam = async (req, res) => {
   }
 
   try {
-    var teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
+    let teamId = title.replace(/\s+/g, "").replace(/\//g, "").toLowerCase();
 
     const oldTeam = await DreamTeam.findOne({ teamId: teamId }).select("_id");
 
@@ -288,9 +216,7 @@ const createBotTeam = async (req, res) => {
 
     const captainPlayer = await createBotSquad(captain, team?._id, rating);
 
-    const squad = await DreamPlayer.find({ team: team?._id }).populate(
-      playerPopulate
-    );
+    const squad = await DreamPlayer.find({ team: team?._id }).populate(playerPopulate);
 
     const playingXI = await createPlayingXI(squad);
 
@@ -303,24 +229,12 @@ const createBotTeam = async (req, res) => {
         captain: captainPlayer,
         playingXI: playingXI.map((item) => item._id),
       },
-      { new: true }
+      { new: true },
     ).populate(teamPopulate);
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { team: newTeam, squad },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { team: newTeam, squad }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -408,13 +322,7 @@ const createSquad = async (captain, team) => {
 
     return captainPlayer._id;
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -504,34 +412,22 @@ const createBotSquad = async (captain, team, rating) => {
 
     return captainPlayer._id;
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
 const createPlayingXI = async (squad) => {
   const bowlers = squad
-    .sort((a, b) =>
-      a.playerInfo?.bowlingLevel < b.playerInfo?.bowlingLevel ? 1 : -1
-    )
+    .sort((a, b) => (a.playerInfo?.bowlingLevel < b.playerInfo?.bowlingLevel ? 1 : -1))
     .slice(0, 5);
 
   const batsmen = squad
-    .sort((a, b) =>
-      a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1
-    )
-    .filter(
-      (batsman) => !bowlers.find((bowler) => bowler?._id === batsman?._id)
-    )
+    .sort((a, b) => (a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1))
+    .filter((batsman) => !bowlers.find((bowler) => bowler?._id === batsman?._id))
     .slice(0, 6);
 
   const playingXI = [...batsmen, ...bowlers].sort((a, b) =>
-    a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1
+    a.playerInfo?.battingLevel < b.playerInfo?.battingLevel ? 1 : -1,
   );
 
   return playingXI;

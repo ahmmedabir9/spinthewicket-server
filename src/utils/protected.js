@@ -45,39 +45,19 @@ const verifyTokenAdmin = async (token) => {
 const isUser = async (req, res, next) => {
   if (req.headers.authorization) {
     try {
-      const user = await verifyToken(
-        req.headers.authorization.split("Bearer ")[1]
-      );
+      const user = await verifyToken(req.headers.authorization.split("Bearer ")[1]);
 
       if (user) {
         req.user = user;
         next();
       } else {
-        return response(
-          res,
-          StatusCodes.NOT_FOUND,
-          false,
-          {},
-          "Not Authenticated"
-        );
+        return response(res, StatusCodes.NOT_FOUND, false, {}, "Not Authenticated");
       }
     } catch (error) {
-      return response(
-        res,
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        false,
-        err,
-        err.message
-      );
+      return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, err, err.message);
     }
   } else {
-    return response(
-      res,
-      StatusCodes.NOT_ACCEPTABLE,
-      false,
-      {},
-      "Authentication Token not found"
-    );
+    return response(res, StatusCodes.NOT_ACCEPTABLE, false, {}, "Authentication Token not found");
   }
 };
 
@@ -85,38 +65,18 @@ const isUser = async (req, res, next) => {
 const isAdmin = async (req, res, next) => {
   if (req.headers.authorization) {
     try {
-      const user = await verifyTokenAdmin(
-        req.headers.authorization.split("Bearer ")[1]
-      );
+      const user = await verifyTokenAdmin(req.headers.authorization.split("Bearer ")[1]);
       if (user && user.role == "admin") {
         req.user = user;
         next();
       } else {
-        return response(
-          res,
-          StatusCodes.NOT_FOUND,
-          false,
-          {},
-          "Not Authenticated"
-        );
+        return response(res, StatusCodes.NOT_FOUND, false, {}, "Not Authenticated");
       }
     } catch (error) {
-      return response(
-        res,
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        false,
-        err,
-        err.message
-      );
+      return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, err, err.message);
     }
   } else {
-    return response(
-      res,
-      StatusCodes.NOT_ACCEPTABLE,
-      false,
-      {},
-      "Authentication Token not found"
-    );
+    return response(res, StatusCodes.NOT_ACCEPTABLE, false, {}, "Authentication Token not found");
   }
 };
 

@@ -1,11 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const { DreamTeam } = require("../models/DreamTeam.model");
 const { response } = require("../utils/response");
-const {
-  CreateQuickMatch,
-  GetQuickMatch,
-  UpdateQuickMatch,
-} = require("../services/firebase");
+const { CreateQuickMatch, GetQuickMatch, UpdateQuickMatch } = require("../services/firebase");
 const { v4: uuidv4 } = require("uuid");
 const { ballResult } = require("../functions/playMatch/ballResult");
 const { ballValidation } = require("../functions/playMatch/ballValidation");
@@ -65,13 +61,7 @@ const startQuickMatch = async (req, res) => {
     const dreamTeam = await DreamTeam.findById(team).populate(teamPopulate);
 
     if (!dreamTeam) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "Dream Team Not Found"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "Dream Team Not Found");
     }
 
     if (dreamTeam?.manager?._id?.toString() !== user?.toString()) {
@@ -80,7 +70,7 @@ const startQuickMatch = async (req, res) => {
         StatusCodes.FORBIDDEN,
         false,
         null,
-        "You dont have permission to play with this team!"
+        "You dont have permission to play with this team!",
       );
     }
 
@@ -92,13 +82,7 @@ const startQuickMatch = async (req, res) => {
     });
 
     if (!botTeams || !botTeams?.length === 0) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "No Opponent Found"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "No Opponent Found");
     }
 
     const opponentTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
@@ -123,14 +107,8 @@ const startQuickMatch = async (req, res) => {
         team: opponentTeam?._id?.toString(),
         selected: choosen === 0 ? "bat" : "bowl",
       };
-      battingTeam =
-        choosen === 0
-          ? opponentTeam?._id?.toString()
-          : dreamTeam?._id?.toString();
-      bowlingTeam =
-        choosen === 1
-          ? opponentTeam?._id?.toString()
-          : dreamTeam?._id?.toString();
+      battingTeam = choosen === 0 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
+      bowlingTeam = choosen === 1 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
       battingScorer = choosen === 0 ? null : user;
       bowlingScorer = choosen === 1 ? null : user;
       now = {
@@ -213,10 +191,10 @@ const startQuickMatch = async (req, res) => {
       createdAt: createdAt.toString(),
       playingXI: {
         [dreamTeam?._id?.toString()]: dreamTeam?.playingXI?.map((player) =>
-          player?._id?.toString()
+          player?._id?.toString(),
         ),
-        [opponentTeam?._id?.toString()]: opponentTeam?.playingXI?.map(
-          (player) => player?._id?.toString()
+        [opponentTeam?._id?.toString()]: opponentTeam?.playingXI?.map((player) =>
+          player?._id?.toString(),
         ),
       },
       ready: {
@@ -233,13 +211,7 @@ const startQuickMatch = async (req, res) => {
 
     return response(res, StatusCodes.ACCEPTED, true, quickMatch, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -250,12 +222,8 @@ const getMatchData = async (req, res) => {
     const matchData = await GetQuickMatch(id);
 
     // fetch teams
-    const teamA = await DreamTeam.findById(matchData?.teams?.a).populate(
-      teamPopulate
-    );
-    const teamB = await DreamTeam.findById(matchData?.teams?.b).populate(
-      teamPopulate
-    );
+    const teamA = await DreamTeam.findById(matchData?.teams?.a).populate(teamPopulate);
+    const teamB = await DreamTeam.findById(matchData?.teams?.b).populate(teamPopulate);
 
     // fetch players
     const players = await DreamPlayer.find()
@@ -281,16 +249,10 @@ const getMatchData = async (req, res) => {
       StatusCodes.ACCEPTED,
       true,
       { teams: [teamA, teamB], players, users },
-      null
+      null,
     );
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -304,20 +266,14 @@ const playQuickMatch = async (req, res) => {
         StatusCodes.NOT_FOUND,
         false,
         null,
-        "match, bat, bowl are required field!"
+        "match, bat, bowl are required field!",
       );
     }
 
     const matchData = await GetQuickMatch(match);
 
     if (!matchData) {
-      return response(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        null,
-        "No Match Found!"
-      );
+      return response(res, StatusCodes.NOT_FOUND, false, null, "No Match Found!");
     }
 
     var inning;
@@ -355,22 +311,15 @@ const playQuickMatch = async (req, res) => {
     if (ballValidation(matchData)) {
       const handler = async () => {
         let ballResponse;
-        if (ballAction === "DOT")
-          ballResponse = await dotBall(matchData, ballData, inning);
-        else if (ballAction === "ONE")
-          ballResponse = await oneRun(matchData, ballData, inning);
-        else if (ballAction === "TWO")
-          ballResponse = await twoRuns(matchData, ballData, inning);
+        if (ballAction === "DOT") ballResponse = await dotBall(matchData, ballData, inning);
+        else if (ballAction === "ONE") ballResponse = await oneRun(matchData, ballData, inning);
+        else if (ballAction === "TWO") ballResponse = await twoRuns(matchData, ballData, inning);
         else if (ballAction === "THREE")
           ballResponse = await threeRuns(matchData, ballData, inning);
-        else if (ballAction === "FOUR")
-          ballResponse = await fourRuns(matchData, ballData, inning);
-        else if (ballAction === "SIX")
-          ballResponse = await sixRuns(matchData, ballData, inning);
-        else if (ballAction === "WIDE")
-          ballResponse = await wideBall(matchData, ballData, inning);
-        else if (ballAction === "NO_BALL")
-          ballResponse = await noBall(matchData, ballData, inning);
+        else if (ballAction === "FOUR") ballResponse = await fourRuns(matchData, ballData, inning);
+        else if (ballAction === "SIX") ballResponse = await sixRuns(matchData, ballData, inning);
+        else if (ballAction === "WIDE") ballResponse = await wideBall(matchData, ballData, inning);
+        else if (ballAction === "NO_BALL") ballResponse = await noBall(matchData, ballData, inning);
         else if (ballAction === "BOWLED") {
           if (matchData?.now?.freeHit) {
             ballResponse = await dotBall(matchData, ballData, inning);
@@ -398,7 +347,7 @@ const playQuickMatch = async (req, res) => {
             StatusCodes.BAD_REQUEST,
             false,
             ballResponse,
-            "Something went wrong!"
+            "Something went wrong!",
           );
         }
 
@@ -415,22 +364,10 @@ const playQuickMatch = async (req, res) => {
       handler();
       // }, 3000)
     } else {
-      return response(
-        res,
-        StatusCodes.BAD_REQUEST,
-        false,
-        null,
-        "SOMETHING WENT WRONG"
-      );
+      return response(res, StatusCodes.BAD_REQUEST, false, null, "SOMETHING WENT WRONG");
     }
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

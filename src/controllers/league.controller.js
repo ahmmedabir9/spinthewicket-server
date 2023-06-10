@@ -13,11 +13,7 @@ const createLeague = async (req, res) => {
   }
 
   try {
-    var slug = title
-      .replace(/\s+/g, "-")
-      .replace(/\//g, "-")
-      .replace(/&/g, "n")
-      .toLowerCase();
+    var slug = title.replace(/\s+/g, "-").replace(/\//g, "-").replace(/&/g, "n").toLowerCase();
 
     const oldSlug = await League.findOne({ slug: slug }).select("_id");
 
@@ -46,13 +42,7 @@ const createLeague = async (req, res) => {
 
     return response(res, StatusCodes.ACCEPTED, true, { league: league }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -66,11 +56,7 @@ const updateLeague = async (req, res) => {
 
     if (title) {
       league.title = title;
-      league.slug = title
-        .replace(/\s+/g, "-")
-        .replace(/\//g, "-")
-        .replace(/&/g, "n")
-        .toLowerCase();
+      league.slug = title.replace(/\s+/g, "-").replace(/\//g, "-").replace(/&/g, "n").toLowerCase();
 
       const oldSlug = await League.findOne({ slug: league.slug }).select("_id");
 
@@ -105,21 +91,9 @@ const updateLeague = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { league: newLeague },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { league: newLeague }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -141,7 +115,7 @@ const getAllLeagues = async (req, res) => {
                 },
               ],
             }
-          : null
+          : null,
       )
       .where(country ? { country: country } : null)
       .where(manager ? { managers: manager } : null)
@@ -161,13 +135,7 @@ const getAllLeagues = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, { leagues: leagues }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -194,13 +162,7 @@ const getLeagueDetails = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, { league: league }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -217,21 +179,9 @@ const deleteLeague = async (req, res) => {
 
     //delete photos here
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { league: { _id: league._id } },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { league: { _id: league._id } }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

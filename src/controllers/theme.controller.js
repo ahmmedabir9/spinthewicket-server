@@ -6,9 +6,7 @@ const getAllThemes = async (req, res) => {
   const { themeType } = req.body;
 
   try {
-    const themes = await Theme.find().where(
-      themeType ? { themeType: themeType } : null
-    );
+    const themes = await Theme.find().where(themeType ? { themeType: themeType } : null);
 
     if (!themes || themes.length === 0) {
       let msg = "no themes found!";
@@ -17,13 +15,7 @@ const getAllThemes = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, themes, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

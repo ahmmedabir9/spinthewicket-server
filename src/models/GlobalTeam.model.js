@@ -20,7 +20,7 @@ const GlobalTeamSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const GlobalTeam = model("global_team", GlobalTeamSchema);

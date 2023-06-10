@@ -6,7 +6,7 @@ const ThemeSchema = new Schema(
     color: String,
     themeType: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Theme = model("theme", ThemeSchema);

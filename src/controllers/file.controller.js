@@ -27,13 +27,7 @@ const uploadFile = async (req, res) => {
     let data = { url: blockBlobClient.url, fileName: blobName };
     return response(res, StatusCodes.ACCEPTED, true, data, null);
   } catch (err) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      err,
-      err.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, err, err.message);
   }
 };
 
@@ -62,16 +56,10 @@ const deleteFile = async (req, res) => {
         fileName: fileName,
         deleted: deleted ? true : false,
       },
-      null
+      null,
     );
   } catch (err) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      err,
-      err.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, err, err.message);
   }
 };
 

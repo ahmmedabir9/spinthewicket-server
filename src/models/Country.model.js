@@ -10,7 +10,7 @@ const CountrySchema = new Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Country = model("country", CountrySchema);

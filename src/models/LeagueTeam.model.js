@@ -71,7 +71,7 @@ const LeagueTeamSchema = new Schema(
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LeagueTeam = model("league_team", LeagueTeamSchema);

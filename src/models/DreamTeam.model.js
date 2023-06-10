@@ -75,7 +75,7 @@ const DreamTeamSchema = new Schema(
     },
     isBot: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const DreamTeam = model("dream_team", DreamTeamSchema);

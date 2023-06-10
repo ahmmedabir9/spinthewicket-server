@@ -13,9 +13,7 @@ const savePlayerData = (matchData, docRef) => {
   } else if (matchData.superOver) {
     if (matchData.innings.super_2.runs > matchData.innings.super_1.runs) {
       teamAWinningPoint = 5;
-    } else if (
-      matchData.innings.super_2.runs < matchData.innings.super_1.runs
-    ) {
+    } else if (matchData.innings.super_2.runs < matchData.innings.super_1.runs) {
       teamBWinningPoint = 5;
     }
   }
@@ -46,7 +44,7 @@ const savePlayerData = (matchData, docRef) => {
       fiveWickets = 0;
 
     const playerBatting = matchData.innings.first.battingOrder.find(
-      (element) => element.id === player.id
+      (element) => element.id === player.id,
     );
 
     if (playerBatting) {
@@ -64,7 +62,7 @@ const savePlayerData = (matchData, docRef) => {
     }
 
     const playerBowling = matchData.innings.second.bowlingOrder.find(
-      (element) => element.id === player.id
+      (element) => element.id === player.id,
     );
 
     if (playerBowling) {
@@ -106,20 +104,16 @@ const savePlayerData = (matchData, docRef) => {
 
           if (playerBatting) {
             const runs = playerOldData.stats.batting.runs + playerBatting.runs;
-            const balls =
-              playerOldData.stats.batting.balls + playerBatting.balls;
-            const fours =
-              playerOldData.stats.batting.fours + playerBatting.fours;
-            const sixes =
-              playerOldData.stats.batting.sixes + playerBatting.sixes;
+            const balls = playerOldData.stats.batting.balls + playerBatting.balls;
+            const fours = playerOldData.stats.batting.fours + playerBatting.fours;
+            const sixes = playerOldData.stats.batting.sixes + playerBatting.sixes;
 
             r = playerBatting.runs;
             f = playerBatting.fours;
             s = playerBatting.sixes;
 
             const average =
-              (playerOldData.stats.batting.average *
-                playerOldData.stats.batting.innings +
+              (playerOldData.stats.batting.average * playerOldData.stats.batting.innings +
                 playerBatting.runs) /
               (playerOldData.stats.batting.innings +
                 (playerBatting.status === "out"
@@ -138,13 +132,8 @@ const savePlayerData = (matchData, docRef) => {
             c = centuries;
 
             const points =
-              (playerOldData.stats.batting.points *
-                playerOldData.stats.batting.innings +
-                (battingPoint +
-                  runs / 100 +
-                  average / 10 +
-                  (strikeRate / 10 - 10)) *
-                  10) /
+              (playerOldData.stats.batting.points * playerOldData.stats.batting.innings +
+                (battingPoint + runs / 100 + average / 10 + (strikeRate / 10 - 10)) * 10) /
               (playerOldData.stats.batting.innings + 1);
 
             firestore
@@ -153,12 +142,8 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.batting.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
-                "stats.batting.innings": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.batting.matches": firebase.firestore.FieldValue.increment(1),
+                "stats.batting.innings": firebase.firestore.FieldValue.increment(1),
                 "stats.batting.runs": runs,
                 "stats.batting.balls": balls,
                 "stats.batting.fours": fours,
@@ -167,12 +152,9 @@ const savePlayerData = (matchData, docRef) => {
                 "stats.batting.strikeRate": strikeRate,
                 "stats.batting.points": points,
                 "stats.batting.best": battingBest,
-                "stats.batting.halfCenturies": firebase.firestore.FieldValue.increment(
-                  halfCenturies
-                ),
-                "stats.batting.centuries": firebase.firestore.FieldValue.increment(
-                  centuries
-                ),
+                "stats.batting.halfCenturies":
+                  firebase.firestore.FieldValue.increment(halfCenturies),
+                "stats.batting.centuries": firebase.firestore.FieldValue.increment(centuries),
               });
           } else {
             firestore
@@ -181,21 +163,16 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.batting.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.batting.matches": firebase.firestore.FieldValue.increment(1),
               });
           }
 
           if (playerBowling) {
             const runs = playerOldData.stats.bowling.runs + playerBowling.runs;
             const balls =
-              playerOldData.stats.bowling.balls +
-              playerBowling.balls +
-              playerBowling.overs * 6;
+              playerOldData.stats.bowling.balls + playerBowling.balls + playerBowling.overs * 6;
 
-            const wickets =
-              playerOldData.stats.bowling.wickets + playerBowling.wickets;
+            const wickets = playerOldData.stats.bowling.wickets + playerBowling.wickets;
 
             const average = runs / wickets;
             const economy = runs / (balls / 6);
@@ -204,10 +181,8 @@ const savePlayerData = (matchData, docRef) => {
 
             var bowlingBest = playerOldData.stats.bowling.best;
             if (
-              playerBowling.wickets >
-                playerOldData.stats.bowling.best.wickets ||
-              (playerBowling.wickets ===
-                playerOldData.stats.bowling.best.wickets &&
+              playerBowling.wickets > playerOldData.stats.bowling.best.wickets ||
+              (playerBowling.wickets === playerOldData.stats.bowling.best.wickets &&
                 playerBowling.runs < playerOldData.stats.bowling.best.runs)
             ) {
               bowlingBest = {
@@ -217,8 +192,7 @@ const savePlayerData = (matchData, docRef) => {
             }
 
             const points =
-              (playerOldData.stats.bowling.points *
-                playerOldData.stats.bowling.innings +
+              (playerOldData.stats.bowling.points * playerOldData.stats.bowling.innings +
                 (bowlingPoint + wickets + (20 - economy)) * 10) /
               (playerOldData.stats.bowling.innings + 1);
 
@@ -228,12 +202,8 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.bowling.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
-                "stats.bowling.innings": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.bowling.matches": firebase.firestore.FieldValue.increment(1),
+                "stats.bowling.innings": firebase.firestore.FieldValue.increment(1),
                 "stats.bowling.runs": runs,
                 "stats.bowling.wickets": wickets,
                 "stats.bowling.balls": balls,
@@ -241,12 +211,8 @@ const savePlayerData = (matchData, docRef) => {
                 "stats.bowling.economy": economy,
                 "stats.bowling.points": points,
                 "stats.bowling.best": bowlingBest,
-                "stats.bowling.threeWickets": firebase.firestore.FieldValue.increment(
-                  threeWickets
-                ),
-                "stats.bowling.fiveWickets": firebase.firestore.FieldValue.increment(
-                  fiveWickets
-                ),
+                "stats.bowling.threeWickets": firebase.firestore.FieldValue.increment(threeWickets),
+                "stats.bowling.fiveWickets": firebase.firestore.FieldValue.increment(fiveWickets),
               });
           } else {
             firestore
@@ -255,9 +221,7 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.bowling.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.bowling.matches": firebase.firestore.FieldValue.increment(1),
               });
           }
 
@@ -270,9 +234,7 @@ const savePlayerData = (matchData, docRef) => {
               .get()
               .then((doc) => {
                 const tournament = collectIdsAndDocs(doc);
-                const oldPlayer = tournament.players.find(
-                  (element) => element.id === player.id
-                );
+                const oldPlayer = tournament.players.find((element) => element.id === player.id);
 
                 if (oldPlayer) {
                   firestore
@@ -302,9 +264,7 @@ const savePlayerData = (matchData, docRef) => {
                         .collection("tournaments")
                         .doc(matchData.tournament.key)
                         .update({
-                          players: firebase.firestore.FieldValue.arrayRemove(
-                            oldPlayer
-                          ),
+                          players: firebase.firestore.FieldValue.arrayRemove(oldPlayer),
                         });
                       savePerformance();
                     });
@@ -361,7 +321,7 @@ const savePlayerData = (matchData, docRef) => {
       fiveWickets = 0;
 
     const playerBatting = matchData.innings.second.battingOrder.find(
-      (element) => element.id === player.id
+      (element) => element.id === player.id,
     );
 
     if (playerBatting) {
@@ -379,7 +339,7 @@ const savePlayerData = (matchData, docRef) => {
     }
 
     const playerBowling = matchData.innings.first.bowlingOrder.find(
-      (element) => element.id === player.id
+      (element) => element.id === player.id,
     );
 
     if (playerBowling) {
@@ -422,20 +382,16 @@ const savePlayerData = (matchData, docRef) => {
 
           if (playerBatting) {
             const runs = playerOldData.stats.batting.runs + playerBatting.runs;
-            const balls =
-              playerOldData.stats.batting.balls + playerBatting.balls;
-            const fours =
-              playerOldData.stats.batting.fours + playerBatting.fours;
-            const sixes =
-              playerOldData.stats.batting.sixes + playerBatting.sixes;
+            const balls = playerOldData.stats.batting.balls + playerBatting.balls;
+            const fours = playerOldData.stats.batting.fours + playerBatting.fours;
+            const sixes = playerOldData.stats.batting.sixes + playerBatting.sixes;
 
             r = playerBatting.runs;
             f = playerBatting.fours;
             s = playerBatting.sixes;
 
             const average =
-              (playerOldData.stats.batting.average *
-                playerOldData.stats.batting.innings +
+              (playerOldData.stats.batting.average * playerOldData.stats.batting.innings +
                 playerBatting.runs) /
               (playerOldData.stats.batting.innings +
                 (playerBatting.status === "out"
@@ -454,13 +410,8 @@ const savePlayerData = (matchData, docRef) => {
             c = centuries;
 
             const points =
-              (playerOldData.stats.batting.points *
-                playerOldData.stats.batting.innings +
-                (battingPoint +
-                  runs / 100 +
-                  average / 10 +
-                  (strikeRate / 10 - 10)) *
-                  10) /
+              (playerOldData.stats.batting.points * playerOldData.stats.batting.innings +
+                (battingPoint + runs / 100 + average / 10 + (strikeRate / 10 - 10)) * 10) /
               (playerOldData.stats.batting.innings + 1);
 
             firestore
@@ -469,12 +420,8 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.batting.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
-                "stats.batting.innings": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.batting.matches": firebase.firestore.FieldValue.increment(1),
+                "stats.batting.innings": firebase.firestore.FieldValue.increment(1),
                 "stats.batting.runs": runs,
                 "stats.batting.balls": balls,
                 "stats.batting.fours": fours,
@@ -483,12 +430,9 @@ const savePlayerData = (matchData, docRef) => {
                 "stats.batting.strikeRate": strikeRate,
                 "stats.batting.points": points,
                 "stats.batting.best": battingBest,
-                "stats.batting.halfCenturies": firebase.firestore.FieldValue.increment(
-                  halfCenturies
-                ),
-                "stats.batting.centuries": firebase.firestore.FieldValue.increment(
-                  centuries
-                ),
+                "stats.batting.halfCenturies":
+                  firebase.firestore.FieldValue.increment(halfCenturies),
+                "stats.batting.centuries": firebase.firestore.FieldValue.increment(centuries),
               });
           } else {
             firestore
@@ -497,20 +441,15 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.batting.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.batting.matches": firebase.firestore.FieldValue.increment(1),
               });
           }
 
           if (playerBowling) {
             const runs = playerOldData.stats.bowling.runs + playerBowling.runs;
             const balls =
-              playerOldData.stats.bowling.balls +
-              playerBowling.balls +
-              playerBowling.overs * 6;
-            const wickets =
-              playerOldData.stats.bowling.wickets + playerBowling.wickets;
+              playerOldData.stats.bowling.balls + playerBowling.balls + playerBowling.overs * 6;
+            const wickets = playerOldData.stats.bowling.wickets + playerBowling.wickets;
 
             const average = runs / wickets;
             const economy = runs / (balls / 6);
@@ -519,10 +458,8 @@ const savePlayerData = (matchData, docRef) => {
 
             var bowlingBest = playerOldData.stats.bowling.best;
             if (
-              playerBowling.wickets >
-                playerOldData.stats.bowling.best.wickets ||
-              (playerBowling.wickets ===
-                playerOldData.stats.bowling.best.wickets &&
+              playerBowling.wickets > playerOldData.stats.bowling.best.wickets ||
+              (playerBowling.wickets === playerOldData.stats.bowling.best.wickets &&
                 playerBowling.runs < playerOldData.stats.bowling.best.runs)
             ) {
               bowlingBest = {
@@ -532,8 +469,7 @@ const savePlayerData = (matchData, docRef) => {
             }
 
             const points =
-              (playerOldData.stats.bowling.points *
-                playerOldData.stats.bowling.innings +
+              (playerOldData.stats.bowling.points * playerOldData.stats.bowling.innings +
                 (bowlingPoint + wickets + (20 - economy)) * 10) /
               (playerOldData.stats.bowling.innings + 1);
 
@@ -543,12 +479,8 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.bowling.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
-                "stats.bowling.innings": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.bowling.matches": firebase.firestore.FieldValue.increment(1),
+                "stats.bowling.innings": firebase.firestore.FieldValue.increment(1),
                 "stats.bowling.runs": runs,
                 "stats.bowling.wickets": wickets,
                 "stats.bowling.balls": balls,
@@ -556,12 +488,8 @@ const savePlayerData = (matchData, docRef) => {
                 "stats.bowling.economy": economy,
                 "stats.bowling.points": points,
                 "stats.bowling.best": bowlingBest,
-                "stats.bowling.threeWickets": firebase.firestore.FieldValue.increment(
-                  threeWickets
-                ),
-                "stats.bowling.fiveWickets": firebase.firestore.FieldValue.increment(
-                  fiveWickets
-                ),
+                "stats.bowling.threeWickets": firebase.firestore.FieldValue.increment(threeWickets),
+                "stats.bowling.fiveWickets": firebase.firestore.FieldValue.increment(fiveWickets),
               });
           } else {
             firestore
@@ -570,9 +498,7 @@ const savePlayerData = (matchData, docRef) => {
               .collection("players")
               .doc(player.id)
               .update({
-                "stats.bowling.matches": firebase.firestore.FieldValue.increment(
-                  1
-                ),
+                "stats.bowling.matches": firebase.firestore.FieldValue.increment(1),
               });
           }
 
@@ -585,9 +511,7 @@ const savePlayerData = (matchData, docRef) => {
               .get()
               .then((doc) => {
                 const tournament = collectIdsAndDocs(doc);
-                const oldPlayer = tournament.players.find(
-                  (element) => element.id === player.id
-                );
+                const oldPlayer = tournament.players.find((element) => element.id === player.id);
 
                 if (oldPlayer) {
                   firestore
@@ -617,9 +541,7 @@ const savePlayerData = (matchData, docRef) => {
                         .collection("tournaments")
                         .doc(matchData.tournament.key)
                         .update({
-                          players: firebase.firestore.FieldValue.arrayRemove(
-                            oldPlayer
-                          ),
+                          players: firebase.firestore.FieldValue.arrayRemove(oldPlayer),
                         });
                       savePerformance();
                     });

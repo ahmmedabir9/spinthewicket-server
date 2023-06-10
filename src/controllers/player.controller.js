@@ -26,7 +26,7 @@ const getAllPlayers = async (req, res) => {
                 },
               ],
             }
-          : null
+          : null,
       )
       .where(
         searchKey
@@ -40,7 +40,7 @@ const getAllPlayers = async (req, res) => {
                 },
               ],
             }
-          : null
+          : null,
       );
 
     const players = await PlayerInfo.find(filter)
@@ -58,7 +58,7 @@ const getAllPlayers = async (req, res) => {
                 },
               ],
             }
-          : null
+          : null,
       )
       .where(
         searchKey
@@ -72,7 +72,7 @@ const getAllPlayers = async (req, res) => {
                 },
               ],
             }
-          : null
+          : null,
       )
       .skip(skip)
       .limit(limit)
@@ -85,13 +85,7 @@ const getAllPlayers = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, { players, playersCount }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -162,13 +156,7 @@ const getRandomCaptains = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, captains, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -183,10 +171,7 @@ const shufflePlayers = (players) => {
     currentIndex--;
 
     // And swap it with the current element.
-    [players[currentIndex], players[randomIndex]] = [
-      players[randomIndex],
-      players[currentIndex],
-    ];
+    [players[currentIndex], players[randomIndex]] = [players[randomIndex], players[currentIndex]];
   }
 
   return players;

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "lib": ["es2016", "es2017.object"],
+    "rootDir": "./src",
+    "module": "esnext",
+    "target": "es2017",
+    "outDir": "./dist",
+    "downlevelIteration": true,
+    "removeComments": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "sourceMap": true,
+    "skipLibCheck": true, //added to speed up tsc
+    "emitDecoratorMetadata": true, // added as per typeorm docs
+    "experimentalDecorators": true // added as per typeorm docs
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*"],
+  "references": []
+}

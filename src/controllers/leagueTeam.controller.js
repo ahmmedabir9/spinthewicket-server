@@ -38,11 +38,7 @@ const createLeagueTeam = async (req, res) => {
     }
 
     const slug =
-      title
-        .replace(/\s+/g, "-")
-        .replace(/\//g, "-")
-        .replace(/&/g, "n")
-        .toLowerCase() +
+      title.replace(/\s+/g, "-").replace(/\//g, "-").replace(/&/g, "n").toLowerCase() +
       "-" +
       +uuidv4();
 
@@ -65,21 +61,9 @@ const createLeagueTeam = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leagueTeam: leagueTeam },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leagueTeam: leagueTeam }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -98,31 +82,18 @@ const updateLeagueTeam = async (req, res) => {
     if (logo) leagueTeam.logo = logo;
     if (captain) leagueTeam.captain = captain;
 
-    const updatedLeagueTeam = await LeagueTeam.findByIdAndUpdate(
-      id,
-      leagueTeam
-    ).populate("captain manager");
+    const updatedLeagueTeam = await LeagueTeam.findByIdAndUpdate(id, leagueTeam).populate(
+      "captain manager",
+    );
 
     if (!updatedLeagueTeam) {
       let msg = "could not update team!";
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leagueTeam: updatedLeagueTeam },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leagueTeam: updatedLeagueTeam }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -137,10 +108,7 @@ const updateLeagueTeamStatus = async (req, res) => {
 
     if (isActive !== undefined) leagueTeam.isActive = isActive;
 
-    const updatedLeagueTeam = await LeagueTeam.findByIdAndUpdate(
-      id,
-      leagueTeam
-    ).populate([
+    const updatedLeagueTeam = await LeagueTeam.findByIdAndUpdate(id, leagueTeam).populate([
       {
         path: "captain",
         select: "playerID playerInfo",
@@ -160,21 +128,9 @@ const updateLeagueTeamStatus = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leagueTeam: updatedLeagueTeam },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leagueTeam: updatedLeagueTeam }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -184,7 +140,7 @@ const getAllLeagueTeams = async (req, res) => {
 
   try {
     const leagueTeams = await LeagueTeam.find({ league: id }).select(
-      "title shortName slug logo xp level points balance matches"
+      "title shortName slug logo xp level points balance matches",
     );
 
     if (!leagueTeams || leagueTeams.length === 0) {
@@ -192,21 +148,9 @@ const getAllLeagueTeams = async (req, res) => {
       return response(res, StatusCodes.NOT_FOUND, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { leagueTeams: leagueTeams },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { leagueTeams: leagueTeams }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -235,21 +179,9 @@ const getLeagueTeamDetails = async (req, res) => {
       return response(res, StatusCodes.NOT_FOUND, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.OK,
-      true,
-      { leagueTeam: leagueTeam },
-      null
-    );
+    return response(res, StatusCodes.OK, true, { leagueTeam: leagueTeam }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -265,21 +197,9 @@ const deleteLeagueTeam = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leagueTeam: leagueTeam },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leagueTeam: leagueTeam }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

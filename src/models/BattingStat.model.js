@@ -28,7 +28,7 @@ const BattingStatSchema = new Schema(
     catch: { type: Number, default: 0 },
     runOut: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const BattingStat = model("batting_stat", BattingStatSchema);

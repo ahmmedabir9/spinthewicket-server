@@ -46,7 +46,7 @@ const LeaguePlayerSchema = new Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LeaguePlayer = model("league_player", LeaguePlayerSchema);

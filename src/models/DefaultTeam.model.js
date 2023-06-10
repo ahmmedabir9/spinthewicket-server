@@ -17,7 +17,7 @@ const DefaultTeamSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const DefaultLeagueSchema = new Schema(
@@ -32,7 +32,7 @@ const DefaultLeagueSchema = new Schema(
     },
     logo: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const DefaultLeague = model("default_league", DefaultLeagueSchema);

@@ -80,7 +80,7 @@ const DreamPlayerSchema = new Schema(
     ],
     isBot: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const DreamPlayer = model("dream_player", DreamPlayerSchema);

@@ -23,21 +23,9 @@ const addPlayerToLeague = async (req, res) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { leaguePlayer: leaguePlayer },
-      null
-    );
+    return response(res, StatusCodes.ACCEPTED, true, { leaguePlayer: leaguePlayer }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -85,13 +73,7 @@ const createLeaguePlayer = async (playerID, leagueID) => {
     }
     return leaguePlayer;
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

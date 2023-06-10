@@ -295,7 +295,7 @@ const MatchSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Match = model("match", MatchSchema);

@@ -19,7 +19,7 @@ const GlobalLeagueSchema = new Schema(
     },
     logo: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const GlobalLeague = model("global_league", GlobalLeagueSchema);

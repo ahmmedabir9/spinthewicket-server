@@ -47,13 +47,7 @@ const createUserProfile = async (req, res) => {
 
     return response(res, StatusCodes.ACCEPTED, true, user, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -63,9 +57,7 @@ const getUserProfile = async (req, res) => {
 
   try {
     const user = await User.findOne({ uid: uid })
-      .select(
-        "name username email nationality uid phone photo achivements xp level"
-      )
+      .select("name username email nationality uid phone photo achivements xp level")
       .populate("nationality");
 
     if (!user) {
@@ -75,13 +67,7 @@ const getUserProfile = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, { user: user }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -115,9 +101,7 @@ const updateUserProfile = async (req, res) => {
     }
 
     const newUser = await User.findByIdAndUpdate(id, user, { new: true })
-      .select(
-        "name username email nationality uid phone photo achivements xp level"
-      )
+      .select("name username email nationality uid phone photo achivements xp level")
       .populate("nationality achivements.achivement");
 
     if (!newUser) {
@@ -127,13 +111,7 @@ const updateUserProfile = async (req, res) => {
 
     return response(res, StatusCodes.OK, true, { user: newUser }, null);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 
@@ -152,13 +130,7 @@ const checkUsername = async (req, res) => {
     let msg = "username is available!";
     return response(res, StatusCodes.OK, true, {}, msg);
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      false,
-      null,
-      error.message
-    );
+    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
 };
 

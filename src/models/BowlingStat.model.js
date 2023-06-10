@@ -23,7 +23,7 @@ const BowlingStatSchema = new Schema(
     dotBalls: { type: Number, default: 0 },
     maidens: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const BowlingStat = model("bowling_stat", BowlingStatSchema);

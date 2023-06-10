@@ -287,7 +287,7 @@ const QuickMatchSchema = new Schema(
     },
     matchType: String, //group, friendly, semifinal, quarterfiner, qualifier, eliminator, quick
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const QuickMatch = model("quick_match", QuickMatchSchema);

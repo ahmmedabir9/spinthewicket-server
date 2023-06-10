@@ -1,4 +1,4 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+import { Schema, model, SchemaTypes } from "mongoose";
 
 const UserSchema = new Schema(
   {
@@ -33,7 +33,7 @@ const UserSchema = new Schema(
     level: { type: Number, default: 0 },
     balance: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = model("user", UserSchema);

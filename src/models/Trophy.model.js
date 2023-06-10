@@ -24,7 +24,7 @@ const TrophySchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Trophy = model("trophy", TrophySchema);

@@ -12,9 +12,7 @@ const threeRuns = async (matchData, ballData, inning) => {
     striker.runs += 3;
     striker.balls += 1;
     striker.strikeRate =
-      ((matchData.now.batsman.striker.runs + 3) /
-        (matchData.now.batsman.striker.balls + 1)) *
-      100;
+      ((matchData.now.batsman.striker.runs + 3) / (matchData.now.batsman.striker.balls + 1)) * 100;
 
     let dataToUpdate = {
       "now.batsman.striker": nonStriker,
@@ -26,8 +24,7 @@ const threeRuns = async (matchData, ballData, inning) => {
         run: ballData.run,
       }),
 
-      [`innings.${inning}.ballByBall`]:
-        firebase.firestore.FieldValue.arrayUnion(ballData),
+      [`innings.${inning}.ballByBall`]: firebase.firestore.FieldValue.arrayUnion(ballData),
       // 'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
       // 'now.batsman.striker.strikeRate':
       //   ((matchData.now.batsman.striker.runs + 1) /
@@ -35,8 +32,7 @@ const threeRuns = async (matchData, ballData, inning) => {
       //   100,
       "now.bowler.economy":
         (matchData.now.bowler.runs + 1) /
-        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) /
-          6),
+        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) / 6),
       "now.partnership": {
         runs: matchData.now.partnership.runs + 1,
         balls: matchData.now.partnership.balls + 1,
@@ -49,13 +45,11 @@ const threeRuns = async (matchData, ballData, inning) => {
       "now.balls": firebase.firestore.FieldValue.increment(1),
       "now.freeHit": false,
       "now.runRate":
-        (matchData.now.runs + 3) /
-        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+        (matchData.now.runs + 3) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
       [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(3),
       [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
       [`innings.${inning}.runRate`]:
-        (matchData.now.runs + 3) /
-        ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+        (matchData.now.runs + 3) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
     };
 
     if (matchData.now.inning === 2 || matchData.now.inning === 4) {

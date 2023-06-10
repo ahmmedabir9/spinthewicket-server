@@ -34,7 +34,7 @@ const PlayerInfoSchema = new Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const PlayerInfo = model("player_info", PlayerInfoSchema);

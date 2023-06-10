@@ -1,8 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-var cors = require("cors");
+let cors = require("cors");
 // const { firestore } = require("firebase");
-var admin = require("firebase-admin");
+let admin = require("firebase-admin");
 const router = express.Router();
 const { connect } = require("mongoose");
 const { mongoURI } = require("./src/config/database");
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 // var admin = require("firebase-admin");
 
-var serviceAccount = require("./spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json");
+let serviceAccount = require("./spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json");
 
 try {
   connect(
@@ -29,7 +29,7 @@ try {
     },
     () => {
       console.log("Database Connected");
-    }
+    },
   );
 } catch (err) {
   console.log("Database Connection Error", err);
@@ -74,7 +74,7 @@ app.get("/", (req, res) => {
   res.send("<div><h1>The Server is Running</h1></div>");
 });
 
-var port = process.env.PORT || 5000;
+let port = process.env.PORT || 5000;
 
 app.listen(port, () => {
   console.log("Server is Running on " + port);

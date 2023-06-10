@@ -20,7 +20,7 @@ const AchivementSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Achivement = model("achivement", AchivementSchema);

@@ -11,7 +11,7 @@ const LeagueInvitationSchema = new Schema(
       type: SchemaTypes.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LeagueInvitation = model("league_invitation", LeagueInvitationSchema);
