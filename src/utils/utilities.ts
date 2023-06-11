@@ -1,8 +1,3 @@
-import { DreamPlayer } from '../models/DreamPlayer.model';
-import { PlayerInfo } from '../models/PlayerInfo.model';
-import { _IDreamPlayer_ } from '../models/_ModelTypes_';
-import { initialPlayerData } from './constants';
-
 const shufflePlayers = (players: any) => {
   let currentIndex = players.length,
     randomIndex: number;

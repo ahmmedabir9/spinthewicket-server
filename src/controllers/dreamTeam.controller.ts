@@ -39,12 +39,6 @@ const teamPopulate = [
   },
 ];
 
-const playerPopulate = [
-  {
-    path: 'playerInfo',
-  },
-];
-
 const createDreamTeam = async (req: Request, res: Response) => {
   const { title, code, theme, manager, captain } = req.body;
 
@@ -80,7 +74,7 @@ const createDreamTeam = async (req: Request, res: Response) => {
 
     const captainPlayer: _IDreamPlayer_ | null = await createDreamSquad(captain, team?._id);
 
-    const squad: Partial<_IDreamPlayer_>[] = await DreamPlayer.find({ team: team?._id }).populate(
+    const squad: _IDreamPlayer_[] = await DreamPlayer.find({ team: team?._id }).populate(
       'playerInfo',
     );
 
