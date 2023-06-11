@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import { Document, Types } from 'mongoose';
 
 // * USER INTERFACES
 interface _IAchievement_ {
@@ -24,7 +24,7 @@ interface _IUser_ extends Document {
 interface _IAchievement_ extends Document {
   title: string;
   description?: string;
-  achievementType: "batting" | "bowling" | "allround" | "team";
+  achievementType: 'batting' | 'bowling' | 'allround' | 'team';
   level: number;
   previousAchievement?: Types.ObjectId;
 }
@@ -33,7 +33,7 @@ interface _IAchievement_ extends Document {
 interface _IBattingStat_ extends Document {
   average: number;
   balls: number;
-  best: {
+  best?: {
     runs: number;
     balls: number;
     match: Types.ObjectId;
@@ -156,6 +156,21 @@ interface _ISquad_ {
   team: Types.ObjectId;
 }
 
+interface _IPlayerInfo_ {
+  _id?: Types.ObjectId;
+  name: string;
+  nationality: Types.ObjectId;
+  slug: string;
+  activePlayer: boolean;
+  teams: Types.ObjectId[];
+  role: string;
+  photo: string;
+  battingStyle: string;
+  bowlingStyle: string;
+  battingLevel: number;
+  bowlingLevel: number;
+}
+
 interface _IMatch_ extends Document {
   title: string;
   slug: string;
@@ -229,7 +244,7 @@ interface _IDefaultLeague_ extends Document {
 }
 
 interface _IDreamPlayer_ extends Document {
-  playerInfo: Types.ObjectId;
+  playerInfo: any | Types.ObjectId;
   activePlayer: boolean;
   battingStat: Types.ObjectId;
   bowlingStat: Types.ObjectId;
@@ -424,20 +439,6 @@ interface _ILeagueTournament_ extends Document {
   result: _ILeagueTournamentResult_;
 }
 
-interface _IPlayerInfo_ {
-  name: string;
-  nationality: Types.ObjectId;
-  slug: string;
-  activePlayer: boolean;
-  teams: Types.ObjectId[];
-  role: string;
-  photo: string;
-  battingStyle: string;
-  bowlingStyle: string;
-  battingLevel: number;
-  bowlingLevel: number;
-}
-
 interface _ITheme_ {
   logo: string;
   color: string;
@@ -447,7 +448,7 @@ interface _ITheme_ {
 interface _ITrophy_ {
   title: string;
   description?: string;
-  trophyType: "champion" | "runnerup" | "motm" | "mots" | "mostruns" | "mostwickets" | "others";
+  trophyType: 'champion' | 'runnerup' | 'motm' | 'mots' | 'mostruns' | 'mostwickets' | 'others';
   tournament?: Types.ObjectId;
   match?: Types.ObjectId;
   league?: Types.ObjectId;
