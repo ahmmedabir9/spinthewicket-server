@@ -1,15 +1,18 @@
-const { StatusCodes } = require("http-status-codes");
-const { Country } = require("../models/Country.model");
-const { PlayerInfo } = require("../models/PlayerInfo.model");
-const { response } = require("../utils/response");
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
-const getAllPlayers = async (req, res) => {
-  const { role, levelRange, skip, limit, sortBy } = req.body;
+import { PlayerInfo } from '../models/PlayerInfo.model';
+import { response } from '../utils/response';
+
+const getAllPlayers = async (req: Request, res: Response) => {
+  const { role, levelRange, skip, limit, sortBy, searchKey } = req.body;
 
   try {
-    let filter = {};
+    let filter: any = {};
 
-    if (role) filter.role === role;
+    if (role) {
+      filter.role = role;
+    }
 
     const playersCount = await PlayerInfo.countDocuments(filter)
       .where(
@@ -17,12 +20,10 @@ const getAllPlayers = async (req, res) => {
           ? {
               $or: [
                 {
-                  bowlingLevel: { $gte: levelRange.min },
-                  bowlingLevel: { $lte: levelRange.max },
+                  bowlingLevel: { $gte: levelRange.min, $lte: levelRange.max },
                 },
                 {
-                  battingLevel: { $gte: levelRange.min },
-                  battingLevel: { $lte: levelRange.max },
+                  battingLevel: { $gte: levelRange.min, $lte: levelRange.max },
                 },
               ],
             }
@@ -33,10 +34,10 @@ const getAllPlayers = async (req, res) => {
           ? {
               $or: [
                 {
-                  name: { $regex: searchKey, $options: "i" },
+                  name: { $regex: searchKey, $options: 'i' },
                 },
                 {
-                  slug: { $regex: searchKey, $options: "i" },
+                  slug: { $regex: searchKey, $options: 'i' },
                 },
               ],
             }
@@ -49,12 +50,10 @@ const getAllPlayers = async (req, res) => {
           ? {
               $or: [
                 {
-                  bowlingLevel: { $gte: levelRange.min },
-                  bowlingLevel: { $lte: levelRange.max },
+                  bowlingLevel: { $gte: levelRange.min, $lte: levelRange.max },
                 },
                 {
-                  battingLevel: { $gte: levelRange.min },
-                  battingLevel: { $lte: levelRange.max },
+                  battingLevel: { $gte: levelRange.min, $lte: levelRange.max },
                 },
               ],
             }
@@ -65,10 +64,10 @@ const getAllPlayers = async (req, res) => {
           ? {
               $or: [
                 {
-                  name: { $regex: searchKey, $options: "i" },
+                  name: { $regex: searchKey, $options: 'i' },
                 },
                 {
-                  slug: { $regex: searchKey, $options: "i" },
+                  slug: { $regex: searchKey, $options: 'i' },
                 },
               ],
             }
@@ -79,7 +78,7 @@ const getAllPlayers = async (req, res) => {
       .sort(sortBy ? { [sortBy.field]: [sortBy.order] } : { name: 1 });
 
     if (!players || players.length === 0) {
-      let msg = "no players found!";
+      let msg = 'no players found!';
       return response(res, StatusCodes.NOT_FOUND, false, null, msg);
     }
 
@@ -93,14 +92,14 @@ const getRandomCaptains = async (req, res) => {
   try {
     const populateFields = [
       {
-        path: "nationality",
+        path: 'nationality',
       },
       {
-        path: "teams",
+        path: 'teams',
       },
     ];
 
-    let allrounders = await PlayerInfo.find({ role: "All-Rounder" })
+    let allrounders = await PlayerInfo.find({ role: 'All-Rounder' })
       .where({
         bowlingLevel: { $gte: 65 },
       })
@@ -115,7 +114,7 @@ const getRandomCaptains = async (req, res) => {
       })
       .populate(populateFields);
 
-    let batsmen = await PlayerInfo.find({ role: "Batsman" })
+    let batsmen = await PlayerInfo.find({ role: 'Batsman' })
       .where({
         battingLevel: { $gte: 75 },
       })
@@ -124,7 +123,7 @@ const getRandomCaptains = async (req, res) => {
       })
       .populate(populateFields);
 
-    let keepers = await PlayerInfo.find({ role: "Wicket-Keeper" })
+    let keepers = await PlayerInfo.find({ role: 'Wicket-Keeper' })
       .where({
         battingLevel: { $gte: 75 },
       })
@@ -133,7 +132,7 @@ const getRandomCaptains = async (req, res) => {
       })
       .populate(populateFields);
 
-    let bowlers = await PlayerInfo.find({ role: "Bowler" })
+    let bowlers = await PlayerInfo.find({ role: 'Bowler' })
       .where({
         bowlingLevel: { $gte: 75 },
       })
@@ -177,4 +176,4 @@ const shufflePlayers = (players) => {
   return players;
 };
 
-module.exports = { getRandomCaptains, shufflePlayers };
+module.exports = { getRandomCaptains, shufflePlayers, getAllPlayers };
