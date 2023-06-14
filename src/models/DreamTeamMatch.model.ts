@@ -31,12 +31,12 @@ const InningSchema = new Schema<_IInning_>(
           required: true,
         },
         batsman: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
         bowler: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
@@ -73,18 +73,18 @@ const InningSchema = new Schema<_IInning_>(
           required: true,
         },
         batsman: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
         out: {
           bowler: {
-            ref: 'league_player',
+            ref: 'dream_player',
             type: SchemaTypes.ObjectId,
             required: true,
           },
           fielder: {
-            ref: 'league_player',
+            ref: 'dream_player',
             type: SchemaTypes.ObjectId,
           },
           wicketType: {
@@ -103,7 +103,7 @@ const InningSchema = new Schema<_IInning_>(
       },
     ],
     battingTeam: {
-      ref: 'league_team',
+      ref: 'dream_team',
       type: SchemaTypes.ObjectId,
       required: true,
     },
@@ -138,14 +138,14 @@ const InningSchema = new Schema<_IInning_>(
           required: true,
         },
         bowler: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
       },
     ],
     bowlingTeam: {
-      ref: 'league_team',
+      ref: 'dream_team',
       type: SchemaTypes.ObjectId,
       required: true,
     },
@@ -164,7 +164,7 @@ const InningSchema = new Schema<_IInning_>(
           required: true,
         },
         player: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
@@ -185,12 +185,12 @@ const InningSchema = new Schema<_IInning_>(
           required: true,
         },
         bastman1: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
         batsman2: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
@@ -223,6 +223,12 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       required: true,
     },
     slug: String,
+    users: [
+      {
+        ref: 'user',
+        type: SchemaTypes.ObjectId,
+      },
+    ],
     innings: {
       first: InningSchema,
       second: InningSchema,
@@ -236,7 +242,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
     performances: [
       {
         player: {
-          ref: 'league_player',
+          ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
         },
@@ -245,7 +251,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
           default: 0,
         },
         team: {
-          ref: 'league_team',
+          ref: 'dream_team',
           type: SchemaTypes.ObjectId,
           required: true,
         },
@@ -253,7 +259,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
     ],
     result: {
       winner: {
-        ref: 'league_team',
+        ref: 'dream_team',
         type: SchemaTypes.ObjectId,
       },
       wonBy: String,
@@ -262,12 +268,12 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
     },
     teams: {
       teamA: {
-        ref: 'league_team',
+        ref: 'dream_team',
         type: SchemaTypes.ObjectId,
         required: true,
       },
       teamB: {
-        ref: 'league_team',
+        ref: 'dream_team',
         type: SchemaTypes.ObjectId,
         required: true,
       },
@@ -276,24 +282,24 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       teamA: {
         playingXI: [
           {
-            ref: 'league_player',
+            ref: 'dream_player',
             type: SchemaTypes.ObjectId,
           },
         ],
         team: {
-          ref: 'league_team',
+          ref: 'dream_team',
           type: SchemaTypes.ObjectId,
         },
       },
       teamB: {
         playingXI: [
           {
-            ref: 'league_player',
+            ref: 'dream_player',
             type: SchemaTypes.ObjectId,
           },
         ],
         team: {
-          ref: 'league_team',
+          ref: 'dream_team',
           type: SchemaTypes.ObjectId,
         },
       },
@@ -304,7 +310,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
     },
     toss: {
       team: {
-        ref: 'league_team',
+        ref: 'dream_team',
         type: SchemaTypes.ObjectId,
         required: true,
       },

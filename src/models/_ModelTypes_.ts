@@ -175,6 +175,7 @@ interface _IPlayerInfo_ {
 interface _IMatch_ extends Document {
   title: string;
   slug: string;
+  users: Types.ObjectId[] | _IUser_[];
   innings: {
     first: _IInning_;
     second: _IInning_;
@@ -195,7 +196,7 @@ interface _IMatch_ extends Document {
   status: string;
   toss: {
     team: Types.ObjectId;
-    selectedTo: string;
+    selectedTo?: string;
   };
   matchType: string;
   tournament: Types.ObjectId;

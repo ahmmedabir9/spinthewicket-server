@@ -49,7 +49,6 @@ export class WebSocketResponder extends SocketResponder {
     );
   }
   respond(responseData: Object) {
-    console.log('💡 | file: socketService.ts:52 | responseData:', responseData);
     let respondFunc = () => {
       this.socket.emit(
         this.routeName + '->' + this.callName + ':' + this.request['reqId'] + ':reply',

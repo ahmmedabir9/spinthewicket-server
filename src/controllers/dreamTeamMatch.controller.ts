@@ -56,6 +56,16 @@ const playerPopulate = [
   },
 ];
 
+const matchPopulate = [
+  { path: 'teams.teamA', populate: teamPopulate },
+  { path: 'teams.teamB', populate: teamPopulate },
+  { path: 'squad.teamA.playingXI', populate: playerPopulate },
+  { path: 'squad.teamB.playingXI', populate: playerPopulate },
+  {
+    path: 'users',
+  },
+];
+
 const startQuickMatch = async (req: Request, res: Response) => {
   try {
     const { team, overs, user } = req.body;
@@ -187,37 +197,14 @@ const startQuickMatch = async (req: Request, res: Response) => {
 };
 
 const getMatchData = async (args: any) => {
-  console.log('💡 | file: dreamTeamMatch.controller.ts:190 | args:', args);
   try {
     const { id } = args;
 
-    const matchData = await GetQuickMatch(id);
+    const matchData: any = await DreamTeamMatch.findById(id).populate(matchPopulate);
 
-    // fetch teams
-    const teamA = await DreamTeam.findById(matchData?.teams?.a).populate(teamPopulate);
-    const teamB = await DreamTeam.findById(matchData?.teams?.b).populate(teamPopulate);
-
-    // fetch players
-    const players = await DreamPlayer.find()
-      .where({
-        $or: [
-          {
-            _id: { $in: matchData.playingXI[matchData?.teams?.a] },
-          },
-          {
-            _id: { $in: matchData.playingXI[matchData?.teams?.b] },
-          },
-        ],
-      })
-      .populate(playerPopulate);
-
-    // fetch users
-    const users = await User.find().where({
-      _id: { $in: matchData.users },
-    });
-
-    return socketResponse(true, { teams: [teamA, teamB], players, users }, null);
+    return socketResponse(true, matchData, null);
   } catch (error) {
+    console.log('💡 | file: dreamTeamMatch.controller.ts:220 | error:', error);
     return socketResponse(false, null, error.message);
   }
 };
