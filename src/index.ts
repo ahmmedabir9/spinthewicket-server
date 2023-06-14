@@ -3,16 +3,17 @@ import { connect } from 'mongoose';
 
 import { HTTPServer } from './services/http';
 import { SocketConnections, SocketObject } from './services/socketService';
+import { SocketRoutes } from './socketRoutes';
 
-let admin = require('firebase-admin');
+// let admin = require('firebase-admin');
 
-let serviceAccount = require('../spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json');
+// let serviceAccount = require('../spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json');
 const { mongoURI } = require('./config/database');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://spin-the-wicket.firebaseio.com',
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://spin-the-wicket.firebaseio.com',
+// });
 
 export class EnvironmentVars {
   port: number = process.argv[2] === 'prod' ? 5000 : 5000;
@@ -50,6 +51,7 @@ export class SpinTheWicket extends EventEmitter {
   socketConnections: SocketConnections;
   environmentVars: EnvironmentVars;
   ruleEngineFilePath: string;
+  socketRoutes: SocketRoutes;
   constructor() {
     super();
     this.environmentVars = new EnvironmentVars();
@@ -67,6 +69,7 @@ export class SpinTheWicket extends EventEmitter {
             console.log('Database Connected');
             this.httpServer = new HTTPServer(this);
             this.socketConnections = new SocketConnections(this);
+            this.socketRoutes = new SocketRoutes(this);
             this.socketConnections.on('socket', (socket: SocketObject) => {
               if (socket?.handshake['session']?.user) {
                 this.socketConnections.addToGroup(

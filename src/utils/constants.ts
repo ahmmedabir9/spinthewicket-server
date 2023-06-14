@@ -3,6 +3,7 @@ import {
   _IBowlingStat_,
   _IDreamPlayer_,
   _IDreamTeam_,
+  _IInning_,
 } from '../models/_ModelTypes_';
 
 const initialPlayerData: Partial<_IDreamPlayer_> = {
@@ -70,4 +71,46 @@ const initialTeamData: Partial<_IDreamTeam_> = {
   },
 };
 
-export { initialPlayerData, initialTeamData, initialBattingStat, initialBowlingStat };
+const initialInningData: Partial<_IInning_> = {
+  battingOrder: [],
+  bowlingOrder: [],
+  partnerships: [],
+  fallOfWickets: [],
+  ballByBall: [],
+  overs: 0,
+  balls: 0,
+  runs: 0,
+  wickets: 0,
+  runRate: 0,
+  extra: 0,
+};
+
+const initialLiveData: any = {
+  batsman: {},
+  bowler: null,
+  overs: 0,
+  balls: 0,
+  runs: 0,
+  wickets: 0,
+  runRate: 0,
+  extra: 0,
+  partnership: {
+    balls: 0,
+    runs: 0,
+    batsman1: null,
+    batsman2: null,
+  },
+  freeHit: false,
+  history: [],
+  spinning: false,
+  lastSpinPosition: 0,
+};
+
+export {
+  initialPlayerData,
+  initialTeamData,
+  initialBattingStat,
+  initialBowlingStat,
+  initialInningData,
+  initialLiveData,
+};

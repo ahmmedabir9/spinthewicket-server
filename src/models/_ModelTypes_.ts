@@ -7,6 +7,7 @@ interface _IAchievement_ {
 }
 
 interface _IUser_ extends Document {
+  _id?: Types.ObjectId;
   name: string;
   username?: string;
   nationality?: Types.ObjectId;
@@ -267,7 +268,7 @@ interface _IDreamTeam_ extends Document {
   isActive?: boolean;
   theme?: Types.ObjectId;
   captain?: Types.ObjectId;
-  manager?: Types.ObjectId;
+  manager?: Types.ObjectId | Partial<_IUser_>;
   points: number;
   trophies: { trophy: Types.ObjectId; date: Date }[];
   playingXI: Types.ObjectId[];

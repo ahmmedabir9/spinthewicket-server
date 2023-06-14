@@ -1,6 +1,6 @@
-import { Schema, SchemaTypes, model } from "mongoose";
+import { Schema, SchemaTypes, model } from 'mongoose';
 
-import { _IUser_ } from "./_ModelTypes_";
+import { _IUser_ } from './_ModelTypes_';
 
 const UserSchema = new Schema<_IUser_>(
   {
@@ -13,7 +13,7 @@ const UserSchema = new Schema<_IUser_>(
       unique: true,
     },
     nationality: {
-      ref: "Country",
+      ref: 'Country',
       type: SchemaTypes.ObjectId,
     },
     email: {
@@ -25,7 +25,7 @@ const UserSchema = new Schema<_IUser_>(
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(value);
         },
-        message: "Invalid email format",
+        message: 'Invalid email format',
       },
     },
     uid: String,
@@ -34,7 +34,7 @@ const UserSchema = new Schema<_IUser_>(
     achievements: [
       {
         achievement: {
-          ref: "Achievement",
+          ref: 'Achievement',
           type: SchemaTypes.ObjectId,
         },
         date: Date,
@@ -47,6 +47,6 @@ const UserSchema = new Schema<_IUser_>(
   { timestamps: true },
 );
 
-const User = model<_IUser_>("User", UserSchema);
+const User = model<_IUser_>('user', UserSchema);
 
 export default User;
