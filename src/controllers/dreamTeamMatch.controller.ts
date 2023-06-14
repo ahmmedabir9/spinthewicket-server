@@ -110,7 +110,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       bowlingTeam = null,
       battingScorer = null,
       bowlingScorer = null,
-      now = null;
+      liveData = null;
     const tossResult = Math.floor(Math.random() * 10000) % 2;
     let toss;
 
@@ -129,7 +129,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       bowlingTeam = choosen === 1 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
       battingScorer = choosen === 0 ? null : user;
       bowlingScorer = choosen === 1 ? null : user;
-      now = {
+      liveData = {
         inning: 1,
         battingTeam: battingTeam,
         bowlingTeam: bowlingTeam,
@@ -182,7 +182,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       },
       users: [user],
       toss: toss,
-      now,
+      liveData,
       innings,
     };
 
@@ -201,6 +201,51 @@ const getMatchData = async (args: any) => {
     const { id } = args;
 
     const matchData: any = await DreamTeamMatch.findById(id).populate(matchPopulate);
+
+    return socketResponse(true, matchData, null);
+  } catch (error) {
+    console.log('💡 | file: dreamTeamMatch.controller.ts:220 | error:', error);
+    return socketResponse(false, null, error.message);
+  }
+};
+
+const updateMatchData = async (args: any, data: any) => {
+  try {
+    const { id } = args;
+    const { selectedTo, striker, nonStriker, bowler } = data;
+    let updateData: any = {};
+
+    // Toss Update
+    if (selectedTo) {
+      updateData = {
+        ...updateData,
+        'toss.selectedTo': selectedTo,
+      };
+    }
+
+    // Select Striker
+    if (striker) {
+      updateData = {
+        ...updateData,
+        'liveData.batsman.striker': striker,
+      };
+    }
+    // Select NonStriker
+    if (nonStriker) {
+      updateData = {
+        ...updateData,
+        'liveData.batsman.nonStriker': nonStriker,
+      };
+    }
+    // Select Bowler
+    if (bowler) {
+      updateData = {
+        ...updateData,
+        'liveData.bowler': bowler,
+      };
+    }
+
+    const matchData: any = await DreamTeamMatch.findByIdAndUpdate(id, updateData);
 
     return socketResponse(true, matchData, null);
   } catch (error) {
@@ -230,13 +275,13 @@ const playQuickMatch = async (req, res) => {
     // }
 
     // var inning;
-    // if (matchData.now.inning === 1) {
+    // if (matchData.liveData.inning === 1) {
     //   inning = 'first';
-    // } else if (matchData.now.inning === 2) {
+    // } else if (matchData.liveData.inning === 2) {
     //   inning = 'second';
-    // } else if (matchData.now.inning === 3) {
+    // } else if (matchData.liveData.inning === 3) {
     //   inning = 'firstSuper';
-    // } else if (matchData.now.inning === 4) {
+    // } else if (matchData.liveData.inning === 4) {
     //   inning = 'secondSuper';
     // }
 
@@ -274,19 +319,19 @@ const playQuickMatch = async (req, res) => {
     //     else if (ballAction === 'WIDE') ballResponse = await wideBall(matchData, ballData, inning);
     //     else if (ballAction === 'NO_BALL') ballResponse = await noBall(matchData, ballData, inning);
     //     else if (ballAction === 'BOWLED') {
-    //       if (matchData?.now?.freeHit) {
+    //       if (matchData?.liveData?.freeHit) {
     //         ballResponse = await dotBall(matchData, ballData, inning);
     //       } else {
     //         ballResponse = await bowled(matchData, ballData, inning);
     //       }
     //     } else if (ballAction === 'LBW') {
-    //       if (matchData?.now?.freeHit) {
+    //       if (matchData?.liveData?.freeHit) {
     //         ballResponse = await dotBall(matchData, ballData, inning);
     //       } else {
     //         ballResponse = await lbw(matchData, ballData, inning);
     //       }
     //     } else if (ballAction === 'CATCH') {
-    //       if (matchData?.now?.freeHit) {
+    //       if (matchData?.liveData?.freeHit) {
     //         ballResponse = await dotBall(matchData, ballData, inning);
     //       } else {
     //         ballResponse = await catchOut(matchData, ballData, inning);
@@ -305,8 +350,8 @@ const playQuickMatch = async (req, res) => {
     //     }
 
     //     const updateData = {
-    //       'now.lastSpinPosition': lastSpinPosition,
-    //       'now.spinning': false,
+    //       'liveData.lastSpinPosition': lastSpinPosition,
+    //       'liveData.spinning': false,
     //     };
 
     //     await UpdateQuickMatch(match, updateData);

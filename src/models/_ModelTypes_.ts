@@ -201,7 +201,7 @@ interface _IMatch_ extends Document {
   matchType: string;
   tournament: Types.ObjectId;
   league: Types.ObjectId;
-  now: {
+  liveData: {
     inning: number;
     battingTeam: Types.ObjectId;
     bowlingTeam: Types.ObjectId;

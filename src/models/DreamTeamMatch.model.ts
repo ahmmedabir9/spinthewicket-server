@@ -316,12 +316,69 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       },
       selectedTo: {
         type: String,
-        required: true,
       },
     },
     matchType: {
       type: String,
       required: true,
+    },
+    liveData: {
+      inning: Number,
+      battingTeam: {
+        ref: 'dream_team',
+        type: SchemaTypes.ObjectId,
+      },
+      bowlingTeam: {
+        ref: 'dream_team',
+        type: SchemaTypes.ObjectId,
+      },
+      battingScorer: {
+        ref: 'user',
+        type: SchemaTypes.ObjectId,
+      },
+      bowlingScorer: {
+        ref: 'user',
+        type: SchemaTypes.ObjectId,
+      },
+      batsman: {
+        striker: {
+          ref: 'dream_player',
+          type: SchemaTypes.ObjectId,
+        },
+        nonStriker: {
+          ref: 'dream_player',
+          type: SchemaTypes.ObjectId,
+        },
+      },
+      bowler: {
+        ref: 'dream_player',
+        type: SchemaTypes.ObjectId,
+      },
+      overs: Number,
+      balls: Number,
+      runs: Number,
+      wickets: Number,
+      runRate: Number,
+      extra: Number,
+      partnership: {
+        balls: Number,
+        runs: Number,
+        batsman1: {
+          ref: 'dream_player',
+          type: SchemaTypes.ObjectId,
+        },
+        batsman2: {
+          ref: 'dream_player',
+          type: SchemaTypes.ObjectId,
+        },
+      },
+      freeHit: Boolean,
+      history: [],
+      spinning: Boolean,
+      lastSpinPosition: Number,
+      need: Number,
+      target: Number,
+      from: Number,
     },
   },
   { timestamps: true },

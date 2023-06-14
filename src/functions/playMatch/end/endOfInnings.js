@@ -1,37 +1,39 @@
-const firebase = require("firebase-admin");
+const firebase = require('firebase-admin');
 // const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
-const endOfMatch = require("./endOfMatch");
+const endOfMatch = require('./endOfMatch');
 
 const endOfInnings = async (matchData, docRef, inning) => {
   var batsman = [];
-  if (matchData.now.batsman.striker) {
+  if (matchData.liveData.batsman.striker) {
     const striker = {
-      balls: matchData.now.batsman.striker.balls,
-      fours: matchData.now.batsman.striker.fours,
-      id: matchData.now.batsman.striker.id,
-      inAt: matchData.now.batsman.striker.inAt,
-      name: matchData.now.batsman.striker.name,
-      photoURL: matchData.now.batsman.striker.photoURL,
-      runs: matchData.now.batsman.striker.runs,
-      sixes: matchData.now.batsman.striker.sixes,
-      strikeRate: (matchData.now.batsman.striker.runs / matchData.now.batsman.striker.balls) * 100,
-      status: "not out",
+      balls: matchData.liveData.batsman.striker.balls,
+      fours: matchData.liveData.batsman.striker.fours,
+      id: matchData.liveData.batsman.striker.id,
+      inAt: matchData.liveData.batsman.striker.inAt,
+      name: matchData.liveData.batsman.striker.name,
+      photoURL: matchData.liveData.batsman.striker.photoURL,
+      runs: matchData.liveData.batsman.striker.runs,
+      sixes: matchData.liveData.batsman.striker.sixes,
+      strikeRate:
+        (matchData.liveData.batsman.striker.runs / matchData.liveData.batsman.striker.balls) * 100,
+      status: 'not out',
     };
     batsman = [...batsman, striker];
   }
-  if (matchData.now.batsman.nonStriker) {
+  if (matchData.liveData.batsman.nonStriker) {
     const nonStriker = {
-      balls: matchData.now.batsman.nonStriker.balls,
-      fours: matchData.now.batsman.nonStriker.fours,
-      id: matchData.now.batsman.nonStriker.id,
-      inAt: matchData.now.batsman.nonStriker.inAt,
-      name: matchData.now.batsman.nonStriker.name,
-      photoURL: matchData.now.batsman.nonStriker.photoURL,
-      runs: matchData.now.batsman.nonStriker.runs,
-      sixes: matchData.now.batsman.nonStriker.sixes,
+      balls: matchData.liveData.batsman.nonStriker.balls,
+      fours: matchData.liveData.batsman.nonStriker.fours,
+      id: matchData.liveData.batsman.nonStriker.id,
+      inAt: matchData.liveData.batsman.nonStriker.inAt,
+      name: matchData.liveData.batsman.nonStriker.name,
+      photoURL: matchData.liveData.batsman.nonStriker.photoURL,
+      runs: matchData.liveData.batsman.nonStriker.runs,
+      sixes: matchData.liveData.batsman.nonStriker.sixes,
       strikeRate:
-        (matchData.now.batsman.nonStriker.runs / matchData.now.batsman.nonStriker.balls) * 100,
-      status: "not out",
+        (matchData.liveData.batsman.nonStriker.runs / matchData.liveData.batsman.nonStriker.balls) *
+        100,
+      status: 'not out',
     };
     batsman = [...batsman, nonStriker];
   }
@@ -39,41 +41,41 @@ const endOfInnings = async (matchData, docRef, inning) => {
   if (batsman.length === 1) {
     docRef
       .update({
-        "now.bowler": null,
-        "now.extra": 0,
-        "now.runRate": 0,
-        "now.batsman.striker": null,
-        "now.batsman.nonStriker": null,
-        "now.balls": 0,
-        "now.overs": 0,
-        "now.freeHit": null,
-        "now.battingTeam": matchData.now.bowlingTeam,
-        "now.bowlingTeam": matchData.now.battingTeam,
-        "now.battingScorer": matchData.now.bowlingScorer,
-        "now.bowlingScorer": matchData.now.battingScorer,
-        "now.runs": 0,
-        "now.target": matchData.now.runs + 1,
-        "now.inning": firebase.firestore.FieldValue.increment(1),
-        "now.wickets": 0,
-        "now.need": matchData.now.runs + 1,
-        "now.partnership": {
+        'liveData.bowler': null,
+        'liveData.extra': 0,
+        'liveData.runRate': 0,
+        'liveData.batsman.striker': null,
+        'liveData.batsman.nonStriker': null,
+        'liveData.balls': 0,
+        'liveData.overs': 0,
+        'liveData.freeHit': null,
+        'liveData.battingTeam': matchData.liveData.bowlingTeam,
+        'liveData.bowlingTeam': matchData.liveData.battingTeam,
+        'liveData.battingScorer': matchData.liveData.bowlingScorer,
+        'liveData.bowlingScorer': matchData.liveData.battingScorer,
+        'liveData.runs': 0,
+        'liveData.target': matchData.liveData.runs + 1,
+        'liveData.inning': firebase.firestore.FieldValue.increment(1),
+        'liveData.wickets': 0,
+        'liveData.need': matchData.liveData.runs + 1,
+        'liveData.partnership': {
           runs: 0,
           balls: 0,
-          batsman1: "",
-          batsman2: "",
+          batsman1: '',
+          batsman2: '',
         },
-        "now.from": matchData.overs * 6,
-        "now.reqRR": (matchData.now.runs + 1) / matchData.overs,
+        'liveData.from': matchData.overs * 6,
+        'liveData.reqRR': (matchData.liveData.runs + 1) / matchData.overs,
         [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(batsman[0]),
         [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion({
-          runs: matchData.now.partnership.runs,
-          balls: matchData.now.partnership.balls,
-          batsman1: matchData.now.partnership.batsman1,
-          batsman2: matchData.now.partnership.batsman2,
+          runs: matchData.liveData.partnership.runs,
+          balls: matchData.liveData.partnership.balls,
+          batsman1: matchData.liveData.partnership.batsman1,
+          batsman2: matchData.liveData.partnership.batsman2,
         }),
       })
       .then(() => {
-        if (inning === "second") {
+        if (inning === 'second') {
           if (matchData.innings.first.runs === matchData.innings.second.runs) {
             const innings = {
               firstSuper: {
@@ -113,22 +115,22 @@ const endOfInnings = async (matchData, docRef, inning) => {
             };
 
             docRef.update({
-              "now.battingTeam": matchData.now.battingTeam,
-              "now.bowlingTeam": matchData.now.bowlingTeam,
-              "now.battingScorer": matchData.now.battingScorer,
-              "now.bowlingScorer": matchData.now.bowlingScorer,
-              "now.target": null,
-              "now.need": null,
-              "now.from": null,
-              "now.reqRR": null,
-              "innings.firstSuper": innings.firstSuper,
-              "innings.secondSuper": innings.secondSuper,
+              'liveData.battingTeam': matchData.liveData.battingTeam,
+              'liveData.bowlingTeam': matchData.liveData.bowlingTeam,
+              'liveData.battingScorer': matchData.liveData.battingScorer,
+              'liveData.bowlingScorer': matchData.liveData.bowlingScorer,
+              'liveData.target': null,
+              'liveData.need': null,
+              'liveData.from': null,
+              'liveData.reqRR': null,
+              'innings.firstSuper': innings.firstSuper,
+              'innings.secondSuper': innings.secondSuper,
               superOver: true,
             });
           } else {
             endOfMatch(matchData, docRef, inning);
           }
-        } else if (inning === "secondSuper") {
+        } else if (inning === 'secondSuper') {
           if (matchData.innings.firstSuper.runs === matchData.innings.secondSuper.runs) {
             const innings = {
               firstSuper: {
@@ -168,16 +170,16 @@ const endOfInnings = async (matchData, docRef, inning) => {
             };
 
             docRef.update({
-              "now.battingTeam": matchData.now.battingTeam,
-              "now.bowlingTeam": matchData.now.bowlingTeam,
-              "now.battingScorer": matchData.now.battingScorer,
-              "now.bowlingScorer": matchData.now.bowlingScorer,
-              "now.target": null,
-              "now.need": null,
-              "now.from": null,
-              "now.reqRR": null,
-              "innings.firstSuper": innings.firstSuper,
-              "innings.secondSuper": innings.secondSuper,
+              'liveData.battingTeam': matchData.liveData.battingTeam,
+              'liveData.bowlingTeam': matchData.liveData.bowlingTeam,
+              'liveData.battingScorer': matchData.liveData.battingScorer,
+              'liveData.bowlingScorer': matchData.liveData.bowlingScorer,
+              'liveData.target': null,
+              'liveData.need': null,
+              'liveData.from': null,
+              'liveData.reqRR': null,
+              'innings.firstSuper': innings.firstSuper,
+              'innings.secondSuper': innings.secondSuper,
               superOver: true,
             });
           } else {
@@ -188,44 +190,44 @@ const endOfInnings = async (matchData, docRef, inning) => {
   } else {
     docRef
       .update({
-        "now.bowler": null,
-        "now.extra": 0,
-        "now.runRate": 0,
-        "now.batsman.striker": null,
-        "now.batsman.nonStriker": null,
-        "now.balls": 0,
-        "now.overs": 0,
-        "now.freeHit": null,
-        "now.battingTeam": matchData.now.bowlingTeam,
-        "now.bowlingTeam": matchData.now.battingTeam,
-        "now.battingScorer": matchData.now.bowlingScorer,
-        "now.bowlingScorer": matchData.now.battingScorer,
-        "now.runs": 0,
-        "now.partnership": {
+        'liveData.bowler': null,
+        'liveData.extra': 0,
+        'liveData.runRate': 0,
+        'liveData.batsman.striker': null,
+        'liveData.batsman.nonStriker': null,
+        'liveData.balls': 0,
+        'liveData.overs': 0,
+        'liveData.freeHit': null,
+        'liveData.battingTeam': matchData.liveData.bowlingTeam,
+        'liveData.bowlingTeam': matchData.liveData.battingTeam,
+        'liveData.battingScorer': matchData.liveData.bowlingScorer,
+        'liveData.bowlingScorer': matchData.liveData.battingScorer,
+        'liveData.runs': 0,
+        'liveData.partnership': {
           runs: 0,
           balls: 0,
-          batsman1: "",
-          batsman2: "",
+          batsman1: '',
+          batsman2: '',
         },
-        "now.target": matchData.now.runs + 1,
-        "now.inning": firebase.firestore.FieldValue.increment(1),
-        "now.wickets": 0,
-        "now.need": matchData.now.runs + 1,
-        "now.from": matchData.overs * 6,
-        "now.reqRR": (matchData.now.runs + 1) / matchData.overs,
+        'liveData.target': matchData.liveData.runs + 1,
+        'liveData.inning': firebase.firestore.FieldValue.increment(1),
+        'liveData.wickets': 0,
+        'liveData.need': matchData.liveData.runs + 1,
+        'liveData.from': matchData.overs * 6,
+        'liveData.reqRR': (matchData.liveData.runs + 1) / matchData.overs,
         [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(
           batsman[0],
           batsman[1],
         ),
         [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion({
-          runs: matchData.now.partnership.runs,
-          balls: matchData.now.partnership.balls,
-          batsman1: matchData.now.partnership.batsman1,
-          batsman2: matchData.now.partnership.batsman2,
+          runs: matchData.liveData.partnership.runs,
+          balls: matchData.liveData.partnership.balls,
+          batsman1: matchData.liveData.partnership.batsman1,
+          batsman2: matchData.liveData.partnership.batsman2,
         }),
       })
       .then(() => {
-        if (inning === "second") {
+        if (inning === 'second') {
           if (matchData.innings.first.runs === matchData.innings.second.runs) {
             const innings = {
               firstSuper: {
@@ -265,23 +267,23 @@ const endOfInnings = async (matchData, docRef, inning) => {
             };
 
             docRef.update({
-              "now.battingTeam": matchData.now.battingTeam,
-              "now.bowlingTeam": matchData.now.bowlingTeam,
-              "now.battingScorer": matchData.now.battingScorer,
-              "now.bowlingScorer": matchData.now.bowlingScorer,
-              "now.target": null,
-              "now.inning": 3,
-              "now.need": null,
-              "now.from": null,
-              "now.reqRR": null,
-              "innings.firstSuper": innings.firstSuper,
-              "innings.secondSuper": innings.secondSuper,
+              'liveData.battingTeam': matchData.liveData.battingTeam,
+              'liveData.bowlingTeam': matchData.liveData.bowlingTeam,
+              'liveData.battingScorer': matchData.liveData.battingScorer,
+              'liveData.bowlingScorer': matchData.liveData.bowlingScorer,
+              'liveData.target': null,
+              'liveData.inning': 3,
+              'liveData.need': null,
+              'liveData.from': null,
+              'liveData.reqRR': null,
+              'innings.firstSuper': innings.firstSuper,
+              'innings.secondSuper': innings.secondSuper,
               superOver: true,
             });
           } else {
             endOfMatch(matchData, docRef, inning);
           }
-        } else if (inning === "secondSuper") {
+        } else if (inning === 'secondSuper') {
           if (matchData.innings.firstSuper.runs === matchData.innings.secondSuper.runs) {
             const innings = {
               firstSuper: {
@@ -321,17 +323,17 @@ const endOfInnings = async (matchData, docRef, inning) => {
             };
 
             docRef.update({
-              "now.battingTeam": matchData.now.battingTeam,
-              "now.bowlingTeam": matchData.now.bowlingTeam,
-              "now.battingScorer": matchData.now.battingScorer,
-              "now.bowlingScorer": matchData.now.bowlingScorer,
-              "now.target": null,
-              "now.inning": 3,
-              "now.need": null,
-              "now.from": null,
-              "now.reqRR": null,
-              "innings.firstSuper": innings.firstSuper,
-              "innings.secondSuper": innings.secondSuper,
+              'liveData.battingTeam': matchData.liveData.battingTeam,
+              'liveData.bowlingTeam': matchData.liveData.bowlingTeam,
+              'liveData.battingScorer': matchData.liveData.battingScorer,
+              'liveData.bowlingScorer': matchData.liveData.bowlingScorer,
+              'liveData.target': null,
+              'liveData.inning': 3,
+              'liveData.need': null,
+              'liveData.from': null,
+              'liveData.reqRR': null,
+              'innings.firstSuper': innings.firstSuper,
+              'innings.secondSuper': innings.secondSuper,
               superOver: true,
             });
           } else {

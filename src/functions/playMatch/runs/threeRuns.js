@@ -1,63 +1,67 @@
-const firebase = require("firebase-admin");
-const { UpdateQuickMatch } = require("../../../services/firebase");
+const firebase = require('firebase-admin');
+const { UpdateQuickMatch } = require('../../../services/firebase');
 // const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
-const endOfOver = require("../end/endOfOver");
-const runChased = require("../end/runChased");
+const endOfOver = require('../end/endOfOver');
+const runChased = require('../end/runChased');
 
 const threeRuns = async (matchData, ballData, inning) => {
-  let striker = matchData?.now?.batsman?.striker;
-  let nonStriker = matchData?.now?.batsman?.nonStriker;
+  let striker = matchData?.liveData?.batsman?.striker;
+  let nonStriker = matchData?.liveData?.batsman?.nonStriker;
 
   try {
     striker.runs += 3;
     striker.balls += 1;
     striker.strikeRate =
-      ((matchData.now.batsman.striker.runs + 3) / (matchData.now.batsman.striker.balls + 1)) * 100;
+      ((matchData.liveData.batsman.striker.runs + 3) /
+        (matchData.liveData.batsman.striker.balls + 1)) *
+      100;
 
     let dataToUpdate = {
-      "now.batsman.striker": nonStriker,
-      "now.batsman.nonStriker": striker,
-      // 'now.batsman.striker.runs': firebase.firestore.FieldValue.increment(1),
-      "now.thisOver": firebase.firestore.FieldValue.arrayUnion({
+      'liveData.batsman.striker': nonStriker,
+      'liveData.batsman.nonStriker': striker,
+      // 'liveData.batsman.striker.runs': firebase.firestore.FieldValue.increment(1),
+      'liveData.thisOver': firebase.firestore.FieldValue.arrayUnion({
         ball: ballData.ballNO,
         status: ballData.status,
         run: ballData.run,
       }),
 
       [`innings.${inning}.ballByBall`]: firebase.firestore.FieldValue.arrayUnion(ballData),
-      // 'now.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
-      // 'now.batsman.striker.strikeRate':
-      //   ((matchData.now.batsman.striker.runs + 1) /
-      //     (matchData.now.batsman.striker.balls + 1)) *
+      // 'liveData.batsman.striker.balls': firebase.firestore.FieldValue.increment(1),
+      // 'liveData.batsman.striker.strikeRate':
+      //   ((matchData.liveData.batsman.striker.runs + 1) /
+      //     (matchData.liveData.batsman.striker.balls + 1)) *
       //   100,
-      "now.bowler.economy":
-        (matchData.now.bowler.runs + 1) /
-        ((matchData.now.bowler.overs * 6 + (matchData.now.bowler.balls + 1)) / 6),
-      "now.partnership": {
-        runs: matchData.now.partnership.runs + 1,
-        balls: matchData.now.partnership.balls + 1,
-        batsman1: matchData.now.batsman.striker.id,
-        batsman2: matchData.now.batsman.nonStriker.id,
+      'liveData.bowler.economy':
+        (matchData.liveData.bowler.runs + 1) /
+        ((matchData.liveData.bowler.overs * 6 + (matchData.liveData.bowler.balls + 1)) / 6),
+      'liveData.partnership': {
+        runs: matchData.liveData.partnership.runs + 1,
+        balls: matchData.liveData.partnership.balls + 1,
+        batsman1: matchData.liveData.batsman.striker.id,
+        batsman2: matchData.liveData.batsman.nonStriker.id,
       },
-      "now.bowler.runs": firebase.firestore.FieldValue.increment(3),
-      "now.bowler.balls": firebase.firestore.FieldValue.increment(1),
-      "now.runs": firebase.firestore.FieldValue.increment(3),
-      "now.balls": firebase.firestore.FieldValue.increment(1),
-      "now.freeHit": false,
-      "now.runRate":
-        (matchData.now.runs + 3) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+      'liveData.bowler.runs': firebase.firestore.FieldValue.increment(3),
+      'liveData.bowler.balls': firebase.firestore.FieldValue.increment(1),
+      'liveData.runs': firebase.firestore.FieldValue.increment(3),
+      'liveData.balls': firebase.firestore.FieldValue.increment(1),
+      'liveData.freeHit': false,
+      'liveData.runRate':
+        (matchData.liveData.runs + 3) /
+        ((matchData.liveData.overs * 6 + (matchData.liveData.balls + 1)) / 6),
       [`innings.${inning}.runs`]: firebase.firestore.FieldValue.increment(3),
       [`innings.${inning}.balls`]: firebase.firestore.FieldValue.increment(1),
       [`innings.${inning}.runRate`]:
-        (matchData.now.runs + 3) / ((matchData.now.overs * 6 + (matchData.now.balls + 1)) / 6),
+        (matchData.liveData.runs + 3) /
+        ((matchData.liveData.overs * 6 + (matchData.liveData.balls + 1)) / 6),
     };
 
-    if (matchData.now.inning === 2 || matchData.now.inning === 4) {
+    if (matchData.liveData.inning === 2 || matchData.liveData.inning === 4) {
       dataToUpdate = {
         ...dataToUpdate,
-        "now.need": matchData.now.need - 3,
-        "now.from": matchData.now.from - 1,
-        "now.reqRR": (matchData.now.need - 3) / ((matchData.now.from - 1) / 6),
+        'liveData.need': matchData.liveData.need - 3,
+        'liveData.from': matchData.liveData.from - 1,
+        'liveData.reqRR': (matchData.liveData.need - 3) / ((matchData.liveData.from - 1) / 6),
       };
     }
 
@@ -65,11 +69,11 @@ const threeRuns = async (matchData, ballData, inning) => {
 
     // await docRef.update()
 
-    if (updateMatch.now.balls === 6) {
+    if (updateMatch.liveData.balls === 6) {
       await endOfOver(updateMatch, inning);
     }
 
-    if (updateMatch.now.need <= 0) {
+    if (updateMatch.liveData.need <= 0) {
       await runChased(updateMatch, inning);
     }
 

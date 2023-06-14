@@ -86,7 +86,10 @@ const initialInningData: Partial<_IInning_> = {
 };
 
 const initialLiveData: any = {
-  batsman: {},
+  batsman: {
+    striker: null,
+    nonStriker: null,
+  },
   bowler: null,
   overs: 0,
   balls: 0,

@@ -1,47 +1,47 @@
-const firebase = require("firebase-admin");
+const firebase = require('firebase-admin');
 // const collectIdsAndDocs = require('../../../../utils/collectIdsAndDocs')
-const { UpdateQuickMatch } = require("../../../services/firebase");
-const endOfMatch = require("./endOfMatch");
+const { UpdateQuickMatch } = require('../../../services/firebase');
+const endOfMatch = require('./endOfMatch');
 
 const runChased = async (matchData, inning) => {
-  if (matchData.now.runs >= matchData.now.target) {
+  if (matchData.liveData.runs >= matchData.liveData.target) {
     const striker = {
-      status: "not out",
-      ...matchData.now.batsman.striker,
+      status: 'not out',
+      ...matchData.liveData.batsman.striker,
     };
     const nonStriker = {
-      status: "not out",
-      ...matchData.now.batsman.nonStriker,
+      status: 'not out',
+      ...matchData.liveData.batsman.nonStriker,
     };
 
     let dataToUpdate = {
-      "now.bowler": null,
-      "now.batsman.striker": null,
-      "now.batsman.nonStriker": null,
-      "now.balls": 0,
-      "now.overs": 0,
-      "now.runs": 0,
-      "now.wickets": 0,
-      "now.thisOver": [],
+      'liveData.bowler': null,
+      'liveData.batsman.striker': null,
+      'liveData.batsman.nonStriker': null,
+      'liveData.balls': 0,
+      'liveData.overs': 0,
+      'liveData.runs': 0,
+      'liveData.wickets': 0,
+      'liveData.thisOver': [],
       [`innings.${inning}.battingOrder`]: firebase.firestore.FieldValue.arrayUnion(
         striker,
         nonStriker,
       ),
 
       [`innings.${inning}.partnerships`]: firebase.firestore.FieldValue.arrayUnion({
-        runs: matchData.now.partnership.runs,
-        balls: matchData.now.partnership.balls,
-        batsman1: matchData.now.partnership.batsman1,
-        batsman2: matchData.now.partnership.batsman2,
+        runs: matchData.liveData.partnership.runs,
+        balls: matchData.liveData.partnership.balls,
+        batsman1: matchData.liveData.partnership.batsman1,
+        batsman2: matchData.liveData.partnership.batsman2,
       }),
-      status: "completed",
+      status: 'completed',
     };
 
-    if (matchData.now.bowler) {
+    if (matchData.liveData.bowler) {
       dataToUpdate = {
         ...dataToUpdate,
         [`innings.${inning}.bowlingOrder`]: firebase.firestore.FieldValue.arrayUnion(
-          matchData.now.bowler,
+          matchData.liveData.bowler,
         ),
       };
     }
