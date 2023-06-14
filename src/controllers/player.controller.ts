@@ -92,9 +92,6 @@ const getRandomCaptains = async (req, res) => {
   try {
     const populateFields = [
       {
-        path: 'nationality',
-      },
-      {
         path: 'teams',
       },
     ];
