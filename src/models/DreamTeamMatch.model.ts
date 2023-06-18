@@ -312,7 +312,6 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       team: {
         ref: 'dream_team',
         type: SchemaTypes.ObjectId,
-        required: true,
       },
       selectedTo: {
         type: String,
@@ -323,7 +322,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       required: true,
     },
     liveData: {
-      inning: Number,
+      inning: String,
       battingTeam: {
         ref: 'dream_team',
         type: SchemaTypes.ObjectId,

@@ -109,6 +109,24 @@ const initialLiveData: any = {
   lastSpinPosition: 0,
 };
 
+const initialMatchBatsmanData = {
+  balls: 0,
+  fours: 0,
+  runs: 0,
+  sixes: 0,
+  dotBalls: 0,
+};
+
+const initialMatchBowlerData = {
+  balls: 0,
+  economy: 0,
+  maidens: 0,
+  dotBalls: 0,
+  overs: 0,
+  runs: 0,
+  wickets: 0,
+};
+
 export {
   initialPlayerData,
   initialTeamData,
@@ -116,4 +134,6 @@ export {
   initialBowlingStat,
   initialInningData,
   initialLiveData,
+  initialMatchBatsmanData,
+  initialMatchBowlerData,
 };

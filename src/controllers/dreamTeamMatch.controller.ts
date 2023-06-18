@@ -9,10 +9,16 @@ import { DreamPlayer } from '../models/DreamPlayer.model';
 import { DreamTeam } from '../models/DreamTeam.model';
 import { DreamTeamMatch } from '../models/DreamTeamMatch.model';
 import User from '../models/User.model';
+import { _IMatch_ } from '../models/_ModelTypes_';
 // import { _IDreamTeam_ } from '../models/_ModelTypes_';
 import { CreateQuickMatch, GetQuickMatch, UpdateQuickMatch } from '../services/firebase';
 import { SocketResponder } from '../services/socketService';
-import { initialInningData, initialLiveData } from '../utils/constants';
+import {
+  initialInningData,
+  initialLiveData,
+  initialMatchBatsmanData,
+  initialMatchBowlerData,
+} from '../utils/constants';
 import { response } from '../utils/response';
 import { socketResponse } from '../utils/socketResponse';
 
@@ -96,7 +102,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
     const botTeams: any[] = await DreamTeam.find({
       rating: { $gte: dreamTeam.rating - 5, $lte: dreamTeam.rating + 5 },
       isBot: true,
-    });
+    }).populate(teamPopulate);
 
     if (botTeams?.length === 0) {
       return response(res, StatusCodes.NOT_FOUND, false, null, 'No Opponent Found');
@@ -130,7 +136,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       battingScorer = choosen === 0 ? null : user;
       bowlingScorer = choosen === 1 ? null : user;
       liveData = {
-        inning: 1,
+        inning: 'first',
         battingTeam: battingTeam,
         bowlingTeam: bowlingTeam,
         battingScorer: battingScorer,
@@ -169,13 +175,15 @@ const startQuickMatch = async (req: Request, res: Response) => {
       overs: parseInt(overs),
       status: toss.team === dreamTeam?._id?.toString() ? 'toss' : 'live',
       createdAt: createdAt.toString(),
-      playingXI: {
-        [dreamTeam?._id?.toString()]: dreamTeam?.playingXI?.map((player) =>
-          player?._id?.toString(),
-        ),
-        [opponentTeam?._id?.toString()]: opponentTeam?.playingXI?.map((player) =>
-          player?._id?.toString(),
-        ),
+      squad: {
+        teamA: {
+          playingXI: dreamTeam?.playingXI?.map((player) => player?._id),
+          team: dreamTeam?._id,
+        },
+        teamB: {
+          playingXI: opponentTeam?.playingXI?.map((player) => player?._id),
+          team: opponentTeam?._id,
+        },
       },
       ready: {
         [user?.toString()]: false,
@@ -200,7 +208,7 @@ const getMatchData = async (args: any) => {
   try {
     const { id } = args;
 
-    const matchData: any = await DreamTeamMatch.findById(id).populate(matchPopulate);
+    const matchData: any = await DreamTeamMatch.findById(id);
 
     return socketResponse(true, matchData, null);
   } catch (error) {
@@ -211,8 +219,13 @@ const getMatchData = async (args: any) => {
 
 const updateMatchData = async (args: any, data: any) => {
   try {
+    if (!data) {
+      return socketResponse(false, null, 'Nothing to Update!');
+    }
+
     const { id } = args;
     const { selectedTo, striker, nonStriker, bowler } = data;
+    let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
 
     // Toss Update
@@ -225,31 +238,84 @@ const updateMatchData = async (args: any, data: any) => {
 
     // Select Striker
     if (striker) {
+      if (
+        matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
+          (b) => b.batsman?.toString() === striker?.toString(),
+        )
+      ) {
+        return socketResponse(false, null, 'Batsman Already Played!');
+      }
+
+      const battingOrder = [
+        ...matchData.innings[matchData.liveData.inning].battingOrder,
+        {
+          ...initialMatchBatsmanData,
+          batsman: striker,
+          inAt: matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length + 1,
+        },
+      ];
+
       updateData = {
         ...updateData,
         'liveData.batsman.striker': striker,
+        [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
       };
     }
     // Select NonStriker
     if (nonStriker) {
+      if (
+        matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
+          (b) => b.batsman?.toString() === nonStriker?.toString(),
+        )
+      ) {
+        return socketResponse(false, null, 'Batsman Already Played!');
+      }
+
+      const battingOrder = [
+        ...matchData.innings[matchData.liveData.inning].battingOrder,
+        {
+          ...initialMatchBatsmanData,
+          batsman: nonStriker,
+          inAt:
+            matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length +
+            (!matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length ? 2 : 1),
+        },
+      ];
+
       updateData = {
         ...updateData,
         'liveData.batsman.nonStriker': nonStriker,
+        [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
       };
     }
     // Select Bowler
     if (bowler) {
+      let newBolwer = matchData?.innings[matchData?.liveData?.inning]?.bowlingOrder?.find(
+        (b) => b.bowler?.toString() === bowler?.toString(),
+      ) || { ...initialMatchBowlerData, bowler: bowler };
+
+      if (newBolwer?.overs === (matchData?.overs / 5).toFixed(0)) {
+        return socketResponse(false, null, 'No Over Left to Bowl!');
+      }
+
+      const bowlingOrder = [
+        ...matchData.innings[matchData.liveData.inning].bowlingOrder.filter(
+          (b) => b.bowler?.toString() !== bowler?.toString(),
+        ),
+        newBolwer,
+      ];
+
       updateData = {
         ...updateData,
         'liveData.bowler': bowler,
+        [`innings.${matchData?.liveData?.inning}.bowlingOrder`]: bowlingOrder,
       };
     }
 
-    const matchData: any = await DreamTeamMatch.findByIdAndUpdate(id, updateData);
+    matchData = await DreamTeamMatch.findByIdAndUpdate(id, updateData, { new: true });
 
     return socketResponse(true, matchData, null);
   } catch (error) {
-    console.log('💡 | file: dreamTeamMatch.controller.ts:220 | error:', error);
     return socketResponse(false, null, error.message);
   }
 };
@@ -369,4 +435,4 @@ const playQuickMatch = async (req, res) => {
   }
 };
 
-export { startQuickMatch, getMatchData, playQuickMatch };
+export { startQuickMatch, getMatchData, playQuickMatch, updateMatchData };
