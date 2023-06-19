@@ -31,7 +31,7 @@
     "no-case-declarations": "off",
     "no-empty": "off",
     "no-async-promise-executor": "off",
-    "no-console": "off",
+    "no-console": "warn",
     "no-undef": "off", // Allow using require without errors
     "@typescript-eslint/no-var-requires": "off",
     "no-unused-vars": "warn"

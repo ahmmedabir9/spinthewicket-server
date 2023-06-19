@@ -1,5 +1,5 @@
 import { SpinTheWicket } from '..';
-import { getMatchData, updateMatchData } from '../controllers/dreamTeamMatch.controller';
+import { getMatchData, playMatch, updateMatchData } from '../controllers/dreamTeamMatch.controller';
 import { SocketResponder, SocketRoutes } from '../services/socketService';
 
 export class DreamTeamMatchSocketRoutes extends SocketRoutes {
@@ -7,6 +7,7 @@ export class DreamTeamMatchSocketRoutes extends SocketRoutes {
     super(app, 'dreamTeamMatch');
     this.addMethod('getMatchData');
     this.addMethod('updateMatchData');
+    this.addMethod('playMatch');
   }
   async getMatchData(responder: SocketResponder, data = {}) {
     responder.respond(await getMatchData(data['args']));
@@ -14,5 +15,9 @@ export class DreamTeamMatchSocketRoutes extends SocketRoutes {
 
   async updateMatchData(responder: SocketResponder, data = {}) {
     responder.respond(await updateMatchData(data['args'], data['data']));
+  }
+
+  async playMatch(responder: SocketResponder, data = {}) {
+    responder.respond(await playMatch(data['data']));
   }
 }

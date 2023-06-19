@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { v4 as uuidv4 } from 'uuid';
 
-// import { ballResult } from '../functions/playMatch/ballResult';
-// import { ballValidation } from '../functions/playMatch/ballValidation';
-// import prepareBallData from '../functions/playMatch/prepareBallData';
-import { DreamPlayer } from '../models/DreamPlayer.model';
+import { ballResult } from '../functions/playMatch/ballResult';
+import { ballValidation } from '../functions/playMatch/ballValidation';
+import { getLastSpinPosition } from '../functions/playMatch/getLastSpinPosition';
+import { getMatchFunction } from '../functions/playMatch/getMatchFunction';
+import { prepareBallData } from '../functions/playMatch/prepareBallData';
 import { DreamTeam } from '../models/DreamTeam.model';
 import { DreamTeamMatch } from '../models/DreamTeamMatch.model';
-import User from '../models/User.model';
 import { _IMatch_ } from '../models/_ModelTypes_';
-// import { _IDreamTeam_ } from '../models/_ModelTypes_';
-import { CreateQuickMatch, GetQuickMatch, UpdateQuickMatch } from '../services/firebase';
-import { SocketResponder } from '../services/socketService';
 import {
   initialInningData,
   initialLiveData,
@@ -21,23 +17,6 @@ import {
 } from '../utils/constants';
 import { response } from '../utils/response';
 import { socketResponse } from '../utils/socketResponse';
-
-// const {
-//   twoRuns,
-//   threeRuns,
-//   fourRuns,
-//   sixRuns,
-//   noBall,
-//   wideBall,
-//   oneRun,
-//   dotBall,
-//   catchOut,
-//   lbw,
-//   runOut,
-//   bowled,
-// } = require('../functions/playMatch');
-
-// const collectIdsAndDocs = require("../../../utils/collectIdsAndDocs");
 
 const teamPopulate = [
   { path: 'theme' },
@@ -257,7 +236,7 @@ const updateMatchData = async (args: any, data: any) => {
 
       updateData = {
         ...updateData,
-        'liveData.batsman.striker': striker,
+        'liveData.batsman.striker': { id: striker, ...initialMatchBatsmanData },
         [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
       };
     }
@@ -284,7 +263,7 @@ const updateMatchData = async (args: any, data: any) => {
 
       updateData = {
         ...updateData,
-        'liveData.batsman.nonStriker': nonStriker,
+        'liveData.batsman.nonStriker': { id: nonStriker, ...initialMatchBatsmanData },
         [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
       };
     }
@@ -307,7 +286,7 @@ const updateMatchData = async (args: any, data: any) => {
 
       updateData = {
         ...updateData,
-        'liveData.bowler': bowler,
+        'liveData.bowler': { id: bowler, ...initialMatchBowlerData },
         [`innings.${matchData?.liveData?.inning}.bowlingOrder`]: bowlingOrder,
       };
     }
@@ -320,119 +299,54 @@ const updateMatchData = async (args: any, data: any) => {
   }
 };
 
-const playQuickMatch = async (req, res) => {
+const playMatch = async (data: any) => {
   try {
-    // const { match, bat, bowl } = req.body;
+    const { match, bat, bowl } = data;
 
-    // if (!match || !bat || !bowl) {
-    //   return response(
-    //     res,
-    //     StatusCodes.NOT_FOUND,
-    //     false,
-    //     null,
-    //     'match, bat, bowl are required field!',
-    //   );
-    // }
+    if (!match || !bat || !bowl) {
+      return socketResponse(false, null, 'Provide all Data!');
+    }
 
-    // const matchData = await GetQuickMatch(match);
+    let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(match);
 
-    // if (!matchData) {
-    //   return response(res, StatusCodes.NOT_FOUND, false, null, 'No Match Found!');
-    // }
+    if (!matchData) {
+      return socketResponse(false, null, 'Match Not Found!');
+    }
 
-    // var inning;
-    // if (matchData.liveData.inning === 1) {
-    //   inning = 'first';
-    // } else if (matchData.liveData.inning === 2) {
-    //   inning = 'second';
-    // } else if (matchData.liveData.inning === 3) {
-    //   inning = 'firstSuper';
-    // } else if (matchData.liveData.inning === 4) {
-    //   inning = 'secondSuper';
-    // }
+    // BROADCAST SPINNING RESPONSE
 
-    // const ballAction = 'SIX';
-    // // const ballAction = ballResult(bat, bowl)
+    const ballAction = 'DOT';
+    // const ballAction = ballResult(bat, bowl);
 
-    // var pointed;
-    // if (ballAction === 'ONE') pointed = 154;
-    // else if (ballAction === 'BOWLED') pointed = 244;
-    // else if (ballAction === 'SIX') pointed = 34;
-    // else if (ballAction === 'WIDE') pointed = 4;
-    // else if (ballAction === 'RUN_OUT') pointed = 334;
-    // else if (ballAction === 'TWO') pointed = 94;
-    // else if (ballAction === 'THREE') pointed = 274;
-    // else if (ballAction === 'LBW') pointed = 124;
-    // else if (ballAction === 'NO_BALL') pointed = 64;
-    // else if (ballAction === 'FOUR') pointed = 304;
-    // else if (ballAction === 'CATCH') pointed = 184;
-    // else if (ballAction === 'DOT') pointed = 214;
+    if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
 
-    // const lastSpinPosition = 0 - (pointed + Math.floor(Math.random() * 22));
+    const lastSpinPosition = getLastSpinPosition(ballAction);
 
-    // const ballData = prepareBallData(matchData, ballAction);
+    const ballData = prepareBallData(matchData, ballAction);
 
-    // if (ballValidation(matchData)) {
-    //   const handler = async () => {
-    //     let ballResponse;
-    //     if (ballAction === 'DOT') ballResponse = await dotBall(matchData, ballData, inning);
-    //     else if (ballAction === 'ONE') ballResponse = await oneRun(matchData, ballData, inning);
-    //     else if (ballAction === 'TWO') ballResponse = await twoRuns(matchData, ballData, inning);
-    //     else if (ballAction === 'THREE')
-    //       ballResponse = await threeRuns(matchData, ballData, inning);
-    //     else if (ballAction === 'FOUR') ballResponse = await fourRuns(matchData, ballData, inning);
-    //     else if (ballAction === 'SIX') ballResponse = await sixRuns(matchData, ballData, inning);
-    //     else if (ballAction === 'WIDE') ballResponse = await wideBall(matchData, ballData, inning);
-    //     else if (ballAction === 'NO_BALL') ballResponse = await noBall(matchData, ballData, inning);
-    //     else if (ballAction === 'BOWLED') {
-    //       if (matchData?.liveData?.freeHit) {
-    //         ballResponse = await dotBall(matchData, ballData, inning);
-    //       } else {
-    //         ballResponse = await bowled(matchData, ballData, inning);
-    //       }
-    //     } else if (ballAction === 'LBW') {
-    //       if (matchData?.liveData?.freeHit) {
-    //         ballResponse = await dotBall(matchData, ballData, inning);
-    //       } else {
-    //         ballResponse = await lbw(matchData, ballData, inning);
-    //       }
-    //     } else if (ballAction === 'CATCH') {
-    //       if (matchData?.liveData?.freeHit) {
-    //         ballResponse = await dotBall(matchData, ballData, inning);
-    //       } else {
-    //         ballResponse = await catchOut(matchData, ballData, inning);
-    //       }
-    //     } else if (ballAction === 'RUN_OUT')
-    //       ballResponse = await runOut(matchData, ballData, inning);
+    if (ballValidation(matchData)) {
+      let ballResponse = await getMatchFunction(ballAction, matchData, ballData);
 
-    //     if (!ballResponse?.success) {
-    //       return response(
-    //         res,
-    //         StatusCodes.BAD_REQUEST,
-    //         false,
-    //         ballResponse,
-    //         'Something went wrong!',
-    //       );
-    //     }
+      if (!ballResponse?.success) {
+        return socketResponse(false, null, 'Something went wrong!');
+      }
 
-    //     const updateData = {
-    //       'liveData.lastSpinPosition': lastSpinPosition,
-    //       'liveData.spinning': false,
-    //     };
+      const updateData = {
+        'liveData.lastSpinPosition': lastSpinPosition,
+        'liveData.spinning': false,
+      };
 
-    //     await UpdateQuickMatch(match, updateData);
-    //     return response(res, StatusCodes.ACCEPTED, true, ballResponse, null);
-    //   };
-
-    //   // setTimeout(() => {
-    //   handler();
-    //   // }, 3000)
-    // } else {
-    return response(res, StatusCodes.BAD_REQUEST, false, null, 'SOMETHING WENT WRONG');
-    // }
+      matchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, updateData, {
+        new: true,
+      });
+      return socketResponse(true, matchData, '');
+    } else {
+      return socketResponse(false, null, 'Something went wrong!');
+    }
   } catch (error) {
-    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
+    console.log('💡 | file: dreamTeamMatch.controller.ts:354 | error:', error);
+    return socketResponse(false, null, 'Server Error!');
   }
 };
 
-export { startQuickMatch, getMatchData, playQuickMatch, updateMatchData };
+export { startQuickMatch, getMatchData, playMatch, updateMatchData };

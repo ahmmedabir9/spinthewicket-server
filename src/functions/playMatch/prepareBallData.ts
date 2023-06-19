@@ -1,7 +1,9 @@
-const prepareBallData = (matchData, ballAction) => {
+import { _IMatch_ } from '../../models/_ModelTypes_';
+
+const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | boolean) => {
   let ball = {
-    bowler: matchData.liveData.bowler?.id,
-    batsman: matchData.liveData.batsman.striker?.id,
+    bowler: matchData.liveData.bowler.id,
+    batsman: matchData.liveData.batsman.striker.id,
     status: ballAction,
     overNO: matchData.liveData.overs,
     wickets: matchData.liveData.wickets,
@@ -46,4 +48,4 @@ const prepareBallData = (matchData, ballAction) => {
   return ball;
 };
 
-module.exports = prepareBallData;
+export { prepareBallData };
