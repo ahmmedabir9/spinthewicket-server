@@ -1,5 +1,6 @@
 import { _IMatch_ } from '../../models/_ModelTypes_';
 import dotBall from './runs/dotBall';
+import oneRun from './runs/oneRun';
 
 const getMatchFunction = (
   ballAction: string | boolean,
@@ -7,7 +8,7 @@ const getMatchFunction = (
   ballData: any,
 ) => {
   if (ballAction === 'DOT') return dotBall(matchData, ballData);
-  //   else if (ballAction === 'ONE') return oneRun(matchData, ballData);
+  else if (ballAction === 'ONE') return oneRun(matchData, ballData);
   //   else if (ballAction === 'TWO') return twoRuns(matchData, ballData);
   //   else if (ballAction === 'THREE') return threeRuns(matchData, ballData);
   //   else if (ballAction === 'FOUR') return fourRuns(matchData, ballData);

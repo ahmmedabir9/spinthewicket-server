@@ -86,6 +86,14 @@ const getPartnarship = (matchData: Partial<_IMatch_>, run: number, ball: number)
   };
 };
 
+const getTargetUpdate = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
+  return {
+    'liveData.need': matchData.liveData.need - run,
+    'liveData.from': matchData.liveData.from - ball,
+    'liveData.reqRR': (matchData.liveData.need - run) / ((matchData.liveData.from - ball) / 6),
+  };
+};
+
 export {
   getStrikeRate,
   getEconomy,
@@ -95,4 +103,5 @@ export {
   getBowlerStats,
   updateBowlingOrder,
   updateOverHistory,
+  getTargetUpdate,
 };

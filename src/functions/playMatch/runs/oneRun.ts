@@ -9,23 +9,23 @@ import {
   getTargetUpdate,
 } from '../utils';
 
-const dotBall = async (matchData: Partial<_IMatch_>, ballData: any) => {
+const oneRun = async (matchData: Partial<_IMatch_>, ballData: any) => {
   try {
     let dataToUpdate = {
       $inc: {
         'liveData.balls': 1,
+        'liveData.runs': 1,
         [`innings.${matchData.liveData.inning}.balls`]: 1,
+        [`innings.${matchData.liveData.inning}.runs`]: 1,
       },
       $push: { 'liveData.thisOver': ballData },
-
-      'liveData.batsman.striker': getBatsmanStats(matchData, 0, 1),
-
-      'liveData.bowler': getBowlerStats(matchData, 0, 1),
-
-      'liveData.runRate': getRunRate(matchData, 0, 1),
-      'liveData.partnership': getPartnarship(matchData, 0, 1),
+      'liveData.batsman.striker': matchData?.liveData?.batsman?.nonStriker,
+      'liveData.batsman.nonStriker': getBatsmanStats(matchData, 1, 1),
+      'liveData.bowler': getBowlerStats(matchData, 1, 1),
+      'liveData.partnership': getPartnarship(matchData, 1, 1),
       'liveData.freeHit': false,
-      [`innings.${matchData.liveData.inning}.runRate`]: getRunRate(matchData, 0, 1),
+      'liveData.runRate': getRunRate(matchData, 1, 1),
+      [`innings.${matchData.liveData.inning}.runRate`]: getRunRate(matchData, 1, 1),
     };
 
     if (matchData.liveData.inning === 'second' || matchData.liveData.inning === 'secondSuper') {
@@ -45,10 +45,14 @@ const dotBall = async (matchData: Partial<_IMatch_>, ballData: any) => {
       await endOfOver(updateMatch);
     }
 
+    // if (updateMatch.liveData.need <= 0) {
+    //   await runChased(updateMatch, inning);
+    // }
+
     return { success: true };
   } catch (error) {
-    return error;
+    return { error, success: false };
   }
 };
 
-export default dotBall;
+export default oneRun;

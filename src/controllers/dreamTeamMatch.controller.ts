@@ -296,7 +296,7 @@ const playMatch = async (data: any) => {
 
     // BROADCAST SPINNING RESPONSE
 
-    const ballAction = 'DOT';
+    const ballAction = 'ONE';
     // const ballAction = ballResult(bat, bowl);
 
     if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
@@ -320,6 +320,9 @@ const playMatch = async (data: any) => {
       matchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, updateData, {
         new: true,
       }).select('innings liveData title');
+
+      //BROADCAST THE UPDATED DATA
+
       return socketResponse(true, matchData, '');
     } else {
       return socketResponse(false, null, 'Something went wrong!');
