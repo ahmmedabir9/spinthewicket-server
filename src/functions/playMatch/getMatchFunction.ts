@@ -1,5 +1,6 @@
 import { _IMatch_ } from '../../models/_ModelTypes_';
 import dotBall from './runs/dotBall';
+import fourRuns from './runs/fourRuns';
 import oneRun from './runs/oneRun';
 import threeRuns from './runs/threeRuns';
 import twoRuns from './runs/twoRuns';
@@ -13,7 +14,7 @@ const getMatchFunction = (
   else if (ballAction === 'ONE') return oneRun(matchData, ballData);
   else if (ballAction === 'TWO') return twoRuns(matchData, ballData);
   else if (ballAction === 'THREE') return threeRuns(matchData, ballData);
-  //   else if (ballAction === 'FOUR') return fourRuns(matchData, ballData);
+  else if (ballAction === 'FOUR') return fourRuns(matchData, ballData);
   //   else if (ballAction === 'SIX') return sixRuns(matchData, ballData);
   //   else if (ballAction === 'WIDE') return wideBall(matchData, ballData);
   //   else if (ballAction === 'NO_BALL') return noBall(matchData, ballData);
