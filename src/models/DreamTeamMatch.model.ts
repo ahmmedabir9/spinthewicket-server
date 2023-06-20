@@ -4,43 +4,45 @@ import { _IInning_, _IMatch_ } from './_ModelTypes_';
 
 const InningSchema = new Schema<_IInning_>(
   {
-    ballByBall: [
-      {
-        ballNo: {
-          type: Number,
-          required: true,
+    overHistory: [
+      [
+        {
+          ballNo: {
+            type: Number,
+            required: true,
+          },
+          overNo: {
+            type: Number,
+            required: true,
+          },
+          run: {
+            type: Number,
+            required: true,
+          },
+          status: {
+            type: String,
+            required: true,
+          },
+          totalRuns: {
+            type: Number,
+            required: true,
+          },
+          wickets: {
+            type: Number,
+            required: true,
+          },
+          batsman: {
+            ref: 'dream_player',
+            type: SchemaTypes.ObjectId,
+            required: true,
+          },
+          bowler: {
+            ref: 'dream_player',
+            type: SchemaTypes.ObjectId,
+            required: true,
+          },
         },
-        overNo: {
-          type: Number,
-          required: true,
-        },
-        run: {
-          type: Number,
-          required: true,
-        },
-        status: {
-          type: String,
-          required: true,
-        },
-        totalRuns: {
-          type: Number,
-          required: true,
-        },
-        wickets: {
-          type: Number,
-          required: true,
-        },
-        batsman: {
-          ref: 'dream_player',
-          type: SchemaTypes.ObjectId,
-          required: true,
-        },
-        bowler: {
-          ref: 'dream_player',
-          type: SchemaTypes.ObjectId,
-          required: true,
-        },
-      },
+      ],
     ],
     balls: {
       type: Number,
@@ -64,6 +66,10 @@ const InningSchema = new Schema<_IInning_>(
           type: Number,
           required: true,
         },
+        strikeRate: {
+          type: Number,
+          required: true,
+        },
         inAt: {
           type: Number,
           required: true,
@@ -72,7 +78,7 @@ const InningSchema = new Schema<_IInning_>(
           type: Number,
           required: true,
         },
-        batsman: {
+        id: {
           ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
@@ -93,10 +99,6 @@ const InningSchema = new Schema<_IInning_>(
           },
           status: {
             type: String,
-            required: true,
-          },
-          strikeRate: {
-            type: Number,
             required: true,
           },
         },
@@ -137,7 +139,7 @@ const InningSchema = new Schema<_IInning_>(
           type: Number,
           required: true,
         },
-        bowler: {
+        id: {
           ref: 'dream_player',
           type: SchemaTypes.ObjectId,
           required: true,
@@ -349,6 +351,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
           fours: Number,
           runs: Number,
           sixes: Number,
+          strikeRate: Number,
           dotBalls: Number,
         },
         nonStriker: {
@@ -358,6 +361,8 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
           },
           balls: Number,
           fours: Number,
+          average: Number,
+          strikeRate: Number,
           runs: Number,
           sixes: Number,
           dotBalls: Number,
@@ -395,7 +400,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
         },
       },
       freeHit: Boolean,
-      history: [],
+      thisOver: [],
       spinning: Boolean,
       lastSpinPosition: Number,
       need: Number,

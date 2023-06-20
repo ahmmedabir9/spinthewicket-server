@@ -81,7 +81,7 @@ interface _ICountry_ extends Document {
 }
 
 interface _IInning_ {
-  ballByBall: {
+  overHistory: {
     ballNo: number;
     overNo: number;
     run: number;
@@ -90,7 +90,7 @@ interface _IInning_ {
     wickets: number;
     batsman: Types.ObjectId;
     bowler: Types.ObjectId;
-  }[];
+  }[][];
   balls: number;
   battingOrder: {
     balls: number;
@@ -222,7 +222,7 @@ interface _IMatch_ extends Document {
       batsman2: any;
     };
     freeHit: boolean;
-    history: any[];
+    thisOver: any[];
     spinning: boolean;
     lastSpinPosition: number;
     need: number;

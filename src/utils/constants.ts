@@ -76,7 +76,7 @@ const initialInningData: Partial<_IInning_> = {
   bowlingOrder: [],
   partnerships: [],
   fallOfWickets: [],
-  ballByBall: [],
+  overHistory: [],
   overs: 0,
   balls: 0,
   runs: 0,
@@ -115,6 +115,7 @@ const initialMatchBatsmanData = {
   runs: 0,
   sixes: 0,
   dotBalls: 0,
+  strikeRate: 0,
 };
 
 const initialMatchBowlerData = {

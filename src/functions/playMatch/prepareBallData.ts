@@ -5,11 +5,11 @@ const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | bool
     bowler: matchData.liveData.bowler.id,
     batsman: matchData.liveData.batsman.striker.id,
     status: ballAction,
-    overNO: matchData.liveData.overs,
+    overNo: matchData.liveData.overs,
     wickets: matchData.liveData.wickets,
     totalRuns: matchData.liveData.runs,
     run: 0,
-    ballNO: matchData.liveData.balls + 1,
+    ballNo: matchData.liveData.balls + 1,
   };
 
   if (ballAction === 'ONE') {
@@ -23,7 +23,7 @@ const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | bool
   } else if (ballAction === 'WIDE') {
     ball.run = 1;
     ball.totalRuns = matchData?.liveData?.runs + 1;
-    ball.ballNO = matchData?.liveData?.balls;
+    ball.ballNo = matchData?.liveData?.balls;
   } else if (ballAction === 'RUN_OUT') {
     ball.wickets = matchData?.liveData?.wickets + 1;
   } else if (ballAction === 'TWO') {
@@ -37,7 +37,7 @@ const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | bool
   } else if (ballAction === 'NO_BALL') {
     ball.run = 1;
     ball.totalRuns = matchData?.liveData?.runs + 1;
-    ball.ballNO = matchData?.liveData?.balls;
+    ball.ballNo = matchData?.liveData?.balls;
   } else if (ballAction === 'FOUR') {
     ball.run = 4;
     ball.totalRuns = matchData?.liveData?.runs + 4;

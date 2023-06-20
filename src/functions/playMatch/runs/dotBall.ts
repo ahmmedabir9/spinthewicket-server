@@ -1,49 +1,25 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
-
-// const endOfOver = require('../end/endOfOver');
-// const endOfOver = require('../end/endOfOver')
+import endOfOver from '../end/endOfOver';
+import { getBatsmanStats, getBowlerStats, getPartnarship, getRunRate } from '../utils';
 
 const dotBall = async (matchData: Partial<_IMatch_>, ballData: any) => {
   try {
-    const batsmanIndex = matchData.innings[matchData.liveData.inning]?.battingOrder?.findIndex(
-      (b) => b.batsman?.toString() === matchData.liveData.batsman.striker.id?.toString(),
-    );
-
-    let newBattingOrder = [...matchData.innings[matchData.liveData.inning].battingOrder];
-    newBattingOrder[batsmanIndex].balls++;
-
     let dataToUpdate = {
       $inc: {
-        'liveData.batsman.striker.balls': 1,
-        'liveData.bowler.balls': 1,
         'liveData.balls': 1,
         [`innings.${matchData.liveData.inning}.balls`]: 1,
       },
-      [`innings.${matchData.liveData.inning}.battingOrder`]: newBattingOrder,
-      'liveData.batsman.striker.strikeRate':
-        (matchData.liveData.batsman.striker.runs / (matchData.liveData.batsman.striker.balls + 1)) *
-        100,
-
-      'liveData.bowler.economy':
-        matchData.liveData.bowler.runs /
-        ((matchData.liveData.bowler.overs * 6 + (matchData.liveData.bowler.balls + 1)) / 6),
-
-      'liveData.runRate':
-        matchData.liveData.runs /
-        ((matchData.liveData.overs * 6 + (matchData.liveData.balls + 1)) / 6),
       $push: { 'liveData.thisOver': ballData },
 
-      'liveData.partnership': {
-        runs: matchData.liveData.partnership.runs,
-        balls: matchData.liveData.partnership.balls + 1,
-        batsman1: matchData.liveData.batsman.striker.id,
-        batsman2: matchData.liveData.batsman.nonStriker.id,
-      },
+      'liveData.batsman.striker': getBatsmanStats(matchData, 0, 1),
+
+      'liveData.bowler': getBowlerStats(matchData, 0, 1),
+
+      'liveData.runRate': getRunRate(matchData, 0, 1),
+      'liveData.partnership': getPartnarship(matchData, 0, 1),
       'liveData.freeHit': false,
-      [`innings.${matchData.liveData.inning}.runRate`]:
-        matchData.liveData.runs /
-        ((matchData.liveData.overs * 6 + (matchData.liveData.balls + 1)) / 6),
+      [`innings.${matchData.liveData.inning}.runRate`]: getRunRate(matchData, 0, 1),
     };
 
     if (matchData.liveData.inning === 'second' || matchData.liveData.inning === 'secondSuper') {
@@ -60,11 +36,9 @@ const dotBall = async (matchData: Partial<_IMatch_>, ballData: any) => {
       { new: true },
     );
 
-    // await docRef.update()
-
-    // if (updateMatch.liveData.balls === 6) {
-    //   await endOfOver(updateMatch);
-    // }
+    if (updateMatch.liveData.balls === 6) {
+      await endOfOver(updateMatch);
+    }
 
     return { success: true };
   } catch (error) {

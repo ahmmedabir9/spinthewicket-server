@@ -97,6 +97,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       bowlingScorer = null,
       liveData = null;
     const tossResult = Math.floor(Math.random() * 10000) % 2;
+    // const tossResult = Math.floor(Math.random() * 10000) % 2;
     let toss;
 
     if (tossResult === 0) {
@@ -219,75 +220,55 @@ const updateMatchData = async (args: any, data: any) => {
     if (striker) {
       if (
         matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
-          (b) => b.batsman?.toString() === striker?.toString(),
+          (b) => b.id?.toString() === striker?.toString(),
         )
       ) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
-      const battingOrder = [
-        ...matchData.innings[matchData.liveData.inning].battingOrder,
-        {
-          ...initialMatchBatsmanData,
-          batsman: striker,
-          inAt: matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length + 1,
-        },
-      ];
-
       updateData = {
         ...updateData,
-        'liveData.batsman.striker': { id: striker, ...initialMatchBatsmanData },
-        [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
+        'liveData.batsman.striker': {
+          id: striker,
+          inAt: matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length + 1,
+          ...initialMatchBatsmanData,
+        },
       };
     }
     // Select NonStriker
     if (nonStriker) {
       if (
         matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
-          (b) => b.batsman?.toString() === nonStriker?.toString(),
+          (b) => b.id?.toString() === nonStriker?.toString(),
         )
       ) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
-      const battingOrder = [
-        ...matchData.innings[matchData.liveData.inning].battingOrder,
-        {
-          ...initialMatchBatsmanData,
-          batsman: nonStriker,
+      updateData = {
+        ...updateData,
+        'liveData.batsman.nonStriker': {
+          id: nonStriker,
           inAt:
             matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length +
             (!matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length ? 2 : 1),
+          ...initialMatchBatsmanData,
         },
-      ];
-
-      updateData = {
-        ...updateData,
-        'liveData.batsman.nonStriker': { id: nonStriker, ...initialMatchBatsmanData },
-        [`innings.${matchData?.liveData?.inning}.battingOrder`]: battingOrder,
       };
     }
     // Select Bowler
     if (bowler) {
       let newBolwer = matchData?.innings[matchData?.liveData?.inning]?.bowlingOrder?.find(
-        (b) => b.bowler?.toString() === bowler?.toString(),
-      ) || { ...initialMatchBowlerData, bowler: bowler };
+        (b) => b.id?.toString() === bowler?.toString(),
+      ) || { ...initialMatchBowlerData, id: bowler };
 
       if (newBolwer?.overs === (matchData?.overs / 5).toFixed(0)) {
         return socketResponse(false, null, 'No Over Left to Bowl!');
       }
 
-      const bowlingOrder = [
-        ...matchData.innings[matchData.liveData.inning].bowlingOrder.filter(
-          (b) => b.bowler?.toString() !== bowler?.toString(),
-        ),
-        newBolwer,
-      ];
-
       updateData = {
         ...updateData,
-        'liveData.bowler': { id: bowler, ...initialMatchBowlerData },
-        [`innings.${matchData?.liveData?.inning}.bowlingOrder`]: bowlingOrder,
+        'liveData.bowler': newBolwer,
       };
     }
 
@@ -338,7 +319,7 @@ const playMatch = async (data: any) => {
 
       matchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, updateData, {
         new: true,
-      });
+      }).select('innings liveData title');
       return socketResponse(true, matchData, '');
     } else {
       return socketResponse(false, null, 'Something went wrong!');
