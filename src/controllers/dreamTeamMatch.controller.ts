@@ -296,7 +296,7 @@ const playMatch = async (data: any) => {
 
     // BROADCAST SPINNING RESPONSE
 
-    const ballAction = 'ONE';
+    const ballAction = 'TWO';
     // const ballAction = ballResult(bat, bowl);
 
     if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
