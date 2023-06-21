@@ -222,7 +222,7 @@ interface _IMatch_ extends Document {
       batsman2: any;
     };
     freeHit: boolean;
-    thisOver: any[];
+    thisOver: any;
     spinning: boolean;
     lastSpinPosition: number;
     need: number;

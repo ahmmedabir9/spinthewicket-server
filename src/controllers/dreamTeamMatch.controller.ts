@@ -95,7 +95,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       bowlingTeam = null,
       battingScorer = null,
       bowlingScorer = null,
-      liveData = null;
+      liveData = { ...initialLiveData };
     const tossResult = Math.floor(Math.random() * 10000) % 2;
     // const tossResult = Math.floor(Math.random() * 10000) % 2;
     let toss;
@@ -170,7 +170,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       },
       users: [user],
       toss: toss,
-      liveData,
+      liveData: liveData,
       innings,
     };
 
@@ -204,7 +204,7 @@ const updateMatchData = async (args: any, data: any) => {
     }
 
     const { id } = args;
-    const { selectedTo, striker, nonStriker, bowler } = data;
+    const { selectedTo, striker, nonStriker, bowler, user } = data;
     let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
 
@@ -213,6 +213,39 @@ const updateMatchData = async (args: any, data: any) => {
       updateData = {
         ...updateData,
         'toss.selectedTo': selectedTo,
+
+        'liveData.inning': 'first',
+        'liveData.battingTeam':
+          selectedTo === 'bowl'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'liveData.bowlingTeam':
+          selectedTo === 'bat'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'liveData.battingScorer': selectedTo === 'bowl' ? null : user,
+        'liveData.bowlingScorer': selectedTo === 'bat' ? null : user,
+
+        'innings.first.battingTeam':
+          selectedTo === 'bowl'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'innings.first.bowlingTeam':
+          selectedTo === 'bat'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'innings.first.battingScorer': selectedTo === 'bowl' ? null : user,
+        'innings.first.bowlingScorer': selectedTo === 'bat' ? null : user,
+        'innings.second.bowlingTeam':
+          selectedTo === 'bowl'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'innings.second.battingTeam':
+          selectedTo === 'bat'
+            ? matchData.teams.teamB?.toString()
+            : matchData.teams.teamA?.toString(),
+        'innings.second.bowlingScorer': selectedTo === 'bowl' ? null : user,
+        'innings.second.battingScorer': selectedTo === 'bat' ? null : user,
       };
     }
 
@@ -307,9 +340,10 @@ const playMatch = async (data: any) => {
 
       const ballData = prepareBallData(matchData, ballAction);
       let ballResponse = await getMatchFunction(ballAction, matchData, ballData);
+      console.log('💡 | file: dreamTeamMatch.controller.ts:343 | ballResponse:', ballResponse);
 
       if (!ballResponse?.success) {
-        return socketResponse(false, null, 'Something went wrong!');
+        return socketResponse(false, null, ballResponse?.message);
       }
 
       const updateData = {

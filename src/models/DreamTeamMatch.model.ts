@@ -107,7 +107,6 @@ const InningSchema = new Schema<_IInning_>(
     battingTeam: {
       ref: 'dream_team',
       type: SchemaTypes.ObjectId,
-      required: true,
     },
     bowlingOrder: [
       {
@@ -149,7 +148,6 @@ const InningSchema = new Schema<_IInning_>(
     bowlingTeam: {
       ref: 'dream_team',
       type: SchemaTypes.ObjectId,
-      required: true,
     },
     extra: {
       type: Number,
@@ -400,7 +398,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
         },
       },
       freeHit: Boolean,
-      thisOver: [],
+      thisOver: Array,
       spinning: Boolean,
       lastSpinPosition: Number,
       need: Number,

@@ -15,7 +15,7 @@ const sixRuns = async (matchData: Partial<_IMatch_>, ballData: any) => {
       $inc: {
         'liveData.balls': 1,
         'liveData.runs': 6,
-        [`innings.${matchData.liveData.inning}.balls`]: 6,
+        [`innings.${matchData.liveData.inning}.balls`]: 1,
         [`innings.${matchData.liveData.inning}.runs`]: 6,
       },
       $push: { 'liveData.thisOver': ballData },

@@ -99,8 +99,8 @@ const getRunRate = (matchData: Partial<_IMatch_>, run: number, ball: number) => 
 
 const getPartnarship = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
   return {
-    runs: matchData.liveData.partnership.runs + run,
-    balls: matchData.liveData.partnership.balls + ball,
+    runs: (matchData.liveData.partnership.runs || 0) + run,
+    balls: (matchData.liveData.partnership.balls || 0) + ball,
     batsman1: matchData.liveData.batsman.striker.id,
     batsman2: matchData.liveData.batsman.nonStriker.id,
   };
