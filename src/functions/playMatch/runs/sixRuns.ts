@@ -13,7 +13,7 @@ const sixRuns = async (matchData: Partial<_IMatch_>, ballData: any) => {
   try {
     let dataToUpdate = {
       $inc: {
-        'liveData.balls': 6,
+        'liveData.balls': 1,
         'liveData.runs': 6,
         [`innings.${matchData.liveData.inning}.balls`]: 6,
         [`innings.${matchData.liveData.inning}.runs`]: 6,

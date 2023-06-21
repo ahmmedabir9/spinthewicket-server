@@ -296,17 +296,16 @@ const playMatch = async (data: any) => {
 
     // BROADCAST SPINNING RESPONSE
 
-    // const ballAction = 'WIDE';
-    const ballAction = ballResult(bat, bowl);
-    console.log('💡 | file: dreamTeamMatch.controller.ts:301 | ballAction:', ballAction);
-
-    if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
-
-    const lastSpinPosition = getLastSpinPosition(ballAction);
-
-    const ballData = prepareBallData(matchData, ballAction);
-
     if (ballValidation(matchData)) {
+      // const ballAction = 'WIDE';
+      const ballAction = ballResult(bat, bowl);
+      console.log('💡 | file: dreamTeamMatch.controller.ts:301 | ballAction:', ballAction);
+
+      if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
+
+      const lastSpinPosition = getLastSpinPosition(ballAction);
+
+      const ballData = prepareBallData(matchData, ballAction);
       let ballResponse = await getMatchFunction(ballAction, matchData, ballData);
 
       if (!ballResponse?.success) {
@@ -326,7 +325,7 @@ const playMatch = async (data: any) => {
 
       return socketResponse(true, matchData, '');
     } else {
-      return socketResponse(false, null, 'Something went wrong!');
+      return socketResponse(false, null, 'Invalid Play!');
     }
   } catch (error) {
     console.log('💡 | file: dreamTeamMatch.controller.ts:354 | error:', error);
