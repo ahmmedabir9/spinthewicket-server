@@ -296,8 +296,9 @@ const playMatch = async (data: any) => {
 
     // BROADCAST SPINNING RESPONSE
 
-    const ballAction = 'WIDE';
-    // const ballAction = ballResult(bat, bowl);
+    // const ballAction = 'WIDE';
+    const ballAction = ballResult(bat, bowl);
+    console.log('💡 | file: dreamTeamMatch.controller.ts:301 | ballAction:', ballAction);
 
     if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
 

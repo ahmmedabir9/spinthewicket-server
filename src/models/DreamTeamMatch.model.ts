@@ -97,10 +97,10 @@ const InningSchema = new Schema<_IInning_>(
             type: String,
             required: true,
           },
-          status: {
-            type: String,
-            required: true,
-          },
+        },
+        status: {
+          type: String,
+          required: true,
         },
       },
     ],

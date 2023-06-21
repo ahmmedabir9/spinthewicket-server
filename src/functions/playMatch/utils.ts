@@ -1,7 +1,13 @@
 import { _IMatch_ } from '../../models/_ModelTypes_';
 
-const getBatsmanStats = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
-  let stats = matchData.liveData.batsman.striker;
+const getBatsmanStats = (
+  matchData: Partial<_IMatch_>,
+  run: number,
+  ball: number,
+  out?: string,
+  nonStriker?: boolean,
+) => {
+  let stats = matchData.liveData.batsman[nonStriker ? 'nonStriker' : 'striker'];
 
   stats.balls = stats.balls + ball;
   stats.runs = stats.runs + run;
@@ -9,6 +15,20 @@ const getBatsmanStats = (matchData: Partial<_IMatch_>, run: number, ball: number
   stats.sixes = stats.sixes + (run === 6 ? 1 : 0);
   stats.dotBalls = stats.dotBalls + (run === 0 ? 1 : 0);
   stats.strikeRate = getStrikeRate(matchData, run, ball);
+
+  if (out) {
+    stats.status = 'out';
+    stats.out = {
+      bowler: matchData.liveData.bowler.id,
+      wicketType: out,
+    };
+
+    if (out === 'CATCH' || out === 'RUN_OUT') {
+      const index = Math.floor(Math.random() * 100) % 11;
+      const team = matchData.liveData.bowlingTeam === matchData.teams.teamA ? 'teamA' : 'teamB';
+      stats.fielder = matchData.squad[team].playingXI[index];
+    }
+  }
 
   return stats;
 };
@@ -86,6 +106,15 @@ const getPartnarship = (matchData: Partial<_IMatch_>, run: number, ball: number)
   };
 };
 
+const getFallOfWicket = (matchData: Partial<_IMatch_>, player: any, ball: number) => {
+  return {
+    runs: matchData.liveData.runs,
+    balls: matchData.liveData.balls + ball,
+    player: player,
+    overs: matchData.liveData.overs,
+  };
+};
+
 const getTargetUpdate = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
   return {
     'liveData.need': matchData.liveData.need - run,
@@ -104,4 +133,5 @@ export {
   updateBowlingOrder,
   updateOverHistory,
   getTargetUpdate,
+  getFallOfWicket,
 };
