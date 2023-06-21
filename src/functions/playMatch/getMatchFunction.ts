@@ -1,10 +1,12 @@
 import { _IMatch_ } from '../../models/_ModelTypes_';
 import dotBall from './runs/dotBall';
 import fourRuns from './runs/fourRuns';
+import noBall from './runs/noBall';
 import oneRun from './runs/oneRun';
 import sixRuns from './runs/sixRuns';
 import threeRuns from './runs/threeRuns';
 import twoRuns from './runs/twoRuns';
+import wideBall from './runs/wideBall';
 
 const getMatchFunction = (
   ballAction: string | boolean,
@@ -17,8 +19,8 @@ const getMatchFunction = (
   else if (ballAction === 'THREE') return threeRuns(matchData, ballData);
   else if (ballAction === 'FOUR') return fourRuns(matchData, ballData);
   else if (ballAction === 'SIX') return sixRuns(matchData, ballData);
-  //   else if (ballAction === 'WIDE') return wideBall(matchData, ballData);
-  //   else if (ballAction === 'NO_BALL') return noBall(matchData, ballData);
+  else if (ballAction === 'WIDE') return wideBall(matchData, ballData);
+  else if (ballAction === 'NO_BALL') return noBall(matchData, ballData);
   //   else if (ballAction === 'BOWLED') {
   //     if (matchData?.liveData?.freeHit) {
   //       return dotBall(matchData, ballData);
