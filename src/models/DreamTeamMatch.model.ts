@@ -149,6 +149,14 @@ const InningSchema = new Schema<_IInning_>(
       ref: 'dream_team',
       type: SchemaTypes.ObjectId,
     },
+    battingScorer: {
+      ref: 'user',
+      type: SchemaTypes.ObjectId,
+    },
+    bowlingScorer: {
+      ref: 'user',
+      type: SchemaTypes.ObjectId,
+    },
     extra: {
       type: Number,
       required: true,

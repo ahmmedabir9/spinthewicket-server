@@ -120,6 +120,8 @@ interface _IInning_ {
     bowler: Types.ObjectId;
   }[];
   bowlingTeam: Types.ObjectId;
+  battingScorer: Types.ObjectId;
+  bowlingScorer: Types.ObjectId;
   extra: number;
   fallOfWickets: {
     balls: number;
