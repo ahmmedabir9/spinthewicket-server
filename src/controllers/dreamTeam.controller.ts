@@ -104,9 +104,13 @@ const getUserDreamTeam = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const dreamTeam: _IDreamTeam_ | null = await DreamTeam.findOne({ manager: id }).populate(
-      'manager theme captain playingXI',
-    );
+    const dreamTeam: _IDreamTeam_ | null = await DreamTeam.findOne({ manager: id }).populate([
+      { path: 'manager theme captain' },
+      {
+        path: 'playingXI',
+        populate: 'playerInfo',
+      },
+    ]);
 
     if (!dreamTeam) {
       return response(res, StatusCodes.NOT_FOUND, false, null, 'You Do not Have Dream Team!');
