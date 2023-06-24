@@ -114,7 +114,7 @@ const getUserDreamTeam = async (req: Request, res: Response) => {
 
     const dreamPlayers: _IDreamPlayer_[] = await DreamPlayer.find({
       team: dreamTeam?._id,
-    }).populate('player');
+    }).populate('playerInfo');
 
     return response(res, StatusCodes.OK, true, { dreamTeam, dreamPlayers }, null);
   } catch (error) {
