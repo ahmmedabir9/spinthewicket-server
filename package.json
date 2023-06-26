@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "dev": "nodemon ./src/index.ts",
+    "start": "node ./src/index.ts",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint:fix": "eslint --fix --ignore-path .eslintignore --ext .js,.ts .",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\" --config ./.prettierrc"
