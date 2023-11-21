@@ -16,7 +16,7 @@ const { mongoURI } = require('./config/database');
 // });
 
 export class EnvironmentVars {
-  port: number = process.argv[2] === 'prod' ? 5000 : 5000;
+  port: number = process.argv[2] === 'prod' ? 5005 : 5005;
   envMode: string = process.argv[2] === 'prod' ? 'prod' : process.argv[2] === 'uat' ? 'uat' : 'dev';
   jwtSecret: string = 'spin-the-wicket-jwt-secret-aksdj3hsajkndsdnad';
   dbName = 'spin-the-wicket';
