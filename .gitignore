@@ -24,3 +24,5 @@ yarn-error.log*
 .yarn
 
 .eslintcache
+dist
+tsconfig.tsbuildinfo

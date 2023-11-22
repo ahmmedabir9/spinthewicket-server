@@ -92,6 +92,7 @@ interface _IInning_ {
     bowler: Types.ObjectId;
   }[][];
   balls: number;
+  ballByBall: any[];
   battingOrder: {
     balls: number;
     fours: number;

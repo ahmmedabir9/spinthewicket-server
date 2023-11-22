@@ -8,7 +8,7 @@ const ballValidation = (matchData: _IMatch_) => {
       matchData.liveData.bowler &&
       matchData.liveData.balls !== 6
     ) {
-      if (matchData.liveData.inning === 1) {
+      if (matchData.liveData.inning === 'first') {
         if (
           matchData.liveData.balls !== 0 &&
           matchData.innings.first.ballByBall[matchData.innings.first.ballByBall.length - 1]
@@ -24,7 +24,7 @@ const ballValidation = (matchData: _IMatch_) => {
         } else {
           return true;
         }
-      } else if (matchData.liveData.inning === 2) {
+      } else if (matchData.liveData.inning === 'second') {
         if (
           matchData.liveData.balls !== 0 &&
           matchData.innings.second.ballByBall[matchData.innings.second.ballByBall.length - 1]
@@ -38,7 +38,7 @@ const ballValidation = (matchData: _IMatch_) => {
         ) {
           return false;
         } else if (
-          (matchData.liveData.inning % 2 === 0 &&
+          (matchData.liveData.inning.includes('second') &&
             matchData.liveData.need + matchData.liveData.runs !== matchData.liveData.target) ||
           matchData.overs * 6 - (matchData.liveData.overs * 6 + matchData.liveData.balls) !==
             matchData.liveData.from
@@ -47,7 +47,7 @@ const ballValidation = (matchData: _IMatch_) => {
         } else {
           return true;
         }
-      } else if (matchData.liveData.inning === 3) {
+      } else if (matchData.liveData.inning === 'firstSuper') {
         if (
           matchData.liveData.balls !== 0 &&
           matchData.innings.firstSuper.ballByBall[
@@ -67,7 +67,7 @@ const ballValidation = (matchData: _IMatch_) => {
         } else {
           return true;
         }
-      } else if (matchData.liveData.inning === 4) {
+      } else if (matchData.liveData.inning === 'secondSuper') {
         if (
           matchData.liveData.balls !== 0 &&
           matchData.innings.secondSuper.ballByBall[
