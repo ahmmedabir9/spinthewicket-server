@@ -20,7 +20,7 @@ export class HTTPServer {
 
     if (this.app.environmentVars.envMode !== 'prod') {
       // CORS and preflight filtering
-      this.express.use((req, res, next) => {
+      this.express.use((req: any, res: any, next: any) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.header(
           'Access-Control-Allow-Headers',
@@ -35,7 +35,7 @@ export class HTTPServer {
     // this.express.set('view engine', 'ejs');
     this.express.use(
       bodyParser.json({
-        verify: (req, res, buf) => {
+        verify: (req: any, res: any, buf: any) => {
           (req as any).rawBody = buf;
         },
       }),
@@ -57,7 +57,7 @@ export class HTTPServer {
     this.express.use('/theme', themeRoute);
     this.express.use('/user', userRoute);
 
-    this.express.get('/', (req, res) => {
+    this.express.get('/', (req: any, res: any) => {
       res.send('<div><h1>The Server is Running</h1></div>');
     });
 
@@ -71,7 +71,7 @@ export class HTTPServer {
     // this.express.use(express.static(path.join(this.app.rootPath, './downloads')));
 
     // catch 404 and forward to error handler
-    this.express.use((req, res, next) => {
+    this.express.use((req: any, res: any, next: any) => {
       let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
       res.status(404).end();
     });
@@ -81,7 +81,7 @@ export class HTTPServer {
     // development error handler
     // will print stacktrace
     if (this.express.get('env') === 'development') {
-      this.express.use((err, req, res, next) => {
+      this.express.use((err: any, req: any, res: any, next: any) => {
         res.status(err.status || 500);
         res.send('The page handler is not registered.');
       });
