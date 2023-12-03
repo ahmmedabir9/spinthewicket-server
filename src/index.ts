@@ -2,12 +2,10 @@ import { EventEmitter } from 'events';
 import { connect } from 'mongoose';
 
 import { HTTPServer } from './services/http';
-import { PassportConfig } from './services/passportConfig';
 import { SocketConnections, SocketObject } from './services/socketService';
 import { SocketRoutes } from './socketRoutes';
 
-const  mongoURI = 'mongodb+srv://abir:tamimiqbal28@cluster0.ecxlb.mongodb.net/spinthewicket_dev?retryWrites=true&w=majority';
-
+const mongoURI = 'mongodb+srv://abir:tamimiqbal28@cluster0.ecxlb.mongodb.net/spinthewicket_dev?retryWrites=true&w=majority';
 
 export class EnvironmentVars {
   port: number = process.argv[2] === 'prod' ? 5005 : 5005;
@@ -46,11 +44,9 @@ export class SpinTheWicket extends EventEmitter {
   environmentVars: EnvironmentVars;
   ruleEngineFilePath: string;
   socketRoutes: SocketRoutes;
-  passportConfig: PassportConfig;
   constructor() {
     super();
     this.environmentVars = new EnvironmentVars();
-    this.passportConfig = new PassportConfig(); 
     try {
       connect(
         mongoURI,
@@ -68,10 +64,7 @@ export class SpinTheWicket extends EventEmitter {
             this.socketRoutes = new SocketRoutes(this);
             this.socketConnections.on('socket', (socket: SocketObject) => {
               if (socket?.handshake['session']?.user) {
-                this.socketConnections.addToGroup(
-                  `user-self-${socket?.handshake['session']?.user._id}`,
-                  socket,
-                );
+                this.socketConnections.addToGroup(`user-self-${socket?.handshake['session']?.user._id}`, socket);
                 this.socketConnections.addToGroup(`user-self`, socket);
               }
             });
