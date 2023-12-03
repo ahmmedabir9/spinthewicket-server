@@ -6,7 +6,7 @@ import { PassportConfig } from './services/passportConfig';
 import { SocketConnections, SocketObject } from './services/socketService';
 import { SocketRoutes } from './socketRoutes';
 
-const { mongoURI } = require('./config/database');
+const  mongoURI = 'mongodb+srv://abir:tamimiqbal28@cluster0.ecxlb.mongodb.net/spinthewicket_dev?retryWrites=true&w=majority';
 
 
 export class EnvironmentVars {

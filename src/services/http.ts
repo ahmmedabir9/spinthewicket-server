@@ -1,7 +1,8 @@
 import path from 'path';
 
 import { SpinTheWicket } from '../index';
-
+import { PassportConfig } from './passportConfig';
+import passport from 'passport';
 const socketIO = require('socket.io');
 
 const http = require('http');
@@ -14,9 +15,11 @@ export class HTTPServer {
   express: any;
   server: any;
   io: any;
+  passport: any;
 
   constructor(private app: SpinTheWicket) {
     this.express = express();
+    
 
     if (this.app.environmentVars.envMode !== 'prod') {
       // CORS and preflight filtering
@@ -41,16 +44,19 @@ export class HTTPServer {
       }),
     );
     this.express.use(bodyParser.urlencoded({ extended: false }));
-
+    
     const userRoute = require('../routes/user.routes');
     const themeRoute = require('../routes/theme.routes');
     const playerRoute = require('../routes/player.routes');
     const dreamTeamRoute = require('../routes/dreamTeam.routes');
     const quickMatchRoute = require('../routes/quickMatch.routes');
-
+    
     this.server = http.createServer(this.express);
     this.io = new socketIO.Server(this.server);
-
+    // passport = new PassportConfig();
+    
+    this.express.use(passport.initialize());
+    this.express.use(passport.session());
     this.express.use('/quick-match', quickMatchRoute);
     this.express.use('/dream-team', dreamTeamRoute);
     this.express.use('/player', playerRoute);
@@ -60,6 +66,7 @@ export class HTTPServer {
     this.express.get('/', (req: any, res: any) => {
       res.send('<div><h1>The Server is Running</h1></div>');
     });
+
 
     this.server.listen(this.app.environmentVars.port, () => {
       console.log('SERVER RUNNING');
