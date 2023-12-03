@@ -3,11 +3,13 @@ import { StatusCodes } from "http-status-codes";
 
 import User from "../models/User.model";
 import { _IUser_ } from "../models/_ModelTypes_";
+import { createToken } from "../utils/protected";
 import { response } from "../utils/response";
 
 //create user profile
 const createUserProfile = async (req: Request, res: Response) => {
   const { name, email, uid, photo } = req.body;
+  console.log("💡 | file: user.controller.ts:11 | req.body:", req.body)
 
   try {
     if (!name || !uid) {
@@ -43,12 +45,15 @@ const createUserProfile = async (req: Request, res: Response) => {
       user = await newUser.save();
     }
 
+    const token = createToken(user)
+
+
     if (!user) {
       const msg = "Could not create user profile!";
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    return response(res, StatusCodes.ACCEPTED, true, user, null);
+    return response(res, StatusCodes.ACCEPTED, true, {user, token}, null);
   } catch (error) {
     return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
   }
