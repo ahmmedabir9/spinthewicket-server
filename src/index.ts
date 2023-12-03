@@ -2,18 +2,12 @@ import { EventEmitter } from 'events';
 import { connect } from 'mongoose';
 
 import { HTTPServer } from './services/http';
+import { PassportConfig } from './services/passportConfig';
 import { SocketConnections, SocketObject } from './services/socketService';
 import { SocketRoutes } from './socketRoutes';
 
-// let admin = require('firebase-admin');
-
-// let serviceAccount = require('../spin-the-wicket-dev-firebase-adminsdk-aw42k-011dfe9971.json');
 const { mongoURI } = require('./config/database');
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   databaseURL: 'https://spin-the-wicket.firebaseio.com',
-// });
 
 export class EnvironmentVars {
   port: number = process.argv[2] === 'prod' ? 5005 : 5005;
@@ -52,9 +46,11 @@ export class SpinTheWicket extends EventEmitter {
   environmentVars: EnvironmentVars;
   ruleEngineFilePath: string;
   socketRoutes: SocketRoutes;
+  passportConfig: PassportConfig;
   constructor() {
     super();
     this.environmentVars = new EnvironmentVars();
+    this.passportConfig = new PassportConfig(); 
     try {
       connect(
         mongoURI,
