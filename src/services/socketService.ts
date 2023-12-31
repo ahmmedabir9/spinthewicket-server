@@ -43,17 +43,11 @@ export class WebSocketResponder extends SocketResponder {
     return this.socket.handshake['session'];
   }
   progress(responseData: Object) {
-    this.socket.emit(
-      this.routeName + '->' + this.callName + ':' + this.request['reqId'] + ':progress',
-      responseData,
-    );
+    this.socket.emit(this.routeName + '->' + this.callName + ':' + this.request['reqId'] + ':progress', responseData);
   }
   respond(responseData: Object) {
     let respondFunc = () => {
-      this.socket.emit(
-        this.routeName + '->' + this.callName + ':' + this.request['reqId'] + ':reply',
-        responseData,
-      );
+      this.socket.emit(this.routeName + '->' + this.callName + ':' + this.request['reqId'] + ':reply', responseData);
     };
 
     respondFunc();
@@ -81,36 +75,19 @@ export class RESTResponder extends SocketResponder {
 }
 export class SocketRoutes {
   methods: Map<string, boolean> = new Map();
-  constructor(protected app: SpinTheWicket, public routeName: string) {}
+  constructor(
+    protected app: SpinTheWicket,
+    public routeName: string,
+  ) {}
   addMethod(key: string) {
     this.app.httpServer.express.post(`/${this.routeName}/${key}`, (req, res) => {
-      this[key](
-        new RESTResponder(
-          { req, res },
-          this.app.environmentVars,
-          this.routeName,
-          key,
-          {},
-          req.body['data'],
-        ),
-        req.body['data'],
-      );
+      this[key](new RESTResponder({ req, res }, this.app.environmentVars, this.routeName, key, {}, req.body['data']), req.body['data']);
     });
     this.methods.set(key, true);
   }
   onRequest(socket: Socket, callName: string, request: Object) {
     if (this.methods.has(callName)) {
-      this[callName](
-        new WebSocketResponder(
-          socket,
-          this.app.environmentVars,
-          this.routeName,
-          callName,
-          request,
-          request['data'],
-        ),
-        request['data'],
-      );
+      this[callName](new WebSocketResponder(socket, this.app.environmentVars, this.routeName, callName, request, request['data']), request['data']);
     }
   }
 }
@@ -180,14 +157,7 @@ export class SocketConnections extends EventEmitter {
               this.socketRoutes.get(route).onRequest(socket, method, request);
             } else {
               if (this.app.environmentVars.envMode !== 'prod') {
-                let responder = new WebSocketResponder(
-                  socket,
-                  this.app.environmentVars,
-                  route,
-                  method,
-                  request,
-                  request['data'],
-                );
+                let responder = new WebSocketResponder(socket, this.app.environmentVars, route, method, request, request['data']);
                 responder.respond({
                   error: true,
                   errorMessage: `${route}->${method} not registered`,
