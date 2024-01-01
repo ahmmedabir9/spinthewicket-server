@@ -9,12 +9,7 @@ import { prepareBallData } from '../functions/playMatch/prepareBallData';
 import { DreamTeam } from '../models/DreamTeam.model';
 import { DreamTeamMatch } from '../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../models/_ModelTypes_';
-import {
-  initialInningData,
-  initialLiveData,
-  initialMatchBatsmanData,
-  initialMatchBowlerData,
-} from '../utils/constants';
+import { initialInningData, initialLiveData, initialMatchBatsmanData, initialMatchBowlerData } from '../utils/constants';
 import { response } from '../utils/response';
 import { socketResponse } from '../utils/socketResponse';
 
@@ -68,13 +63,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
     }
 
     if (dreamTeam?.manager?._id?.toString() !== user?.toString()) {
-      return response(
-        res,
-        StatusCodes.FORBIDDEN,
-        false,
-        null,
-        'You dont have permission to play with this team!',
-      );
+      return response(res, StatusCodes.FORBIDDEN, false, null, 'You dont have permission to play with this team!');
     }
 
     //find opponent
@@ -188,7 +177,26 @@ const getMatchData = async (args: any) => {
   try {
     const { id } = args;
 
-    const matchData: any = await DreamTeamMatch.findById(id);
+    const matchData: any = await DreamTeamMatch.findById(id).populate([
+      {
+        path: 'teams.teamA',
+      },
+      {
+        path: 'teams.teamB',
+      },
+      {
+        path: 'squad.teamA.playingXI',
+        populate: {
+          path: 'playerInfo',
+        },
+      },
+      {
+        path: 'squad.teamB.playingXI',
+        populate: {
+          path: 'playerInfo',
+        },
+      },
+    ]);
 
     return socketResponse(true, matchData, null);
   } catch (error) {
@@ -215,35 +223,17 @@ const updateMatchData = async (args: any, data: any) => {
         'toss.selectedTo': selectedTo,
 
         'liveData.inning': 'first',
-        'liveData.battingTeam':
-          selectedTo === 'bowl'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
-        'liveData.bowlingTeam':
-          selectedTo === 'bat'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
+        'liveData.battingTeam': selectedTo === 'bowl' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
+        'liveData.bowlingTeam': selectedTo === 'bat' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
         'liveData.battingScorer': selectedTo === 'bowl' ? null : user,
         'liveData.bowlingScorer': selectedTo === 'bat' ? null : user,
 
-        'innings.first.battingTeam':
-          selectedTo === 'bowl'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
-        'innings.first.bowlingTeam':
-          selectedTo === 'bat'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
+        'innings.first.battingTeam': selectedTo === 'bowl' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
+        'innings.first.bowlingTeam': selectedTo === 'bat' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
         'innings.first.battingScorer': selectedTo === 'bowl' ? null : user,
         'innings.first.bowlingScorer': selectedTo === 'bat' ? null : user,
-        'innings.second.bowlingTeam':
-          selectedTo === 'bowl'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
-        'innings.second.battingTeam':
-          selectedTo === 'bat'
-            ? matchData.teams.teamB?.toString()
-            : matchData.teams.teamA?.toString(),
+        'innings.second.bowlingTeam': selectedTo === 'bowl' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
+        'innings.second.battingTeam': selectedTo === 'bat' ? matchData.teams.teamB?.toString() : matchData.teams.teamA?.toString(),
         'innings.second.bowlingScorer': selectedTo === 'bowl' ? null : user,
         'innings.second.battingScorer': selectedTo === 'bat' ? null : user,
       };
@@ -251,11 +241,7 @@ const updateMatchData = async (args: any, data: any) => {
 
     // Select Striker
     if (striker) {
-      if (
-        matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
-          (b) => b.id?.toString() === striker?.toString(),
-        )
-      ) {
+      if (matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find((b) => b.id?.toString() === striker?.toString())) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
@@ -270,11 +256,7 @@ const updateMatchData = async (args: any, data: any) => {
     }
     // Select NonStriker
     if (nonStriker) {
-      if (
-        matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find(
-          (b) => b.id?.toString() === nonStriker?.toString(),
-        )
-      ) {
+      if (matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find((b) => b.id?.toString() === nonStriker?.toString())) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
@@ -291,9 +273,10 @@ const updateMatchData = async (args: any, data: any) => {
     }
     // Select Bowler
     if (bowler) {
-      let newBolwer = matchData?.innings[matchData?.liveData?.inning]?.bowlingOrder?.find(
-        (b) => b.id?.toString() === bowler?.toString(),
-      ) || { ...initialMatchBowlerData, id: bowler };
+      let newBolwer = matchData?.innings[matchData?.liveData?.inning]?.bowlingOrder?.find((b) => b.id?.toString() === bowler?.toString()) || {
+        ...initialMatchBowlerData,
+        id: bowler,
+      };
 
       if (newBolwer?.overs === (matchData?.overs / 5).toFixed(0)) {
         return socketResponse(false, null, 'No Over Left to Bowl!');
