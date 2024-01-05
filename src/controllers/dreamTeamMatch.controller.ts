@@ -180,9 +180,15 @@ const getMatchData = async (args: any) => {
     const matchData: any = await DreamTeamMatch.findById(id).populate([
       {
         path: 'teams.teamA',
+        populate: {
+          path: 'theme',
+        },
       },
       {
         path: 'teams.teamB',
+        populate: {
+          path: 'theme',
+        },
       },
       {
         path: 'squad.teamA.playingXI',
@@ -212,7 +218,7 @@ const updateMatchData = async (args: any, data: any) => {
     }
 
     const { id } = args;
-    const { selectedTo, striker, nonStriker, bowler, user } = data;
+    const { selectedTo, striker, nonStriker, bowler, user, ...rest } = data;
     let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
 
@@ -288,7 +294,7 @@ const updateMatchData = async (args: any, data: any) => {
       };
     }
 
-    matchData = await DreamTeamMatch.findByIdAndUpdate(id, updateData, { new: true });
+    matchData = await DreamTeamMatch.findByIdAndUpdate(id, { ...updateData, ...rest }, { new: true });
 
     return socketResponse(true, matchData, null);
   } catch (error) {

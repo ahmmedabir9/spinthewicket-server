@@ -316,6 +316,10 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       type: String,
       required: true,
     },
+    ready: {
+      type: Object,
+      required: false,
+    },
     toss: {
       team: {
         ref: 'dream_team',

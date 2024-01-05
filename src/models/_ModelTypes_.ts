@@ -231,6 +231,9 @@ interface _IMatch_ extends Document {
     need: number;
     target: number;
     from: number;
+    ready: {
+      [key: string]: boolean;
+    };
   };
 }
 
