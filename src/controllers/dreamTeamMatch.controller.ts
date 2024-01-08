@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { ballResult } from '../functions/playMatch/ballResult';
+// import { ballResult } from '../functions/playMatch/ballResult';
 import { ballValidation } from '../functions/playMatch/ballValidation';
 import { getLastSpinPosition } from '../functions/playMatch/getLastSpinPosition';
 import { getMatchFunction } from '../functions/playMatch/getMatchFunction';
@@ -304,7 +304,7 @@ const updateMatchData = async (args: any, data: any) => {
 
 const playMatch = async (data: any) => {
   try {
-    const { match, bat, bowl } = data;
+    const { match, bat, bowl, team } = data;
 
     if (!match || !bat || !bowl) {
       return socketResponse(false, null, 'Provide all Data!');
@@ -318,17 +318,20 @@ const playMatch = async (data: any) => {
 
     // BROADCAST SPINNING RESPONSE
 
-    if (ballValidation(matchData)) {
-      // const ballAction = 'WIDE';
-      const ballAction = ballResult(bat, bowl);
+    const battingTeam = matchData?.teams?.teamA?.toString() === team ? 'teamA' : 'teamB';
+    const bowlingTeam = matchData?.teams?.teamA?.toString() === team ? 'teamB' : 'teamA';
+
+    if (ballValidation(matchData, battingTeam)) {
+      const ballAction = 'WIDE';
+      // const ballAction = ballResult(bat, bowl);
       console.log('💡 | file: dreamTeamMatch.controller.ts:301 | ballAction:', ballAction);
 
       if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
 
       const lastSpinPosition = getLastSpinPosition(ballAction);
 
-      const ballData = prepareBallData(matchData, ballAction);
-      let ballResponse = await getMatchFunction(ballAction, matchData, ballData);
+      const ballData = prepareBallData(matchData, ballAction, battingTeam, bowlingTeam);
+      const ballResponse = await getMatchFunction(ballAction, matchData, ballData, battingTeam);
       console.log('💡 | file: dreamTeamMatch.controller.ts:343 | ballResponse:', ballResponse);
 
       if (!ballResponse?.success) {

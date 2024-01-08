@@ -175,6 +175,32 @@ interface _IPlayerInfo_ {
   bowlingLevel: number;
 }
 
+interface _ILiveTeamData_ {
+  status: 'batting' | 'bowling';
+  scorer: Types.ObjectId;
+  batsman: any;
+  bowler: any;
+  overs: number;
+  balls: number;
+  runs: number;
+  wickets: number;
+  runRate: number;
+  extra: number;
+  partnership: {
+    balls: number;
+    runs: number;
+    batsman1: any;
+    batsman2: any;
+  };
+  freeHit: boolean;
+  thisOver: any;
+  spinning: boolean;
+  lastSpinPosition: number;
+  need: number;
+  target: number;
+  from: number;
+}
+
 interface _IMatch_ extends Document {
   title: string;
   slug: string;
@@ -205,32 +231,9 @@ interface _IMatch_ extends Document {
   tournament: Types.ObjectId;
   league: Types.ObjectId;
   liveData: {
+    teamA: _ILiveTeamData_;
+    teamB: _ILiveTeamData_;
     inning: string;
-    battingTeam: Types.ObjectId;
-    bowlingTeam: Types.ObjectId;
-    battingScorer: Types.ObjectId;
-    bowlingScorer: Types.ObjectId;
-    batsman: any;
-    bowler: any;
-    overs: number;
-    balls: number;
-    runs: number;
-    wickets: number;
-    runRate: number;
-    extra: number;
-    partnership: {
-      balls: number;
-      runs: number;
-      batsman1: any;
-      batsman2: any;
-    };
-    freeHit: boolean;
-    thisOver: any;
-    spinning: boolean;
-    lastSpinPosition: number;
-    need: number;
-    target: number;
-    from: number;
     ready: {
       [key: string]: boolean;
     };

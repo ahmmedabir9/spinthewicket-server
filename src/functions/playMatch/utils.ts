@@ -6,8 +6,10 @@ const getBatsmanStats = (
   ball: number,
   out?: string,
   nonStriker?: boolean,
+  battingTeam?: string,
+  bowlingTeam?: string,
 ) => {
-  let stats = matchData.liveData.batsman[nonStriker ? 'nonStriker' : 'striker'];
+  const stats = matchData.liveData?.[`${battingTeam}`]?.batsman[nonStriker ? 'nonStriker' : 'striker'];
 
   stats.balls = stats.balls + ball;
   stats.runs = stats.runs + run;
@@ -19,27 +21,21 @@ const getBatsmanStats = (
   if (out) {
     stats.status = 'out';
     stats.out = {
-      bowler: matchData.liveData.bowler.id,
+      bowler: matchData.liveData?.[bowlingTeam]?.bowler.id,
       wicketType: out,
     };
 
     if (out === 'CATCH' || out === 'RUN_OUT') {
       const index = Math.floor(Math.random() * 100) % 11;
-      const team = matchData.liveData.bowlingTeam === matchData.teams.teamA ? 'teamA' : 'teamB';
-      stats.fielder = matchData.squad[team].playingXI[index];
+      stats.fielder = matchData.squad[bowlingTeam].playingXI[index];
     }
   }
 
   return stats;
 };
 
-const getBowlerStats = (
-  matchData: Partial<_IMatch_>,
-  run: number,
-  ball: number,
-  wicket?: number,
-) => {
-  let stats = matchData.liveData.bowler;
+const getBowlerStats = (matchData: Partial<_IMatch_>, run: number, ball: number, wicket?: number, battingTeam?: string, bowlingTeam?: string) => {
+  const stats = matchData.liveData?.[bowlingTeam]?.bowler;
 
   stats.balls = stats.balls + ball;
   stats.runs = stats.runs + run;
@@ -52,74 +48,69 @@ const getBowlerStats = (
   return stats;
 };
 
-const updateBowlingOrder = (matchData: Partial<_IMatch_>, endOfOver?: boolean) => {
+const updateBowlingOrder = (matchData: Partial<_IMatch_>, endOfOver?: boolean, battingTeam?: string, bowlingTeam?: string) => {
   let bowlingOrder = matchData.innings[matchData.liveData.inning].bowlingOrder || [];
-  bowlingOrder = bowlingOrder.filter((b) => b.id?.toString() !== matchData.liveData.bowler.id);
+  bowlingOrder = bowlingOrder.filter((b) => b.id?.toString() !== matchData.liveData?.[bowlingTeam]?.bowler.id);
 
-  if (!matchData.liveData.bowler.runs) matchData.liveData.bowler.maidens++;
+  if (!matchData.liveData?.[bowlingTeam]?.bowler.runs) matchData.liveData[bowlingTeam].bowler.maidens++;
   if (endOfOver) {
-    matchData.liveData.bowler.overs++;
-    matchData.liveData.bowler.balls = 0;
+    matchData.liveData[bowlingTeam].bowler.overs++;
+    matchData.liveData[bowlingTeam].bowler.balls = 0;
   }
 
-  bowlingOrder.push(matchData.liveData.bowler);
+  bowlingOrder.push(matchData.liveData[bowlingTeam]?.bowler);
 
   return bowlingOrder;
 };
 
-const updateOverHistory = (matchData: Partial<_IMatch_>) => {
-  let overHistory = matchData.innings[matchData.liveData.inning].overHistory || [];
+const updateOverHistory = (matchData: Partial<_IMatch_>, battingTeam?: string) => {
+  const overHistory = matchData.innings[matchData.liveData.inning].overHistory || [];
 
-  overHistory.push(matchData.liveData.thisOver);
+  overHistory.push(matchData.liveData[battingTeam]?.thisOver);
 
   return overHistory;
 };
 
-const getStrikeRate = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
+const getStrikeRate = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam?: string) => {
+  return ((matchData.liveData[battingTeam]?.batsman.striker.runs + run) / (matchData.liveData[battingTeam]?.batsman.striker.balls + ball)) * 100;
+};
+
+const getEconomy = (matchData: Partial<_IMatch_>, run: number, ball: number, bowlingTeam?: string) => {
   return (
-    ((matchData.liveData.batsman.striker.runs + run) /
-      (matchData.liveData.batsman.striker.balls + ball)) *
-    100
+    (matchData.liveData[bowlingTeam].bowler.runs + run) /
+    ((matchData.liveData[bowlingTeam].bowler.overs * 6 + (matchData.liveData[bowlingTeam].bowler.balls + ball)) / 6)
   );
 };
 
-const getEconomy = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
+const getRunRate = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam?: string) => {
   return (
-    (matchData.liveData.bowler.runs + run) /
-    ((matchData.liveData.bowler.overs * 6 + (matchData.liveData.bowler.balls + ball)) / 6)
+    (matchData.liveData[battingTeam].runs + run) / ((matchData.liveData[battingTeam].overs * 6 + (matchData.liveData[battingTeam].balls + ball)) / 6)
   );
 };
 
-const getRunRate = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
-  return (
-    (matchData.liveData.runs + run) /
-    ((matchData.liveData.overs * 6 + (matchData.liveData.balls + ball)) / 6)
-  );
-};
-
-const getPartnarship = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
+const getPartnarship = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam?: string) => {
   return {
-    runs: (matchData.liveData.partnership.runs || 0) + run,
-    balls: (matchData.liveData.partnership.balls || 0) + ball,
-    batsman1: matchData.liveData.batsman.striker.id,
-    batsman2: matchData.liveData.batsman.nonStriker.id,
+    runs: (matchData.liveData[battingTeam].partnership.runs || 0) + run,
+    balls: (matchData.liveData[battingTeam].partnership.balls || 0) + ball,
+    batsman1: matchData.liveData[battingTeam].batsman.striker.id,
+    batsman2: matchData.liveData[battingTeam].batsman.nonStriker.id,
   };
 };
 
-const getFallOfWicket = (matchData: Partial<_IMatch_>, player: any, ball: number) => {
+const getFallOfWicket = (matchData: Partial<_IMatch_>, player: any, ball: number, battingTeam?: string) => {
   return {
-    runs: matchData.liveData.runs,
-    balls: matchData.liveData.balls + ball,
+    runs: matchData.liveData[battingTeam].runs,
+    balls: matchData.liveData[battingTeam].balls + ball,
     player: player,
-    overs: matchData.liveData.overs,
+    overs: matchData.liveData[battingTeam].overs,
   };
 };
 
-const getTargetUpdate = (matchData: Partial<_IMatch_>, run: number, ball: number) => {
+const getTargetUpdate = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam?: string) => {
   return {
-    'liveData.need': matchData.liveData.need - run,
-    'liveData.from': matchData.liveData.from - ball,
-    'liveData.reqRR': (matchData.liveData.need - run) / ((matchData.liveData.from - ball) / 6),
+    'liveData.need': matchData.liveData[battingTeam].need - run,
+    'liveData.from': matchData.liveData[battingTeam].from - ball,
+    'liveData.reqRR': (matchData.liveData[battingTeam].need - run) / ((matchData.liveData[battingTeam].from - ball) / 6),
   };
 };
 

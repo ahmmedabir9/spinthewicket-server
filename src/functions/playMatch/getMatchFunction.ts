@@ -12,11 +12,7 @@ import catchOut from './wickets/catchOut';
 import lbw from './wickets/lbw';
 import runOut from './wickets/runOut';
 
-const getMatchFunction = (
-  ballAction: string | boolean,
-  matchData: Partial<_IMatch_>,
-  ballData: any,
-) => {
+const getMatchFunction = (ballAction: string | boolean, matchData: Partial<_IMatch_>, ballData: any, battingTeam: string) => {
   if (ballAction === 'DOT') return dotBall(matchData, ballData);
   else if (ballAction === 'ONE') return oneRun(matchData, ballData);
   else if (ballAction === 'TWO') return twoRuns(matchData, ballData);
@@ -26,19 +22,19 @@ const getMatchFunction = (
   else if (ballAction === 'WIDE') return wideBall(matchData, ballData);
   else if (ballAction === 'NO_BALL') return noBall(matchData, ballData);
   else if (ballAction === 'BOWLED') {
-    if (matchData?.liveData?.freeHit) {
+    if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
       return dotBall(matchData, ballData);
     } else {
       return bowled(matchData, ballData);
     }
   } else if (ballAction === 'LBW') {
-    if (matchData?.liveData?.freeHit) {
+    if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
       return dotBall(matchData, ballData);
     } else {
       return lbw(matchData, ballData);
     }
   } else if (ballAction === 'CATCH') {
-    if (matchData?.liveData?.freeHit) {
+    if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
       return dotBall(matchData, ballData);
     } else {
       return catchOut(matchData, ballData);
