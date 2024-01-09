@@ -148,7 +148,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
       scorers: { a: user, b: null },
       matchMode: matchMode || 'h2h',
       overs: parseInt(overs),
-      status: toss.team === dreamTeam?._id?.toString() ? 'toss' : 'live',
+      status: 'live',
       createdAt: createdAt.toString(),
       squad: {
         teamA: {
