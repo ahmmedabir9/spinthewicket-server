@@ -179,7 +179,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
   }
 };
 
-const getMatchData = async (args: any) => {
+const getMatchData = async (args: any, app: any, responder: any) => {
   try {
     const { id } = args;
 
@@ -210,6 +210,9 @@ const getMatchData = async (args: any) => {
       },
     ]);
 
+    // join the user to this match group in socket
+    app.socketConnections.addToGroup(`dream-team-match-${id}`, responder.socket);
+
     return socketResponse(true, matchData, null);
   } catch (error) {
     console.log('💡 | file: dreamTeamMatch.controller.ts:220 | error:', error);
@@ -217,7 +220,7 @@ const getMatchData = async (args: any) => {
   }
 };
 
-const updateMatchData = async (args: any, data: any) => {
+const updateMatchData = async (args: any, data: any, app: any) => {
   try {
     if (!data) {
       return socketResponse(false, null, 'Nothing to Update!');
@@ -302,6 +305,10 @@ const updateMatchData = async (args: any, data: any) => {
 
     matchData = await DreamTeamMatch.findByIdAndUpdate(id, { ...updateData, ...rest }, { new: true });
 
+    app.socketConnections.broadcastInMemory(`dream-team-match-${id}`, 'dream-team-match', {
+      data: matchData,
+      timestamp: new Date(),
+    });
     return socketResponse(true, matchData, null);
   } catch (error) {
     return socketResponse(false, null, error.message);

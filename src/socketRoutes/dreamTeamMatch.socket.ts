@@ -10,11 +10,11 @@ export class DreamTeamMatchSocketRoutes extends SocketRoutes {
     this.addMethod('playMatch');
   }
   async getMatchData(responder: SocketResponder, data = {}) {
-    responder.respond(await getMatchData(data['args']));
+    responder.respond(await getMatchData(data['args'], this.app, responder));
   }
 
   async updateMatchData(responder: SocketResponder, data = {}) {
-    responder.respond(await updateMatchData(data['args'], data['data']));
+    responder.respond(await updateMatchData(data['args'], data['data'], this.app));
   }
 
   async playMatch(responder: SocketResponder, data = {}) {
