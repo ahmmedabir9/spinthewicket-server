@@ -333,9 +333,16 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
       type: String,
       required: true,
     },
+    matchMode: {
+      type: String,
+      required: true,
+      default: 'h2h',
+      enum: ['h2h', 'full'],
+    },
     liveData: {
       inning: String,
       teamA: {
+        status: String,
         scorer: {
           ref: 'user',
           type: SchemaTypes.ObjectId,
@@ -407,6 +414,7 @@ const DreamTeamMatchSchema = new Schema<_IMatch_>(
         from: Number,
       },
       teamB: {
+        status: String,
         scorer: {
           ref: 'user',
           type: SchemaTypes.ObjectId,

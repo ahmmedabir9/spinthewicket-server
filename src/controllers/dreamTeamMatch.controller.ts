@@ -48,10 +48,10 @@ const matchPopulate = [
 
 const startQuickMatch = async (req: Request, res: Response) => {
   try {
-    const { team, overs, user } = req.body;
+    const { team, overs, user, matchMode } = req.body;
 
     if (!team || !overs || !user) {
-      let msg = 'provide all informations!';
+      const msg = 'provide all informations!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -82,51 +82,56 @@ const startQuickMatch = async (req: Request, res: Response) => {
 
     let battingTeam = null,
       bowlingTeam = null,
-      battingScorer = null,
-      bowlingScorer = null,
       liveData = { ...initialLiveData };
     const tossResult = Math.floor(Math.random() * 10000) % 2;
     // const tossResult = Math.floor(Math.random() * 10000) % 2;
-    let toss;
 
-    if (tossResult === 0) {
-      toss = {
-        team: dreamTeam?._id?.toString(),
-        selectedTo: null,
-      };
-    } else {
-      const choosen = Math.floor(Math.random() * 10000) % 2;
-      toss = {
-        team: opponentTeam?._id?.toString(),
-        selectedTo: choosen === 0 ? 'bat' : 'bowl',
-      };
-      battingTeam = choosen === 0 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
-      bowlingTeam = choosen === 1 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
-      battingScorer = choosen === 0 ? null : user;
-      bowlingScorer = choosen === 1 ? null : user;
-      liveData = {
-        inning: 'first',
-        battingTeam: battingTeam,
-        bowlingTeam: bowlingTeam,
-        battingScorer: battingScorer,
-        bowlingScorer: bowlingScorer,
+    const choosen = Math.floor(Math.random() * 10000) % 2;
+    const toss = {
+      team: tossResult === 0 ? dreamTeam?._id?.toString() : opponentTeam?._id?.toString(),
+      selectedTo: choosen === 0 ? 'bat' : 'bowl',
+    };
+    battingTeam = choosen === 0 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
+    bowlingTeam = choosen === 1 ? opponentTeam?._id?.toString() : dreamTeam?._id?.toString();
+    const teamAStatus =
+      toss.team === dreamTeam?._id?.toString()
+        ? toss.selectedTo === 'bat'
+          ? 'batting'
+          : 'bowling'
+        : toss.selectedTo === 'bat'
+          ? 'bowling'
+          : 'batting';
+    const teamBStatus =
+      toss.team === dreamTeam?._id?.toString()
+        ? toss.selectedTo === 'bat'
+          ? 'bowling'
+          : 'batting'
+        : toss.selectedTo === 'bat'
+          ? 'batting'
+          : 'bowling';
+
+    liveData = {
+      teamA: {
+        scorer: user,
+        status: matchMode === 'h2h' ? 'batting' : teamAStatus,
         ...initialLiveData,
-      };
-    }
+      },
+      teamB: {
+        scorer: null,
+        status: matchMode === 'h2h' ? 'batting' : teamBStatus,
+        ...initialLiveData,
+      },
+    };
 
     const innings = {
       first: {
         battingTeam: battingTeam,
         bowlingTeam: bowlingTeam,
-        battingScorer: battingScorer,
-        bowlingScorer: bowlingScorer,
         ...initialInningData,
       },
       second: {
         battingTeam: bowlingTeam,
         bowlingTeam: battingTeam,
-        battingScorer: bowlingScorer,
-        bowlingScorer: battingScorer,
         ...initialInningData,
       },
     };
@@ -141,6 +146,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
         teamB: opponentTeam?._id?.toString(),
       },
       scorers: { a: user, b: null },
+      matchMode: matchMode || 'h2h',
       overs: parseInt(overs),
       status: toss.team === dreamTeam?._id?.toString() ? 'toss' : 'live',
       createdAt: createdAt.toString(),
