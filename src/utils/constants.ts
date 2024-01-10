@@ -1,10 +1,4 @@
-import {
-  _IBattingStat_,
-  _IBowlingStat_,
-  _IDreamPlayer_,
-  _IDreamTeam_,
-  _IInning_,
-} from '../models/_ModelTypes_';
+import { _IBattingStat_, _IBowlingStat_, _IDreamPlayer_, _IDreamTeam_, _IInning_ } from '../models/_ModelTypes_';
 
 const initialPlayerData: Partial<_IDreamPlayer_> = {
   trophies: [],
@@ -87,10 +81,36 @@ const initialInningData: Partial<_IInning_> = {
 
 const initialLiveData: any = {
   batsman: {
-    striker: null,
-    nonStriker: null,
+    striker: {
+      id: null,
+      balls: 0,
+      fours: 0,
+      runs: 0,
+      sixes: 0,
+      strikeRate: 0,
+      dotBalls: 0,
+    },
+    nonStriker: {
+      id: null,
+      balls: 0,
+      fours: 0,
+      average: 0,
+      strikeRate: 0,
+      runs: 0,
+      sixes: 0,
+      dotBalls: 0,
+    },
   },
-  bowler: null,
+  bowler: {
+    id: null,
+    balls: 0,
+    economy: 0,
+    maidens: 0,
+    dotBalls: 0,
+    overs: 0,
+    runs: 0,
+    wickets: 0,
+  },
   overs: 0,
   balls: 0,
   runs: 0,

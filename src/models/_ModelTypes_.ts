@@ -178,7 +178,10 @@ interface _IPlayerInfo_ {
 interface _ILiveTeamData_ {
   status: 'batting' | 'bowling';
   scorer: Types.ObjectId;
-  batsman: any;
+  batsman: {
+    striker: any;
+    nonStriker: any;
+  };
   bowler: any;
   overs: number;
   balls: number;

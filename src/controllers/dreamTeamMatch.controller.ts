@@ -122,6 +122,7 @@ const startQuickMatch = async (req: Request, res: Response) => {
         ...initialLiveData,
       },
     };
+    console.log('💡 | liveData:', liveData);
 
     const innings = {
       first: {
@@ -227,9 +228,12 @@ const updateMatchData = async (args: any, data: any, app: any) => {
     }
 
     const { id } = args;
-    const { selectedTo, striker, nonStriker, bowler, user, ...rest } = data;
+    const { selectedTo, striker, nonStriker, bowler, user, team, ...rest } = data;
     let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
+
+    const currentInning =
+      matchData?.innings?.first?.battingTeam?.toString() === matchData?.teams[team]?.toString() ? (bowler ? 'second' : 'first') : 'first';
 
     // Toss Update
     if (selectedTo) {
@@ -256,54 +260,55 @@ const updateMatchData = async (args: any, data: any, app: any) => {
 
     // Select Striker
     if (striker) {
-      if (matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find((b) => b.id?.toString() === striker?.toString())) {
+      console.log('💡 | striker:', striker);
+      if (matchData?.innings[currentInning]?.battingOrder?.find((b: any) => b.id?.toString() === striker?.toString())) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
       updateData = {
         ...updateData,
-        'liveData.batsman.striker': {
+        [`liveData.${team}.batsman.striker`]: {
           id: striker,
-          inAt: matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length + 1,
+          inAt: matchData?.innings[currentInning]?.battingOrder?.length + 1 || 1,
           ...initialMatchBatsmanData,
         },
       };
+      console.log('💡 | updateData:', updateData);
     }
     // Select NonStriker
     if (nonStriker) {
-      if (matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.find((b) => b.id?.toString() === nonStriker?.toString())) {
+      if (matchData?.innings[currentInning]?.battingOrder?.find((b: any) => b.id?.toString() === nonStriker?.toString())) {
         return socketResponse(false, null, 'Batsman Already Played!');
       }
 
       updateData = {
         ...updateData,
-        'liveData.batsman.nonStriker': {
+        [`liveData.${team}.batsman.nonStriker`]: {
           id: nonStriker,
-          inAt:
-            matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length +
-            (!matchData?.innings[matchData?.liveData?.inning]?.battingOrder?.length ? 2 : 1),
+          inAt: matchData?.innings[currentInning]?.battingOrder?.length + (!matchData?.innings[currentInning]?.battingOrder?.length ? 2 : 1),
           ...initialMatchBatsmanData,
         },
       };
     }
     // Select Bowler
     if (bowler) {
-      let newBolwer = matchData?.innings[matchData?.liveData?.inning]?.bowlingOrder?.find((b) => b.id?.toString() === bowler?.toString()) || {
+      const newBolwer = matchData?.innings[currentInning]?.bowlingOrder?.find((b: any) => b.id?.toString() === bowler?.toString()) || {
         ...initialMatchBowlerData,
         id: bowler,
       };
 
-      if (newBolwer?.overs === (matchData?.overs / 5).toFixed(0)) {
+      if (newBolwer?.overs === Number((matchData?.overs / 5).toFixed(0))) {
         return socketResponse(false, null, 'No Over Left to Bowl!');
       }
 
       updateData = {
         ...updateData,
-        'liveData.bowler': newBolwer,
+        [`liveData.${team}.batsman.bowler`]: newBolwer,
       };
     }
 
     matchData = await DreamTeamMatch.findByIdAndUpdate(id, { ...updateData, ...rest }, { new: true });
+    console.log('💡 | matchData:', matchData);
 
     app.socketConnections.broadcastInMemory(`dream-team-match-${id}`, 'dream-team-match', {
       data: matchData,
