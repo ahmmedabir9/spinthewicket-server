@@ -6,19 +6,9 @@ import BowlingStat from '../models/BowlingStat.model';
 import { DreamPlayer } from '../models/DreamPlayer.model';
 import { DreamTeam } from '../models/DreamTeam.model';
 import { PlayerInfo } from '../models/PlayerInfo.model';
-import {
-  _IBattingStat_,
-  _IBowlingStat_,
-  _IDreamPlayer_,
-  _IDreamTeam_,
-  _IPlayerInfo_,
-} from '../models/_ModelTypes_';
-import {
-  initialBattingStat,
-  initialBowlingStat,
-  initialPlayerData,
-  initialTeamData,
-} from '../utils/constants';
+import { _IBattingStat_, _IBowlingStat_, _IDreamPlayer_, _IDreamTeam_, _IPlayerInfo_ } from '../models/_ModelTypes_';
+import { addPlayers } from '../services/playerCreator';
+import { initialBattingStat, initialBowlingStat, initialPlayerData, initialTeamData } from '../utils/constants';
 import { response } from '../utils/response';
 import { shufflePlayers } from '../utils/utilities';
 
@@ -74,9 +64,7 @@ const createDreamTeam = async (req: Request, res: Response) => {
 
     const captainPlayer: _IDreamPlayer_ | null = await createDreamSquad(captain, team?._id);
 
-    const squad: _IDreamPlayer_[] = await DreamPlayer.find({ team: team?._id }).populate(
-      'playerInfo',
-    );
+    const squad: _IDreamPlayer_[] = await DreamPlayer.find({ team: team?._id }).populate('playerInfo');
 
     const playingXI: any = await createPlayingXI(squad);
 
@@ -85,7 +73,7 @@ const createDreamTeam = async (req: Request, res: Response) => {
     const newTeam: _IDreamTeam_ | null = await DreamTeam.findByIdAndUpdate(
       team?._id,
       {
-        rating: teamRating,
+        // rating: teamRating,
         captain: captainPlayer?._id,
         playingXI: playingXI.map((item) => item._id),
       },
@@ -130,9 +118,7 @@ const getDreamTeamById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const dreamTeam: _IDreamTeam_ | null = await DreamTeam.findById(id).populate(
-      'manager theme captain playingXI',
-    );
+    const dreamTeam: _IDreamTeam_ | null = await DreamTeam.findById(id).populate('manager theme captain playingXI');
 
     if (!dreamTeam) {
       return response(res, StatusCodes.NOT_FOUND, false, null, 'No Team Found!');
@@ -229,12 +215,7 @@ const createBotTeam = async (req: Request, res: Response) => {
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
-    const captainPlayer: _IDreamPlayer_ | null = await createDreamSquad(
-      captain,
-      team?._id,
-      true,
-      rating,
-    );
+    const captainPlayer: _IDreamPlayer_ | null = await createDreamSquad(captain, team?._id, true, rating);
 
     const squad: _IDreamPlayer_[] = await DreamPlayer.find({ team: team?._id }).populate('player');
 
@@ -245,7 +226,7 @@ const createBotTeam = async (req: Request, res: Response) => {
     const newTeam: _IDreamTeam_ | null = await DreamTeam.findByIdAndUpdate(
       team?._id,
       {
-        rating: teamRating,
+        // rating: teamRating,
         captain: captainPlayer?._id,
         playingXI: playingXI.map((item) => item._id),
       },
@@ -260,17 +241,9 @@ const createBotTeam = async (req: Request, res: Response) => {
   }
 };
 
-const createDreamSquad = async (
-  captain: string,
-  team: string,
-  isBot: boolean = false,
-  rating?: number,
-) => {
+const createDreamSquad = async (captain: string, team: string, isBot: boolean = false, rating?: number) => {
   try {
-    let allrounders: _IPlayerInfo_[],
-      batsmen: _IPlayerInfo_[],
-      keepers: _IPlayerInfo_[],
-      bowlers: _IPlayerInfo_[];
+    let allrounders: _IPlayerInfo_[], batsmen: _IPlayerInfo_[], keepers: _IPlayerInfo_[], bowlers: _IPlayerInfo_[];
 
     if (isBot) {
       allrounders = await PlayerInfo.find({
@@ -301,26 +274,26 @@ const createDreamSquad = async (
       allrounders = await PlayerInfo.find({
         _id: { $ne: captain },
         role: 'All-Rounder',
-        bowlingLevel: { $gte: 50, $lte: 75 },
-        battingLevel: { $gte: 50, $lte: 75 },
+        bowlingLevel: { $gte: 75, $lte: 90 },
+        battingLevel: { $gte: 75, $lte: 90 },
       }).select('_id');
 
       batsmen = await PlayerInfo.find({
         _id: { $ne: captain },
         role: 'Batsman',
-        battingLevel: { $gte: 60, $lte: 80 },
+        battingLevel: { $gte: 80, $lte: 95 },
       }).select('_id');
 
       keepers = await PlayerInfo.find({
         _id: { $ne: captain },
         role: 'Wicket-Keeper',
-        battingLevel: { $gte: 60, $lte: 80 },
+        battingLevel: { $gte: 80, $lte: 95 },
       }).select('_id');
 
       bowlers = await PlayerInfo.find({
         _id: { $ne: captain },
         role: 'Bowler',
-        bowlingLevel: { $gte: 60, $lte: 80 },
+        bowlingLevel: { $gte: 80, $lte: 95 },
       }).select('_id');
     }
 
@@ -329,12 +302,7 @@ const createDreamSquad = async (
     shufflePlayers(bowlers);
     shufflePlayers(keepers);
 
-    const players = [
-      ...batsmen.slice(0, 5),
-      ...allrounders.slice(0, 4),
-      ...bowlers.slice(0, 4),
-      ...keepers.slice(0, 1),
-    ].map((item) => item._id);
+    const players = [...batsmen.slice(0, 5), ...allrounders.slice(0, 4), ...bowlers.slice(0, 4), ...keepers.slice(0, 1)].map((item) => item._id);
 
     const captainBattingStat: _IBattingStat_ = await BattingStat.create({
       ...initialBattingStat,
@@ -379,18 +347,14 @@ const createDreamSquad = async (
 };
 
 const createPlayingXI = async (squad: _IDreamPlayer_[]) => {
-  const bowlers = squad
-    .sort((a, b) => (a.playerInfo.bowlingLevel < b.playerInfo.bowlingLevel ? 1 : -1))
-    .slice(0, 5);
+  const bowlers = squad.sort((a, b) => (a.playerInfo.bowlingLevel < b.playerInfo.bowlingLevel ? 1 : -1)).slice(0, 5);
 
   const batsmen = squad
     .sort((a, b) => (a.playerInfo.battingLevel < b.playerInfo.battingLevel ? 1 : -1))
     .filter((batsman) => !bowlers.find((bowler) => bowler?._id === batsman?._id))
     .slice(0, 6);
 
-  const playingXI = [...batsmen, ...bowlers].sort((a, b) =>
-    a.playerInfo.battingLevel < b.playerInfo.battingLevel ? 1 : -1,
-  );
+  const playingXI = [...batsmen, ...bowlers].sort((a, b) => (a.playerInfo.battingLevel < b.playerInfo.battingLevel ? 1 : -1));
 
   return playingXI;
 };
@@ -401,9 +365,7 @@ const calculateTeamRating = async (playingXI: _IDreamPlayer_[]): Promise<number>
   for (let index = 0; index < playingXI.length; index++) {
     const player = playingXI[index];
     totalRating +=
-      player.playerInfo?.battingLevel > player.playerInfo?.bowlingLevel
-        ? player.playerInfo?.battingLevel
-        : player.playerInfo?.bowlingLevel;
+      player.playerInfo?.battingLevel > player.playerInfo?.bowlingLevel ? player.playerInfo?.battingLevel : player.playerInfo?.bowlingLevel;
   }
 
   return totalRating / 11;

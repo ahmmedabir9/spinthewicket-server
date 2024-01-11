@@ -91,50 +91,50 @@ const getAllPlayers = async (req: Request, res: Response) => {
 const getRandomCaptains = async (req, res) => {
   try {
     const populateFields = [
-      {
-        path: 'teams',
-      },
+      // {
+      //   path: 'teams',
+      // },
     ];
 
     let allrounders = await PlayerInfo.find({ role: 'All-Rounder' })
       .where({
-        bowlingLevel: { $gte: 65 },
+        bowlingLevel: { $gte: 75 },
       })
       .where({
-        bowlingLevel: { $lte: 75 },
+        bowlingLevel: { $lte: 90 },
       })
       .where({
-        battingLevel: { $gte: 65 },
+        battingLevel: { $gte: 75 },
       })
       .where({
-        battingLevel: { $lte: 75 },
+        battingLevel: { $lte: 90 },
       })
       .populate(populateFields);
 
     let batsmen = await PlayerInfo.find({ role: 'Batsman' })
       .where({
-        battingLevel: { $gte: 75 },
+        battingLevel: { $gte: 80 },
       })
       .where({
-        battingLevel: { $lte: 80 },
+        battingLevel: { $lte: 90 },
       })
       .populate(populateFields);
 
     let keepers = await PlayerInfo.find({ role: 'Wicket-Keeper' })
       .where({
-        battingLevel: { $gte: 75 },
+        battingLevel: { $gte: 80 },
       })
       .where({
-        battingLevel: { $lte: 80 },
+        battingLevel: { $lte: 90 },
       })
       .populate(populateFields);
 
     let bowlers = await PlayerInfo.find({ role: 'Bowler' })
       .where({
-        bowlingLevel: { $gte: 75 },
+        bowlingLevel: { $gte: 85 },
       })
       .where({
-        bowlingLevel: { $lte: 80 },
+        bowlingLevel: { $lte: 95 },
       })
       .populate(populateFields);
 
@@ -143,12 +143,7 @@ const getRandomCaptains = async (req, res) => {
     shufflePlayers(bowlers);
     shufflePlayers(keepers);
 
-    const captains = [
-      ...batsmen.slice(0, 2),
-      ...allrounders.slice(0, 2),
-      ...bowlers.slice(0, 1),
-      ...keepers.slice(0, 1),
-    ];
+    const captains = [...batsmen.slice(0, 2), ...allrounders.slice(0, 2), ...bowlers.slice(0, 1), ...keepers.slice(0, 1)];
 
     return response(res, StatusCodes.OK, true, captains, null);
   } catch (error) {
