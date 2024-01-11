@@ -303,7 +303,7 @@ const updateMatchData = async (args: any, data: any, app: any) => {
 
       updateData = {
         ...updateData,
-        [`liveData.${team}.batsman.bowler`]: newBolwer,
+        [`liveData.${team}.bowler`]: newBolwer,
       };
     }
 
