@@ -18,6 +18,6 @@ export class DreamTeamMatchSocketRoutes extends SocketRoutes {
   }
 
   async playMatch(responder: SocketResponder, data = {}) {
-    responder.respond(await playMatch(data['data']));
+    responder.respond(await playMatch(data['data'], this.app));
   }
 }
