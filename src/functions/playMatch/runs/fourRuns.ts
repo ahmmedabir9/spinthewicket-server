@@ -21,19 +21,19 @@ const fourRuns = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam
       [`innings.${inning}.runRate`]: getRunRate(matchData, 4, 1, battingTeam),
     };
 
-    if (inning === 'second' || inning === 'secondSuper') {
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...getTargetUpdate(matchData, 4, 1, battingTeam),
-      };
-    }
+    // if (inning === 'second' || inning === 'secondSuper') {
+    //   dataToUpdate = {
+    //     ...dataToUpdate,
+    //     ...getTargetUpdate(matchData, 4, 1, battingTeam),
+    //   };
+    // }
     console.log('💡 | dataToUpdate:', dataToUpdate);
 
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
-    // if (updateMatch.liveData[battingTeam].balls === 6) {
-    //   await endOfOver(updateMatch);
-    // }
+    if (updateMatch.liveData[battingTeam].balls === 6) {
+      await endOfOver(updateMatch, battingTeam, bowlingTeam, inning);
+    }
 
     // if (updateMatch.liveData.need <= 0) {
     //   await runChased(updateMatch, inning);

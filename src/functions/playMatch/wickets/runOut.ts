@@ -1,5 +1,6 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
+import { initialLiveData } from '../../../utils/constants';
 import endOfOver from '../end/endOfOver';
 import { getBatsmanStats, getBowlerStats, getFallOfWicket, getPartnarship, getRunRate, getTargetUpdate } from '../utils';
 
@@ -30,7 +31,13 @@ const runOut = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: 
         [`innings.${inning}.fallOfWickets`]: getFallOfWicket(matchData, matchData.liveData[battingTeam].batsman[outBatsman].id, 1, battingTeam),
       },
 
-      [`liveData.${battingTeam}.batsman.striker`]: outBatsman === 'striker' ? null : getBatsmanStats(matchData, 0, 1, battingTeam, bowlingTeam),
+      [`liveData.${battingTeam}.batsman.striker`]:
+        outBatsman === 'striker'
+          ? {
+              id: null,
+              ...initialLiveData.batsman.striker,
+            }
+          : getBatsmanStats(matchData, 0, 1, battingTeam, bowlingTeam),
 
       // [`liveData.${battingTeam}.batsman.nonStriker`]: outBatsman === 'nonStriker' ? null : getBatsmanStats(matchData, 0, 0, battingTeam, bowlingTeam),
 
@@ -41,19 +48,19 @@ const runOut = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: 
       [`innings.${inning}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
     };
 
-    if (inning === 'second' || inning === 'secondSuper') {
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...getTargetUpdate(matchData, 1, 1, battingTeam),
-      };
-    }
+    // if (inning === 'second' || inning === 'secondSuper') {
+    //   dataToUpdate = {
+    //     ...dataToUpdate,
+    //     ...getTargetUpdate(matchData, 1, 1, battingTeam),
+    //   };
+    // }
     console.log('💡 | dataToUpdate:', dataToUpdate);
 
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
-    // if (updateMatch.liveData[battingTeam].balls === 6) {
-    //   await endOfOver(updateMatch);
-    // }
+    if (updateMatch.liveData[battingTeam].balls === 6) {
+      await endOfOver(updateMatch, battingTeam, bowlingTeam, inning);
+    }
 
     // if (
     //   updateMatch.liveData.wickets === 10 ||

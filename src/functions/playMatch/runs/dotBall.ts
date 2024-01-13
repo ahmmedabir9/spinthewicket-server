@@ -1,6 +1,6 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
-// import endOfOver from '../end/endOfOver';
+import endOfOver from '../end/endOfOver';
 import { getBatsmanStats, getBowlerStats, getPartnarship, getRunRate, getTargetUpdate } from '../utils';
 
 const dotBall = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: string, bowlingTeam: string, inning: string) => {
@@ -23,18 +23,18 @@ const dotBall = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam:
       [`innings.${inning}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
     };
 
-    if (inning === 'second' || inning === 'secondSuper') {
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...getTargetUpdate(matchData, 1, 1, battingTeam),
-      };
-    }
-
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
-
-    // if (updateMatch.liveData[battingTeam].balls === 6) {
-    //   await endOfOver(updateMatch);
+    // if (inning === 'second' || inning === 'secondSuper') {
+    //   dataToUpdate = {
+    //     ...dataToUpdate,
+    //     ...getTargetUpdate(matchData, 1, 1, battingTeam),
+    //   };
     // }
+
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+
+    if (updateMatch.liveData[battingTeam].balls === 6) {
+      await endOfOver(updateMatch, battingTeam, bowlingTeam, inning);
+    }
 
     return { success: true };
   } catch (error) {

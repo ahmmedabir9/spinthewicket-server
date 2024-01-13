@@ -27,7 +27,7 @@ const wideBall = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam
     //   };
     // }
 
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
     // if (updateMatch.liveData[battingTeam].need <= 0) {
     //   await runChased(updateMatch, inning);

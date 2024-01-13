@@ -59,8 +59,8 @@ const getBowlerStats = (matchData: Partial<_IMatch_>, run: number, ball: number,
   return stats;
 };
 
-const updateBowlingOrder = (matchData: Partial<_IMatch_>, endOfOver?: boolean, battingTeam?: string, bowlingTeam?: string) => {
-  let bowlingOrder = matchData.innings[matchData.liveData.inning].bowlingOrder || [];
+const updateBowlingOrder = (matchData: Partial<_IMatch_>, bowlingTeam: string, inning: string, endOfOver?: boolean) => {
+  let bowlingOrder = matchData.innings[inning].bowlingOrder || [];
   bowlingOrder = bowlingOrder.filter((b) => b.id?.toString() !== matchData.liveData?.[bowlingTeam]?.bowler.id);
 
   if (!matchData.liveData?.[bowlingTeam]?.bowler.runs) matchData.liveData[bowlingTeam].bowler.maidens++;
@@ -74,8 +74,8 @@ const updateBowlingOrder = (matchData: Partial<_IMatch_>, endOfOver?: boolean, b
   return bowlingOrder;
 };
 
-const updateOverHistory = (matchData: Partial<_IMatch_>, battingTeam?: string) => {
-  const overHistory = matchData.innings[matchData.liveData.inning].overHistory || [];
+const updateOverHistory = (matchData: Partial<_IMatch_>, battingTeam: string, inning: string) => {
+  const overHistory = matchData.innings[inning].overHistory || [];
 
   overHistory.push(matchData.liveData[battingTeam]?.thisOver);
 

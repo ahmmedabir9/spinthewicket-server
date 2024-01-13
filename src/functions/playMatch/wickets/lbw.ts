@@ -1,5 +1,6 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
+import { initialLiveData } from '../../../utils/constants';
 import endOfOver from '../end/endOfOver';
 import { getBatsmanStats, getBowlerStats, getFallOfWicket, getPartnarship, getRunRate, getTargetUpdate } from '../utils';
 
@@ -19,7 +20,10 @@ const lbw = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: str
         [`innings.${inning}.fallOfWickets`]: getFallOfWicket(matchData, matchData.liveData[battingTeam].batsman.striker.id, 1, battingTeam),
       },
 
-      [`liveData.${battingTeam}.batsman.striker`]: null,
+      [`liveData.${battingTeam}.batsman.striker`]: {
+        id: null,
+        ...initialLiveData.batsman.striker,
+      },
 
       [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, bowlingTeam, 1),
 
@@ -29,19 +33,19 @@ const lbw = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: str
       [`innings.${inning}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
     };
 
-    if (inning === 'second' || inning === 'secondSuper') {
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...getTargetUpdate(matchData, 1, 1, battingTeam),
-      };
-    }
+    // if (inning === 'second' || inning === 'secondSuper') {
+    //   dataToUpdate = {
+    //     ...dataToUpdate,
+    //     ...getTargetUpdate(matchData, 1, 1, battingTeam),
+    //   };
+    // }
     console.log('💡 | dataToUpdate:', dataToUpdate);
 
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
-    // if (updateMatch.liveData[battingTeam].balls === 6) {
-    //   await endOfOver(updateMatch);
-    // }
+    if (updateMatch.liveData[battingTeam].balls === 6) {
+      await endOfOver(updateMatch, battingTeam, bowlingTeam, inning);
+    }
 
     // if (
     //   updateMatch.liveData.wickets === 10 ||

@@ -21,18 +21,18 @@ const sixRuns = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam:
       [`innings.${inning}.runRate`]: getRunRate(matchData, 6, 1, battingTeam),
     };
 
-    if (inning === 'second' || inning === 'secondSuper') {
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...getTargetUpdate(matchData, 6, 1, battingTeam),
-      };
-    }
-
-    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
-
-    // if (updateMatch.liveData[battingTeam].balls === 6) {
-    //   await endOfOver(updateMatch);
+    // if (inning === 'second' || inning === 'secondSuper') {
+    //   dataToUpdate = {
+    //     ...dataToUpdate,
+    //     ...getTargetUpdate(matchData, 6, 1, battingTeam),
+    //   };
     // }
+
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+
+    if (updateMatch.liveData[battingTeam].balls === 6) {
+      await endOfOver(updateMatch, battingTeam, bowlingTeam, inning);
+    }
     console.log('💡 | updateMatch:', dataToUpdate);
 
     // if (updateMatch.liveData.need <= 0) {

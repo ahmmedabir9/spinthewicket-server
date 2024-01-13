@@ -360,15 +360,15 @@ const playMatch = async (data: any, app: any) => {
         {
           new: true,
         },
-      ).select('innings liveData title squad');
+      );
 
       app.socketConnections.broadcastInMemory(`dream-team-match-${match}`, 'dream-team-match', {
         data: matchData,
         timestamp: new Date(),
       });
 
-      const ballAction = 'RUN_OUT';
-      // const ballAction = ballResult(bat, bowl);
+      // const ballAction = 'RUN_OUT';
+      const ballAction = ballResult(bat, bowl);
 
       if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
 
@@ -391,7 +391,7 @@ const playMatch = async (data: any, app: any) => {
 
       matchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, updateData, {
         new: true,
-      }).select('innings liveData title');
+      });
 
       //BROADCAST THE UPDATED DATA
 
