@@ -231,12 +231,19 @@ const updateMatchData = async (args: any, data: any, app: any) => {
     }
 
     const { id } = args;
-    const { selectedTo, striker, nonStriker, bowler, user, team, ...rest } = data;
+    const { selectedTo, striker, nonStriker, bowler, user, spinning, team, ...rest } = data;
     let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
 
     const currentInning =
       matchData?.innings?.first?.battingTeam?.toString() === matchData?.teams[team]?.toString() ? (bowler ? 'second' : 'first') : 'first';
+
+    if (spinning !== undefined) {
+      updateData = {
+        ...updateData,
+        [`liveData.${team}.spinning`]: spinning,
+      };
+    }
 
     // Toss Update
     if (selectedTo) {
@@ -311,7 +318,6 @@ const updateMatchData = async (args: any, data: any, app: any) => {
     }
 
     matchData = await DreamTeamMatch.findByIdAndUpdate(id, { ...updateData, ...rest }, { new: true });
-    console.log('💡 | matchData:', matchData);
 
     app.socketConnections.broadcastInMemory(`dream-team-match-${id}`, 'dream-team-match', {
       data: matchData,
@@ -326,7 +332,6 @@ const updateMatchData = async (args: any, data: any, app: any) => {
 const playMatch = async (data: any, app: any) => {
   try {
     const { match, bat, bowl, team } = data;
-    console.log('💡 | data:', data);
 
     if (!match || !bat || !bowl) {
       return socketResponse(false, null, 'Provide all Data!');
@@ -343,7 +348,10 @@ const playMatch = async (data: any, app: any) => {
     const battingTeam = matchData?.teams?.teamA?.toString() === team ? 'teamA' : 'teamB';
     const bowlingTeam = matchData?.teams?.teamA?.toString() === team ? 'teamB' : 'teamA';
 
-    if (ballValidation(matchData, battingTeam)) {
+    const currentInning = matchData?.innings?.first?.battingTeam?.toString() === team ? 'first' : 'second';
+    console.log('💡 | currentInning:', currentInning);
+
+    if (ballValidation(matchData, battingTeam, bowlingTeam)) {
       matchData = await DreamTeamMatch.findByIdAndUpdate(
         matchData._id,
         {
@@ -352,28 +360,29 @@ const playMatch = async (data: any, app: any) => {
         {
           new: true,
         },
-      ).select('innings liveData title');
+      ).select('innings liveData title squad');
 
       app.socketConnections.broadcastInMemory(`dream-team-match-${match}`, 'dream-team-match', {
         data: matchData,
         timestamp: new Date(),
       });
 
-      // const ballAction = 'FOUR';
-      const ballAction = ballResult(bat, bowl);
-      console.log('💡 | file: dreamTeamMatch.controller.ts:301 | ballAction:', ballAction);
+      const ballAction = 'RUN_OUT';
+      // const ballAction = ballResult(bat, bowl);
 
       if (!ballAction) return socketResponse(false, null, 'Failed to generate ball result!');
 
       const lastSpinPosition = getLastSpinPosition(ballAction);
 
-      // const ballData = prepareBallData(matchData, ballAction, battingTeam, bowlingTeam);
-      // const ballResponse = await getMatchFunction(ballAction, matchData, ballData, battingTeam);
+      const ballData = prepareBallData(matchData, ballAction, battingTeam, bowlingTeam);
+      const ballResponse = await getMatchFunction(ballAction, matchData, ballData, battingTeam, bowlingTeam, currentInning);
+
       // console.log('💡 | file: dreamTeamMatch.controller.ts:343 | ballResponse:', ballResponse);
 
-      // if (!ballResponse?.success) {
-      //   return socketResponse(false, null, ballResponse?.message);
-      // }
+      if (!ballResponse?.success) {
+        console.log('💡 | ballResponse:', ballResponse);
+        return socketResponse(false, null, ballResponse?.message);
+      }
 
       const updateData = {
         [`liveData.${battingTeam}.lastSpinPosition`]: lastSpinPosition,

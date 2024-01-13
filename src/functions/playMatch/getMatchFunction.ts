@@ -12,34 +12,41 @@ import catchOut from './wickets/catchOut';
 import lbw from './wickets/lbw';
 import runOut from './wickets/runOut';
 
-const getMatchFunction = (ballAction: string | boolean, matchData: Partial<_IMatch_>, ballData: any, battingTeam: string) => {
-  if (ballAction === 'DOT') return dotBall(matchData, ballData);
-  else if (ballAction === 'ONE') return oneRun(matchData, ballData);
-  else if (ballAction === 'TWO') return twoRuns(matchData, ballData);
-  else if (ballAction === 'THREE') return threeRuns(matchData, ballData);
-  else if (ballAction === 'FOUR') return fourRuns(matchData, ballData);
-  else if (ballAction === 'SIX') return sixRuns(matchData, ballData);
-  else if (ballAction === 'WIDE') return wideBall(matchData, ballData);
-  else if (ballAction === 'NO_BALL') return noBall(matchData, ballData);
+const getMatchFunction = (
+  ballAction: string | boolean,
+  matchData: Partial<_IMatch_>,
+  ballData: any,
+  battingTeam: string,
+  bowlingTeam: string,
+  inning: string,
+) => {
+  if (ballAction === 'DOT') return dotBall(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'ONE') return oneRun(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'TWO') return twoRuns(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'THREE') return threeRuns(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'FOUR') return fourRuns(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'SIX') return sixRuns(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'WIDE') return wideBall(matchData, ballData, battingTeam, bowlingTeam, inning);
+  else if (ballAction === 'NO_BALL') return noBall(matchData, ballData, battingTeam, bowlingTeam, inning);
   else if (ballAction === 'BOWLED') {
     if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
-      return dotBall(matchData, ballData);
+      return dotBall(matchData, ballData, battingTeam, bowlingTeam, inning);
     } else {
-      return bowled(matchData, ballData);
+      return bowled(matchData, ballData, battingTeam, bowlingTeam, inning);
     }
   } else if (ballAction === 'LBW') {
     if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
-      return dotBall(matchData, ballData);
+      return dotBall(matchData, ballData, battingTeam, bowlingTeam, inning);
     } else {
-      return lbw(matchData, ballData);
+      return lbw(matchData, ballData, battingTeam, bowlingTeam, inning);
     }
   } else if (ballAction === 'CATCH') {
     if (matchData?.liveData?.[`${battingTeam}`]?.freeHit) {
-      return dotBall(matchData, ballData);
+      return dotBall(matchData, ballData, battingTeam, bowlingTeam, inning);
     } else {
-      return catchOut(matchData, ballData);
+      return catchOut(matchData, ballData, battingTeam, bowlingTeam, inning);
     }
-  } else if (ballAction === 'RUN_OUT') return runOut(matchData, ballData);
+  } else if (ballAction === 'RUN_OUT') return runOut(matchData, ballData, battingTeam, bowlingTeam, inning);
 };
 
 export { getMatchFunction };

@@ -1,66 +1,47 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
 import endOfOver from '../end/endOfOver';
-import {
-  getBatsmanStats,
-  getBowlerStats,
-  getFallOfWicket,
-  getPartnarship,
-  getRunRate,
-  getTargetUpdate,
-} from '../utils';
+import { getBatsmanStats, getBowlerStats, getFallOfWicket, getPartnarship, getRunRate, getTargetUpdate } from '../utils';
 
-const lbw = async (matchData: Partial<_IMatch_>, ballData: any) => {
+const lbw = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: string, bowlingTeam: string, inning: string) => {
   try {
     let dataToUpdate = {
       $inc: {
-        'liveData.balls': 1,
-        'liveData.wickets': 1,
-        [`innings.${matchData.liveData.inning}.balls`]: 1,
-        [`innings.${matchData.liveData.inning}.wickets`]: 1,
+        [`liveData.${battingTeam}.balls`]: 1,
+        [`liveData.${battingTeam}.wickets`]: 1,
+        [`innings.${inning}.balls`]: 1,
+        [`innings.${inning}.wickets`]: 1,
       },
       $push: {
-        'liveData.thisOver': ballData,
-        [`innings.${matchData.liveData.inning}.battingOrder`]: getBatsmanStats(
-          matchData,
-          0,
-          1,
-          'LBW',
-        ),
-        [`innings.${matchData.liveData.inning}.partnerships`]: getPartnarship(matchData, 0, 1),
-        [`innings.${matchData.liveData.inning}.fallOfWickets`]: getFallOfWicket(
-          matchData,
-          matchData.liveData.batsman.striker.id,
-          1,
-        ),
+        [`liveData.${battingTeam}.thisOver`]: ballData,
+        [`innings.${inning}.battingOrder`]: getBatsmanStats(matchData, 0, 1, battingTeam, bowlingTeam, 'LBW'),
+        [`innings.${inning}.partnerships`]: getPartnarship(matchData, 0, 1, battingTeam),
+        [`innings.${inning}.fallOfWickets`]: getFallOfWicket(matchData, matchData.liveData[battingTeam].batsman.striker.id, 1, battingTeam),
       },
 
-      'liveData.batsman.striker': null,
+      [`liveData.${battingTeam}.batsman.striker`]: null,
 
-      'liveData.bowler': getBowlerStats(matchData, 0, 1, 1),
+      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, bowlingTeam, 1),
 
-      'liveData.runRate': getRunRate(matchData, 0, 1),
-      'liveData.partnership': null,
-      'liveData.freeHit': false,
-      [`innings.${matchData.liveData.inning}.runRate`]: getRunRate(matchData, 0, 1),
+      [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
+      [`liveData.${battingTeam}.partnership`]: null,
+      [`liveData.${battingTeam}.freeHit`]: false,
+      [`innings.${inning}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
     };
 
-    if (matchData.liveData.inning === 'second' || matchData.liveData.inning === 'secondSuper') {
+    if (inning === 'second' || inning === 'secondSuper') {
       dataToUpdate = {
         ...dataToUpdate,
-        ...getTargetUpdate(matchData, 1, 1),
+        ...getTargetUpdate(matchData, 1, 1, battingTeam),
       };
     }
+    console.log('💡 | dataToUpdate:', dataToUpdate);
 
-    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(
-      matchData._id,
-      dataToUpdate,
-      { new: true },
-    );
+    // const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
-    if (updateMatch.liveData.balls === 6) {
-      await endOfOver(updateMatch);
-    }
+    // if (updateMatch.liveData[battingTeam].balls === 6) {
+    //   await endOfOver(updateMatch);
+    // }
 
     // if (
     //   updateMatch.liveData.wickets === 10 ||

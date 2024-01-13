@@ -4,11 +4,11 @@ import { updateBowlingOrder, updateOverHistory } from '../utils';
 
 // const endOfInnings = require('./endOfInnings');
 
-const endOfOver = async (matchData: Partial<_IMatch_>) => {
+const endOfOver = async (matchData: Partial<_IMatch_>, battingTeam?: string, bowlingTeam?: string) => {
   try {
     let dataToUpdate = {
       'liveData.bowler': null,
-      'liveData.batsman.striker': matchData.liveData.batsman.nonStriker,
+      [`liveData.batsman.striker`]: matchData.liveData.batsman.nonStriker,
       'liveData.batsman.nonStriker': matchData.liveData.batsman.striker,
       'liveData.balls': 0,
       'liveData.thisOver': [],
