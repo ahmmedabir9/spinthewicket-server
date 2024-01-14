@@ -8,7 +8,7 @@ import { SocketRoutes } from './socketRoutes';
 const mongoURI = 'mongodb+srv://abir:tamimiqbal28@cluster0.ecxlb.mongodb.net/spinthewicket_dev?retryWrites=true&w=majority';
 
 export class EnvironmentVars {
-  port: number = process.argv[2] === 'prod' ? 5005 : 5005;
+  port: any = process.env.PORT || 5005;
   envMode: string = process.argv[2] === 'prod' ? 'prod' : process.argv[2] === 'uat' ? 'uat' : 'dev';
   jwtSecret: string = 'spin-the-wicket-jwt-secret-aksdj3hsajkndsdnad';
   dbName = 'spin-the-wicket';
