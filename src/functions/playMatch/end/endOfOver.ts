@@ -2,8 +2,7 @@ import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
 import { initialLiveData } from '../../../utils/constants';
 import { updateBowlingOrder, updateOverHistory } from '../utils';
-
-// const endOfInnings = require('./endOfInnings');
+import endOfInnings from './endOfInnings';
 
 const endOfOver = async (matchData: Partial<_IMatch_>, battingTeam: string, bowlingTeam: string, inning: string) => {
   try {
@@ -23,11 +22,12 @@ const endOfOver = async (matchData: Partial<_IMatch_>, battingTeam: string, bowl
       [`innings.${inning}.overHistory`]: updateOverHistory(matchData, battingTeam, inning),
     };
 
-    await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
+    const updateMatch: _IMatch_ = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, { new: true });
 
-    // if (updateMatch.liveData.overs === updateMatch.overs || updateMatch.superOver) {
-    //   await endOfInnings(updateMatch);
-    // }
+    if (updateMatch.liveData[battingTeam].overs === updateMatch.overs || updateMatch.superOver) {
+      console.log('🚀 | endOfOver | updateMatch.overs:', updateMatch.overs);
+      await endOfInnings(updateMatch, battingTeam, bowlingTeam, inning);
+    }
 
     return { success: true };
   } catch (error) {

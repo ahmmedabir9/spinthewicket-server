@@ -1,139 +1,146 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
+import { initialLiveData } from '../../../utils/constants';
 import { getBatsmanStats, getBowlerStats, getPartnarship, updateOverHistory } from '../utils';
 
+const OPOSITE_INNING = {
+  first: 'second',
+  second: 'first',
+  firstSuper: 'secondSuper',
+  secondSuper: 'firstSuper',
+};
+
 // * FROM :: LAST BALL, LAST WICKET, RUN CHASED
-const endOfInnings = async (matchData: Partial<_IMatch_>) => {
-  // * PUSH BATTING ORDER
-  let batsman = [];
-  if (matchData.liveData.batsman.striker.id)
-    batsman.push({ ...getBatsmanStats(matchData, 0, 0), status: 'notout' });
-  if (matchData.liveData.batsman.nonStriker.id)
-    batsman.push({ ...getBatsmanStats(matchData, 0, 0, null, true), status: 'notout' });
+const endOfInnings = async (matchData: Partial<_IMatch_>, battingTeam: string, bowlingTeam: string, inning: string) => {
+  try {
+    // * PUSH BATTING ORDER
+    const batsman = [];
+    console.log('💡 | batsman:', batsman);
+    if (matchData.liveData[battingTeam].batsman?.striker?.id) {
+      batsman.push({ ...getBatsmanStats(matchData, 0, 0, battingTeam, bowlingTeam), status: 'notout' });
+    }
+    if (matchData.liveData[battingTeam].batsman?.nonStriker?.id) {
+      batsman.push({ ...getBatsmanStats(matchData, 0, 0, battingTeam, bowlingTeam, null, true), status: 'notout' });
+    }
 
-  let bowler: any;
-  // * PUSH BOWLING ORDER
-  if (matchData.liveData.bowler.id) bowler = getBowlerStats(matchData, 0, 0);
+    let bowler: any;
 
-  let dataToUpdate: any = {
-    'liveData.bowler': null,
-    'liveData.extra': 0,
-    'liveData.runRate': 0,
-    'liveData.batsman.striker': null,
-    'liveData.batsman.nonStriker': null,
-    'liveData.balls': 0,
-    'liveData.overs': 0,
-    'liveData.freeHit': null,
-    'liveData.battingTeam': matchData.liveData.bowlingTeam,
-    'liveData.bowlingTeam': matchData.liveData.battingTeam,
-    'liveData.battingScorer': matchData.liveData.bowlingScorer,
-    'liveData.bowlingScorer': matchData.liveData.battingScorer,
-    'liveData.runs': 0,
-    'liveData.wickets': 0,
-    'liveData.partnership': {
-      runs: 0,
-      balls: 0,
-      batsman1: null,
-      batsman2: null,
-    },
-    'liveData.thisOver': [],
-    $push: {
-      [`innings.${matchData.liveData.inning}.bowlingOrder`]: bowler,
-      [`innings.${matchData.liveData.inning}.battingOrder`]: [...batsman],
-      [`innings.${matchData.liveData.inning}.partnerships`]: getPartnarship(matchData, 0, 0),
-    },
-    [`innings.${matchData.liveData.inning}.overHistory`]: updateOverHistory(matchData),
-  };
+    console.log('🚀 | endOfInnings | bowler:', bowler);
+    // * PUSH BOWLING ORDER
+    if (matchData.liveData[bowlingTeam]?.bowler?.id) {
+      bowler = getBowlerStats(matchData, 0, 0, bowlingTeam);
+    }
 
-  // * IF FIRST INNING, EXCHANGE BATTING/BOWLING TEAM ON LIVE DATA
-  // * IF FIRST INNING, CALCULATE TARGET
-  if (matchData.liveData.inning === 'first' || matchData.liveData.inning === 'firstSuper') {
-    dataToUpdate = {
-      ...dataToUpdate,
-      'liveData.target': matchData.liveData.runs + 1,
-      'liveData.inning': matchData.liveData.inning === 'first' ? 'second' : 'secondSuper',
-      'liveData.need': matchData.liveData.runs + 1,
-      'liveData.from': matchData.overs * 6,
-      'liveData.reqRR': (matchData.liveData.runs + 1) / matchData.overs,
+    console.log('🚀 | endOfInnings | batsman:', batsman);
+
+    let dataToUpdate: any = {
+      [`liveData.${battingTeam}.status`]: 'completed',
+      $push: {
+        [`innings.${inning}.bowlingOrder`]: bowler,
+        [`innings.${inning}.battingOrder`]: [...batsman],
+        [`innings.${inning}.partnerships`]: getPartnarship(matchData, 0, 0, battingTeam),
+      },
+      [`innings.${inning}.overHistory`]: updateOverHistory(matchData, battingTeam, inning),
     };
-  }
 
-  // * IF SECOND INNINGS, CALCULATE RESULT, START SUPER IF TIE, OR END MATCH
-  // *
+    console.log('💡 | dataToUpdate:', dataToUpdate);
 
-  if (matchData.liveData.inning === 'second' || matchData.liveData.inning === 'secondSuper') {
-    // * RESULT
-    const firstInning = matchData.liveData.inning === 'secondSuper' ? 'firstSuper' : 'first';
-    const secondInning = matchData.liveData.inning === 'secondSuper' ? 'secondSuper' : 'second';
-
-    if (matchData.innings[firstInning].runs > matchData.innings[secondInning].runs) {
+    // * IF FIRST INNING, EXCHANGE BATTING/BOWLING TEAM ON LIVE DATA
+    // * IF FIRST INNING, CALCULATE TARGET
+    if (matchData.matchMode === 'full' && (inning === 'first' || inning === 'firstSuper')) {
       dataToUpdate = {
         ...dataToUpdate,
-        result: {
-          winner: matchData.innings[firstInning].battingTeam,
-          wonBy: firstInning === 'firstSuper' ? 'superOver' : 'runs',
-          runs: matchData.innings[firstInning].runs - matchData.innings[secondInning].runs,
-        },
-        liveData: null,
-
-        status: 'completed',
+        [`liveData.${battingTeam}.target`]: matchData.liveData[battingTeam].runs + 1,
+        [`liveData.${battingTeam}.inning`]: inning === 'first' ? 'second' : 'secondSuper',
+        [`liveData.${battingTeam}.need`]: matchData.liveData[battingTeam].runs + 1,
+        [`liveData.${battingTeam}.from`]: matchData.overs * 6,
+        [`liveData.${battingTeam}.reqRR`]: (matchData.liveData[battingTeam].runs + 1) / matchData.overs,
       };
-    } else if (matchData.innings[firstInning].runs < matchData.innings[secondInning].runs) {
-      dataToUpdate = {
-        ...dataToUpdate,
-        result: {
-          winner: matchData.innings[secondInning].battingTeam,
-          wonBy: firstInning === 'firstSuper' ? 'superOver' : 'wickets',
-          runs: 10 - matchData.innings[secondInning].wickets,
-        },
-        liveData: null,
+    }
 
-        status: 'completed',
-      };
-    } else {
-      dataToUpdate = {
-        ...dataToUpdate,
-        'liveData.inning': 'firstSuper',
-        'liveData.target': null,
-        'liveData.need': null,
-        'liveData.from': null,
-        'liveData.reqRR': null,
+    // * IF SECOND INNINGS, OR THIS INNING LEFT ONLY, CALCULATE RESULT, START SUPER IF TIE, OR END MATCH
+    // *
 
-        'innings.firstSuper': {
-          battingTeam: matchData.innings.second.battingTeam,
-          bowlingTeam: matchData.innings.first.battingTeam,
-          battingScorer: matchData.innings.second.battingScorer,
-          bowlingScorer: matchData.innings.second.bowlingScorer,
-          battingOrder: [],
-          bowlingOrder: [],
-          partnerships: [],
-          fallOfWickets: [],
-          ballByBall: [],
-          overs: 0,
-          balls: 0,
-          runs: 0,
-          wickets: 0,
-          runRate: 0,
-          extra: 0,
-        },
-        'innings.secondSuper': {
-          battingTeam: matchData.innings.first.battingTeam,
-          bowlingTeam: matchData.innings.second.battingTeam,
-          battingScorer: matchData.innings.first.battingScorer,
-          bowlingScorer: matchData.innings.first.bowlingScorer,
-          battingOrder: [],
-          bowlingOrder: [],
-          partnerships: [],
-          fallOfWickets: [],
-          ballByBall: [],
-          overs: 0,
-          balls: 0,
-          runs: 0,
-          wickets: 0,
-          runRate: 0,
-          extra: 0,
-        },
-      };
+    if (matchData.liveData[bowlingTeam].status === 'completed') {
+      // * RESULT
+
+      const otherInning = OPOSITE_INNING[inning];
+
+      if (matchData.innings[otherInning].runs > matchData.innings[inning].runs) {
+        dataToUpdate = {
+          ...dataToUpdate,
+          result: {
+            winner: matchData.innings[otherInning].battingTeam,
+            wonBy: otherInning === 'firstSuper' ? 'superOver' : 'runs',
+            wickets: 10 - matchData.innings[otherInning].wickets,
+            runs: matchData.innings[otherInning].runs - matchData.innings[inning].runs,
+          },
+
+          status: 'completed',
+        };
+      } else if (matchData.innings[otherInning].runs < matchData.innings[inning].runs) {
+        dataToUpdate = {
+          ...dataToUpdate,
+          result: {
+            winner: matchData.innings[inning].battingTeam,
+            wonBy: otherInning === 'firstSuper' ? 'superOver' : 'wickets',
+            wickets: 10 - matchData.innings[inning].wickets,
+            runs: matchData.innings[inning].runs - matchData.innings[otherInning].runs,
+          },
+
+          status: 'completed',
+        };
+      } else {
+        dataToUpdate = {
+          ...dataToUpdate,
+          [`liveData.${battingTeam}.inning`]: 'firstSuper',
+          [`liveData.${battingTeam}.target`]: null,
+          [`liveData.${battingTeam}.need`]: null,
+          [`liveData.${battingTeam}.from`]: null,
+          [`liveData.${battingTeam}.reqRR`]: null,
+
+          [`liveData.${bowlingTeam}.inning`]: 'secondSuper',
+          [`liveData.${bowlingTeam}.target`]: null,
+          [`liveData.${bowlingTeam}.need`]: null,
+          [`liveData.${bowlingTeam}.from`]: null,
+          [`liveData.${bowlingTeam}.reqRR`]: null,
+
+          [`innings.firstSuper`]: {
+            battingTeam: matchData.innings[inning].battingTeam,
+            bowlingTeam: matchData.innings[inning].bowlingTeam,
+            battingScorer: matchData.innings[inning].battingScorer,
+            bowlingScorer: matchData.innings[inning].bowlingScorer,
+            battingOrder: [],
+            bowlingOrder: [],
+            partnerships: [],
+            fallOfWickets: [],
+            ballByBall: [],
+            overs: 0,
+            balls: 0,
+            runs: 0,
+            wickets: 0,
+            runRate: 0,
+            extra: 0,
+          },
+          [`innings.secondSuper`]: {
+            battingTeam: matchData.innings[otherInning].battingTeam,
+            bowlingTeam: matchData.innings[otherInning].bowlingTeam,
+            battingScorer: matchData.innings[otherInning].battingScorer,
+            bowlingScorer: matchData.innings[otherInning].bowlingScorer,
+            battingOrder: [],
+            bowlingOrder: [],
+            partnerships: [],
+            fallOfWickets: [],
+            ballByBall: [],
+            overs: 0,
+            balls: 0,
+            runs: 0,
+            wickets: 0,
+            runRate: 0,
+            extra: 0,
+          },
+        };
+      }
     }
 
     const newMatchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, {
@@ -143,6 +150,14 @@ const endOfInnings = async (matchData: Partial<_IMatch_>) => {
     if (newMatchData.status === 'completed') {
       // SAVE MATCH DATA HERE
     }
+
+    return { success: true };
+  } catch (error) {
+    console.log('🚀 | endOfInnings | error:', error);
+    return {
+      success: false,
+      error,
+    };
   }
 };
 export default endOfInnings;

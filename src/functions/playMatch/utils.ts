@@ -75,7 +75,7 @@ const updateBowlingOrder = (matchData: Partial<_IMatch_>, bowlingTeam: string, i
 };
 
 const updateOverHistory = (matchData: Partial<_IMatch_>, battingTeam: string, inning: string) => {
-  const overHistory = matchData.innings[inning].overHistory || [];
+  const overHistory = matchData.innings[inning]?.overHistory || [];
 
   overHistory.push(matchData.liveData[battingTeam]?.thisOver);
 

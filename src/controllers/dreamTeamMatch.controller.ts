@@ -117,11 +117,13 @@ const startQuickMatch = async (req: Request, res: Response) => {
       teamA: {
         scorer: user,
         status: matchMode === 'h2h' ? 'batting' : teamAStatus,
+        inning: battingTeam === dreamTeam?._id?.toString() ? 'first' : 'second',
         ...initialLiveData,
       },
       teamB: {
         scorer: null,
         status: matchMode === 'h2h' ? 'batting' : teamBStatus,
+        inning: bowlingTeam === dreamTeam?._id?.toString() ? 'first' : 'second',
         ...initialLiveData,
       },
     };

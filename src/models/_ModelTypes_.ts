@@ -176,7 +176,8 @@ interface _IPlayerInfo_ {
 }
 
 interface _ILiveTeamData_ {
-  status: 'batting' | 'bowling';
+  status: 'batting' | 'bowling' | 'completed';
+  inning: 'first' | 'second' | 'firstSuper' | 'secondSuper';
   scorer: Types.ObjectId;
   batsman: {
     striker: any;
@@ -208,6 +209,7 @@ interface _IMatch_ extends Document {
   title: string;
   slug: string;
   users: Types.ObjectId[] | _IUser_[];
+  superOver: boolean;
   innings: {
     first: _IInning_;
     second: _IInning_;
@@ -231,6 +233,7 @@ interface _IMatch_ extends Document {
     selectedTo?: string;
   };
   matchType: string;
+  matchMode: string;
   tournament: Types.ObjectId;
   league: Types.ObjectId;
   liveData: {
