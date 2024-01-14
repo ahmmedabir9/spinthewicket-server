@@ -7,7 +7,7 @@
   "private": false,
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/src/index.js",
+    "start": "node ./src/index.ts",
     "dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint:fix": "eslint --fix --ignore-path .eslintignore --ext .js,.ts .",
