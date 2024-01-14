@@ -13,7 +13,7 @@ const noBall = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: 
         [`innings.${inning}.runs`]: 1,
       },
       $push: { [`liveData.${battingTeam}.thisOver`]: ballData },
-      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 1, 0, bowlingTeam),
+      [`liveData.${battingTeam}.bowler`]: getBowlerStats(matchData, 1, 0, battingTeam),
       [`liveData.${battingTeam}.partnership`]: getPartnarship(matchData, 1, 0, battingTeam),
       [`liveData.${battingTeam}.freeHit`]: true,
       [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 1, 0, battingTeam),

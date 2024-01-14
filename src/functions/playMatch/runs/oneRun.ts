@@ -16,7 +16,7 @@ const oneRun = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: 
       $push: { [`liveData.${battingTeam}.thisOver`]: ballData },
       [`liveData.${battingTeam}.batsman.striker`]: matchData?.liveData[battingTeam]?.batsman?.nonStriker,
       [`liveData.${battingTeam}.batsman.nonStriker`]: getBatsmanStats(matchData, 1, 1, battingTeam, bowlingTeam),
-      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 1, 1, bowlingTeam),
+      [`liveData.${battingTeam}.bowler`]: getBowlerStats(matchData, 1, 1, battingTeam),
       [`liveData.${battingTeam}.partnership`]: getPartnarship(matchData, 1, 1, battingTeam),
       [`liveData.${battingTeam}.freeHit`]: false,
       [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 1, 1, battingTeam),

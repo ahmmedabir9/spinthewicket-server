@@ -27,8 +27,8 @@ const endOfInnings = async (matchData: Partial<_IMatch_>, battingTeam: string, b
 
     console.log('🚀 | endOfInnings | bowler:', bowler);
     // * PUSH BOWLING ORDER
-    if (matchData.liveData[bowlingTeam]?.bowler?.id) {
-      bowler = getBowlerStats(matchData, 0, 0, bowlingTeam);
+    if (matchData.liveData[battingTeam]?.bowler?.id) {
+      bowler = getBowlerStats(matchData, 0, 0, battingTeam);
     }
 
     console.log('🚀 | endOfInnings | batsman:', batsman);
@@ -36,7 +36,7 @@ const endOfInnings = async (matchData: Partial<_IMatch_>, battingTeam: string, b
     let dataToUpdate: any = {
       [`liveData.${battingTeam}.status`]: 'completed',
       $push: {
-        [`innings.${inning}.bowlingOrder`]: bowler,
+        ...(bowler ? { [`innings.${inning}.bowlingOrder`]: bowler } : null),
         [`innings.${inning}.battingOrder`]: [...batsman],
         [`innings.${inning}.partnerships`]: getPartnarship(matchData, 0, 0, battingTeam),
       },

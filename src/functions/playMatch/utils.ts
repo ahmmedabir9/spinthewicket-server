@@ -25,14 +25,13 @@ const getBatsmanStats = (
       ...stats,
       status: 'out',
       out: {
-        bowler: matchData.liveData?.[bowlingTeam]?.bowler.id,
+        bowler: matchData.liveData?.[battingTeam]?.bowler.id,
         wicketType: out,
       },
     };
 
     if (out === 'CATCH' || out === 'RUN_OUT') {
       const index = Math.floor(Math.random() * 100) % 11;
-      console.log('💡 | atchData.squad[bowlingTeam]:', matchData.squad[bowlingTeam]);
 
       stats = {
         ...stats,
@@ -45,8 +44,8 @@ const getBatsmanStats = (
   return stats;
 };
 
-const getBowlerStats = (matchData: Partial<_IMatch_>, run: number, ball: number, bowlingTeam: string, wicket?: number) => {
-  const stats = matchData.liveData?.[bowlingTeam]?.bowler;
+const getBowlerStats = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam: string, wicket?: number) => {
+  const stats = matchData.liveData?.[battingTeam]?.bowler;
 
   stats.balls = stats.balls + ball;
   stats.runs = stats.runs + run;
@@ -54,22 +53,22 @@ const getBowlerStats = (matchData: Partial<_IMatch_>, run: number, ball: number,
   stats.fours = stats.fours + (run === 4 ? 1 : 0);
   stats.sixes = stats.sixes + (run === 6 ? 1 : 0);
   stats.dotBalls = stats.dotBalls + (run === 0 ? 1 : 0);
-  stats.economy = getEconomy(matchData, run, ball, bowlingTeam);
+  stats.economy = getEconomy(matchData, run, ball, battingTeam);
 
   return stats;
 };
 
-const updateBowlingOrder = (matchData: Partial<_IMatch_>, bowlingTeam: string, inning: string, endOfOver?: boolean) => {
+const updateBowlingOrder = (matchData: Partial<_IMatch_>, battingTeam: string, inning: string, endOfOver?: boolean) => {
   let bowlingOrder = matchData.innings[inning].bowlingOrder || [];
-  bowlingOrder = bowlingOrder.filter((b) => b.id?.toString() !== matchData.liveData?.[bowlingTeam]?.bowler.id);
+  bowlingOrder = bowlingOrder.filter((b) => b.id?.toString() !== matchData.liveData?.[battingTeam]?.bowler.id);
 
-  if (!matchData.liveData?.[bowlingTeam]?.bowler.runs) matchData.liveData[bowlingTeam].bowler.maidens++;
+  if (!matchData.liveData?.[battingTeam]?.bowler.runs) matchData.liveData[battingTeam].bowler.maidens++;
   if (endOfOver) {
-    matchData.liveData[bowlingTeam].bowler.overs++;
-    matchData.liveData[bowlingTeam].bowler.balls = 0;
+    matchData.liveData[battingTeam].bowler.overs++;
+    matchData.liveData[battingTeam].bowler.balls = 0;
   }
 
-  bowlingOrder.push(matchData.liveData[bowlingTeam]?.bowler);
+  bowlingOrder.push(matchData.liveData[battingTeam]?.bowler);
 
   return bowlingOrder;
 };
@@ -86,10 +85,10 @@ const getStrikeRate = (matchData: Partial<_IMatch_>, run: number, ball: number, 
   return ((matchData.liveData[battingTeam]?.batsman.striker.runs + run) / (matchData.liveData[battingTeam]?.batsman.striker.balls + ball)) * 100;
 };
 
-const getEconomy = (matchData: Partial<_IMatch_>, run: number, ball: number, bowlingTeam: string) => {
+const getEconomy = (matchData: Partial<_IMatch_>, run: number, ball: number, battingTeam: string) => {
   return (
-    (matchData.liveData[bowlingTeam].bowler.runs + run) /
-    ((matchData.liveData[bowlingTeam].bowler.overs * 6 + (matchData.liveData[bowlingTeam].bowler.balls + ball)) / 6)
+    (matchData.liveData[battingTeam]?.bowler.runs + run) /
+    ((matchData.liveData[battingTeam]?.bowler.overs * 6 + (matchData.liveData[battingTeam]?.bowler.balls + ball)) / 6)
   );
 };
 

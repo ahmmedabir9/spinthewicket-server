@@ -1,8 +1,8 @@
 import { _IMatch_ } from '../../models/_ModelTypes_';
 
-const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | boolean, battingTeam: string, bowlingTeam: string) => {
+const prepareBallData = (matchData: Partial<_IMatch_>, ballAction: string | boolean, battingTeam: string) => {
   const ball = {
-    bowler: matchData.liveData[bowlingTeam].bowler.id,
+    bowler: matchData.liveData[battingTeam].bowler.id,
     batsman: matchData.liveData[battingTeam].batsman.striker.id,
     status: ballAction,
     overNo: matchData.liveData[battingTeam].overs,

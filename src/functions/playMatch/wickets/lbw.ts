@@ -25,7 +25,7 @@ const lbw = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: str
         ...initialLiveData.batsman.striker,
       },
 
-      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, bowlingTeam, 1),
+      [`liveData.${battingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, battingTeam, 1),
 
       [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
       [`liveData.${battingTeam}.partnership`]: null,

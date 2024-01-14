@@ -14,6 +14,11 @@ import { initialInningData, initialLiveData, initialMatchBatsmanData, initialMat
 import { response } from '../utils/response';
 import { socketResponse } from '../utils/socketResponse';
 
+const OPOSITE_TEAM = {
+  teamA: 'teamB',
+  teamB: 'teamA',
+};
+
 const teamPopulate = [
   { path: 'theme' },
   { path: 'manager' },
@@ -237,8 +242,7 @@ const updateMatchData = async (args: any, data: any, app: any) => {
     let matchData: Partial<_IMatch_> = await DreamTeamMatch.findById(id);
     let updateData: any = {};
 
-    const currentInning =
-      matchData?.innings?.first?.battingTeam?.toString() === matchData?.teams[team]?.toString() ? (bowler ? 'second' : 'first') : 'first';
+    const currentInning = matchData.liveData[team]?.inning || 'first';
 
     if (spinning !== undefined) {
       updateData = {
@@ -304,7 +308,7 @@ const updateMatchData = async (args: any, data: any, app: any) => {
     }
     // Select Bowler
     if (bowler) {
-      const newBolwer = matchData?.innings[currentInning]?.bowlingOrder?.find((b: any) => b.id?.toString() === bowler?.toString()) || {
+      const newBolwer = matchData?.innings[currentInning]?.bowlingOrder?.find((b: any) => b?.id?.toString() === bowler?.toString()) || {
         ...initialMatchBowlerData,
         id: bowler,
       };
@@ -315,7 +319,7 @@ const updateMatchData = async (args: any, data: any, app: any) => {
 
       updateData = {
         ...updateData,
-        [`liveData.${team}.bowler`]: newBolwer,
+        [`liveData.${OPOSITE_TEAM[team]}.bowler`]: newBolwer,
       };
     }
 
@@ -323,10 +327,14 @@ const updateMatchData = async (args: any, data: any, app: any) => {
 
     app.socketConnections.broadcastInMemory(`dream-team-match-${id}`, 'dream-team-match', {
       data: matchData,
+      meta: {
+        team: bowler ? OPOSITE_TEAM[team] : team,
+      },
       timestamp: new Date(),
     });
     return socketResponse(true, matchData, null);
   } catch (error) {
+    console.log('💡 | error:', error);
     return socketResponse(false, null, error.message);
   }
 };
@@ -353,7 +361,7 @@ const playMatch = async (data: any, app: any) => {
     const currentInning = matchData?.innings?.first?.battingTeam?.toString() === team ? 'first' : 'second';
     console.log('💡 | currentInning:', currentInning);
 
-    if (ballValidation(matchData, battingTeam, bowlingTeam)) {
+    if (ballValidation(matchData, battingTeam)) {
       matchData = await DreamTeamMatch.findByIdAndUpdate(
         matchData._id,
         {
@@ -367,6 +375,9 @@ const playMatch = async (data: any, app: any) => {
       app.socketConnections.broadcastInMemory(`dream-team-match-${match}`, 'dream-team-match', {
         data: matchData,
         timestamp: new Date(),
+        meta: {
+          team: battingTeam,
+        },
       });
 
       // const ballAction = 'RUN_OUT';
@@ -376,7 +387,7 @@ const playMatch = async (data: any, app: any) => {
 
       const lastSpinPosition = getLastSpinPosition(ballAction);
 
-      const ballData = prepareBallData(matchData, ballAction, battingTeam, bowlingTeam);
+      const ballData = prepareBallData(matchData, ballAction, battingTeam);
       const ballResponse = await getMatchFunction(ballAction, matchData, ballData, battingTeam, bowlingTeam, currentInning);
 
       // console.log('💡 | file: dreamTeamMatch.controller.ts:343 | ballResponse:', ballResponse);
@@ -400,6 +411,9 @@ const playMatch = async (data: any, app: any) => {
       setTimeout(() => {
         app.socketConnections.broadcastInMemory(`dream-team-match-${match}`, 'dream-team-match', {
           data: matchData,
+          meta: {
+            team: battingTeam,
+          },
           timestamp: new Date(),
         });
       }, 3000);

@@ -7,7 +7,7 @@ import endOfInnings from './endOfInnings';
 const endOfOver = async (matchData: Partial<_IMatch_>, battingTeam: string, bowlingTeam: string, inning: string) => {
   try {
     const dataToUpdate = {
-      [`liveData.${bowlingTeam}.bowler`]: {
+      [`liveData.${battingTeam}.bowler`]: {
         id: null,
         ...initialLiveData.bowler,
       },
@@ -18,7 +18,7 @@ const endOfOver = async (matchData: Partial<_IMatch_>, battingTeam: string, bowl
       [`liveData.${battingTeam}.overs`]: matchData.liveData[battingTeam].overs + 1,
       [`innings.${inning}.overs`]: matchData.liveData[battingTeam].overs + 1,
       [`innings.${inning}.balls`]: 0,
-      [`innings.${inning}.bowlingOrder`]: updateBowlingOrder(matchData, bowlingTeam, inning, true),
+      [`innings.${inning}.bowlingOrder`]: updateBowlingOrder(matchData, battingTeam, inning, true),
       [`innings.${inning}.overHistory`]: updateOverHistory(matchData, battingTeam, inning),
     };
 

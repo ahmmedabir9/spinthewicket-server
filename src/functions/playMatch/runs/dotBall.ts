@@ -15,7 +15,7 @@ const dotBall = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam:
 
       [`liveData.${battingTeam}.batsman.striker`]: getBatsmanStats(matchData, 0, 1, battingTeam, bowlingTeam),
 
-      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, bowlingTeam),
+      [`liveData.${battingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, battingTeam),
 
       [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
       [`liveData.${battingTeam}.partnership`]: getPartnarship(matchData, 0, 1, battingTeam),

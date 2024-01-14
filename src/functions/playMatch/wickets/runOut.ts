@@ -41,7 +41,7 @@ const runOut = async (matchData: Partial<_IMatch_>, ballData: any, battingTeam: 
 
       // [`liveData.${battingTeam}.batsman.nonStriker`]: outBatsman === 'nonStriker' ? null : getBatsmanStats(matchData, 0, 0, battingTeam, bowlingTeam),
 
-      [`liveData.${bowlingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, bowlingTeam),
+      [`liveData.${battingTeam}.bowler`]: getBowlerStats(matchData, 0, 1, battingTeam),
       [`liveData.${battingTeam}.runRate`]: getRunRate(matchData, 0, 1, battingTeam),
       [`liveData.${battingTeam}.partnership`]: null,
       [`liveData.${battingTeam}.freeHit`]: false,
