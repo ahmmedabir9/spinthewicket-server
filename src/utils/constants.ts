@@ -40,7 +40,7 @@ const initialBowlingStat: Partial<_IBowlingStat_> = {
 };
 
 const initialTeamData: Partial<_IDreamTeam_> = {
-  points: 0,
+  rankPoints: 0,
   trophies: [],
   achievements: [],
   matches: {
@@ -48,7 +48,6 @@ const initialTeamData: Partial<_IDreamTeam_> = {
     won: 0,
     lost: 0,
     tied: 0,
-    points: 0,
   },
   netRunRate: {
     against: {
@@ -61,7 +60,7 @@ const initialTeamData: Partial<_IDreamTeam_> = {
       overs: 0,
       runs: 0,
     },
-    nRR: 0,
+    runRate: 0,
   },
 };
 

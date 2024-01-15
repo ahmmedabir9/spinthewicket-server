@@ -285,7 +285,7 @@ interface _IDreamTeam_ extends Document {
   theme?: Types.ObjectId;
   captain?: Types.ObjectId;
   manager?: Types.ObjectId | Partial<_IUser_>;
-  points: number;
+  rankPoints: number;
   trophies: { trophy: Types.ObjectId; date: Date }[];
   playingXI: Types.ObjectId[];
   rating: number;
@@ -295,12 +295,11 @@ interface _IDreamTeam_ extends Document {
     won: number;
     lost: number;
     tied: number;
-    points: number;
   };
   netRunRate: {
     against: { balls: number; overs: number; runs: number };
     for: { balls: number; overs: number; runs: number };
-    nRR: number;
+    runRate: number;
   };
   isBot: boolean;
 }

@@ -1,6 +1,7 @@
 import { DreamTeamMatch } from '../../../models/DreamTeamMatch.model';
 import { _IMatch_ } from '../../../models/_ModelTypes_';
 import { initialLiveData } from '../../../utils/constants';
+import { saveMatch } from '../../saveMatch/saveMatch';
 import { getBatsmanStats, getBowlerStats, getPartnarship, updateOverHistory } from '../utils';
 
 const OPOSITE_INNING = {
@@ -148,7 +149,7 @@ const endOfInnings = async (matchData: Partial<_IMatch_>, battingTeam: string, b
     });
 
     if (newMatchData.status === 'completed') {
-      // SAVE MATCH DATA HERE
+      await saveMatch(newMatchData);
     }
 
     return { success: true };

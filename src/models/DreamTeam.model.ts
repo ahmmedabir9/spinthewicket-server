@@ -1,6 +1,6 @@
-import { Schema, SchemaTypes, model } from "mongoose";
+import { Schema, SchemaTypes, model } from 'mongoose';
 
-import { _IDreamTeam_ } from "./_ModelTypes_";
+import { _IDreamTeam_ } from './_ModelTypes_';
 
 const DreamTeamSchema = new Schema<_IDreamTeam_>(
   {
@@ -18,22 +18,21 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
     },
     isActive: Boolean,
     theme: {
-      ref: "theme",
+      ref: 'theme',
       type: SchemaTypes.ObjectId,
     },
     captain: {
-      ref: "dream_player",
+      ref: 'dream_player',
       type: SchemaTypes.ObjectId,
     },
     manager: {
-      ref: "user",
+      ref: 'user',
       type: SchemaTypes.ObjectId,
     },
-    points: { type: Number, default: 0 },
     trophies: [
       {
         trophy: {
-          ref: "trophy",
+          ref: 'trophy',
           type: SchemaTypes.ObjectId,
         },
         date: Date,
@@ -41,7 +40,7 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
     ],
     playingXI: [
       {
-        ref: "dream_player",
+        ref: 'dream_player',
         type: SchemaTypes.ObjectId,
       },
     ],
@@ -49,7 +48,7 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
     achievements: [
       {
         achievement: {
-          ref: "achievement",
+          ref: 'achievement',
           type: SchemaTypes.ObjectId,
         },
         date: Date,
@@ -60,7 +59,6 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
       won: { type: Number, default: 0 },
       lost: { type: Number, default: 0 },
       tied: { type: Number, default: 0 },
-      points: { type: Number, default: 0 },
     },
     netRunRate: {
       against: {
@@ -73,13 +71,14 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
         overs: { type: Number, default: 0 },
         runs: { type: Number, default: 0 },
       },
-      nRR: { type: Number, default: 0 },
+      runRate: { type: Number, default: 0 },
     },
+    rankPoints: { type: Number, default: 0 },
     isBot: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
-const DreamTeam = model<_IDreamTeam_>("dream_team", DreamTeamSchema);
+const DreamTeam = model<_IDreamTeam_>('dream_team', DreamTeamSchema);
 
 export { DreamTeam };
