@@ -1,30 +1,30 @@
-import { Schema, SchemaTypes, model } from "mongoose";
+import { Schema, SchemaTypes, model } from 'mongoose';
 
-import { _IDreamPlayer_ } from "./_ModelTypes_";
+import { _IDreamPlayer_ } from './_ModelTypes_';
 
 const DreamPlayerSchema = new Schema<_IDreamPlayer_>(
   {
     playerInfo: {
-      ref: "player_info",
+      ref: 'player_info',
       type: SchemaTypes.ObjectId,
     },
     activePlayer: { type: Boolean, default: true },
     battingStat: {
-      ref: "batting_stat",
+      ref: 'batting_stat',
       type: SchemaTypes.ObjectId,
     },
     bowlingStat: {
-      ref: "bowling_stat",
+      ref: 'bowling_stat',
       type: SchemaTypes.ObjectId,
     },
     team: {
-      ref: "dream_team",
+      ref: 'dream_team',
       type: SchemaTypes.ObjectId,
     },
     trophies: [
       {
         trophy: {
-          ref: "trophy",
+          ref: 'trophy',
           type: SchemaTypes.ObjectId,
         },
         date: { type: Date, default: Date.now },
@@ -33,7 +33,7 @@ const DreamPlayerSchema = new Schema<_IDreamPlayer_>(
     achievements: [
       {
         achievement: {
-          ref: "achievement",
+          ref: 'achievement',
           type: SchemaTypes.ObjectId,
         },
         date: { type: Date, default: Date.now },
@@ -44,6 +44,6 @@ const DreamPlayerSchema = new Schema<_IDreamPlayer_>(
   { timestamps: true },
 );
 
-const DreamPlayer = model<_IDreamPlayer_>("dream_player", DreamPlayerSchema);
+const DreamPlayer = model<_IDreamPlayer_>('dream_player', DreamPlayerSchema);
 
 export { DreamPlayer };

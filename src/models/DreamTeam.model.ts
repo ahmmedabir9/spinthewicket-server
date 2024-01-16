@@ -73,7 +73,7 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
       },
       runRate: { type: Number, default: 0 },
     },
-    rankPoints: { type: Number, default: 0 },
+    points: { type: Number, default: 0 },
     isBot: { type: Boolean, default: false },
   },
   { timestamps: true },

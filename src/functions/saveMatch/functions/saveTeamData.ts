@@ -47,7 +47,6 @@ const getNetRunRate = (matchData: Partial<_IMatch_>, teamData, inning) => {
 };
 
 const saveTeamData = async (matchData: any) => {
-  console.log('💡 | matchData:', matchData);
   try {
     const teamAData: Partial<_IDreamTeam_> = await DreamTeam.findById(matchData.teams.teamA);
 
@@ -73,13 +72,13 @@ const saveTeamData = async (matchData: any) => {
         },
         runRate: getNetRunRate(matchData, teamAData, matchData.liveData.teamA.inning),
       },
-      rankPoints: getMatchWon(matchData, teamAData)
+      points: getMatchWon(matchData, teamAData)
         ? getMatchWon(matchData, teamAData) * 2 +
           (getMatchWon(matchData, teamAData) / (teamAData.matches.played || 0) + 1) * 1000 +
           getNetRunRate(matchData, teamAData, matchData.liveData.teamA.inning) * 10
         : 0,
     };
-    console.log('💡 | teamAUpdate:', teamAUpdate);
+    // console.log('💡 | teamAUpdate:', teamAUpdate);
 
     const teamBUpdate: Partial<_IDreamTeam_> = {
       matches: {
@@ -101,7 +100,7 @@ const saveTeamData = async (matchData: any) => {
         },
         runRate: getNetRunRate(matchData, teamBData, matchData.liveData.teamB.inning),
       },
-      rankPoints: getMatchWon(matchData, teamBData)
+      points: getMatchWon(matchData, teamBData)
         ? getMatchWon(matchData, teamBData) * 2 +
           (getMatchWon(matchData, teamBData) / teamBData.matches.played + 1) * 1000 +
           getNetRunRate(matchData, teamBData, matchData.liveData.teamB.inning) * 10
@@ -109,16 +108,16 @@ const saveTeamData = async (matchData: any) => {
     };
 
     const updatedTeamA = await DreamTeam.findByIdAndUpdate(matchData.teams.teamA, teamAUpdate, { new: true });
-    console.log('💡 | updatedTeamA:', updatedTeamA);
+    // console.log('💡 | updatedTeamA:', updatedTeamA);
 
     const updatedTeamB = await DreamTeam.findByIdAndUpdate(matchData.teams.teamB, teamBUpdate, { new: true });
-    console.log('💡 | updatedTeamB:', updatedTeamB);
+    // console.log('💡 | updatedTeamB:', updatedTeamB);
 
     return {
       success: true,
     };
   } catch (error) {
-    console.log('💡 | error:', error);
+    // console.log('💡 | error:', error);
   }
 };
 

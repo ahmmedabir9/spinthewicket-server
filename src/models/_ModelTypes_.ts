@@ -48,11 +48,11 @@ interface _IBattingStat_ extends Document {
   runs: number;
   sixes: number;
   strikeRate: number;
-  dotBall: number;
-  duck: number;
-  notOut: number;
-  catch: number;
-  runOut: number;
+  dotBalls: number;
+  ducks: number;
+  notOuts: number;
+  catches: number;
+  runOuts: number;
 }
 
 interface _IBowlingStat_ extends Document {
@@ -285,7 +285,7 @@ interface _IDreamTeam_ extends Document {
   theme?: Types.ObjectId;
   captain?: Types.ObjectId;
   manager?: Types.ObjectId | Partial<_IUser_>;
-  rankPoints: number;
+  points: number;
   trophies: { trophy: Types.ObjectId; date: Date }[];
   playingXI: Types.ObjectId[];
   rating: number;

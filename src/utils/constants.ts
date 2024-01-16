@@ -17,11 +17,11 @@ const initialBattingStat: Partial<_IBattingStat_> = {
   runs: 0,
   sixes: 0,
   strikeRate: 0,
-  dotBall: 0,
-  duck: 0,
-  notOut: 0,
-  catch: 0,
-  runOut: 0,
+  dotBalls: 0,
+  ducks: 0,
+  notOuts: 0,
+  catches: 0,
+  runOuts: 0,
 };
 
 const initialBowlingStat: Partial<_IBowlingStat_> = {
@@ -40,7 +40,7 @@ const initialBowlingStat: Partial<_IBowlingStat_> = {
 };
 
 const initialTeamData: Partial<_IDreamTeam_> = {
-  rankPoints: 0,
+  points: 0,
   trophies: [],
   achievements: [],
   matches: {

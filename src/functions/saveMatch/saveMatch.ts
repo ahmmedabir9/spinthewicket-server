@@ -1,11 +1,11 @@
-// import savePlayerData from './functions/savePlayerData';
 import { _IMatch_ } from '../../models/_ModelTypes_';
+import { savePlayerData } from './functions/savePlayerData';
 import { saveTeamData } from './functions/saveTeamData';
 
-const saveMatch = (matchData: Partial<_IMatch_>) => {
+const saveMatch = async (matchData: Partial<_IMatch_>) => {
   if (matchData.matchType !== 'Super-Over' && matchData.matchType !== 'Friendly') {
     saveTeamData(matchData);
-    // savePlayerData(matchData);
+    await savePlayerData(matchData);
   }
 };
 

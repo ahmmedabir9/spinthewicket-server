@@ -1,6 +1,6 @@
-import { Schema, SchemaTypes, model } from "mongoose";
+import { Schema, SchemaTypes, model } from 'mongoose';
 
-import { _IBattingStat_ } from "./_ModelTypes_";
+import { _IBattingStat_ } from './_ModelTypes_';
 
 const BattingStatSchema = new Schema<_IBattingStat_>(
   {
@@ -10,7 +10,7 @@ const BattingStatSchema = new Schema<_IBattingStat_>(
       runs: { type: Number, default: 0 },
       balls: { type: Number, default: 0 },
       match: {
-        ref: "Match",
+        ref: 'Match',
         type: SchemaTypes.ObjectId,
       },
     },
@@ -23,15 +23,15 @@ const BattingStatSchema = new Schema<_IBattingStat_>(
     runs: { type: Number, default: 0 },
     sixes: { type: Number, default: 0 },
     strikeRate: { type: Number, default: 0 },
-    dotBall: { type: Number, default: 0 },
-    duck: { type: Number, default: 0 },
-    notOut: { type: Number, default: 0 },
-    catch: { type: Number, default: 0 },
-    runOut: { type: Number, default: 0 },
+    dotBalls: { type: Number, default: 0 },
+    ducks: { type: Number, default: 0 },
+    notOuts: { type: Number, default: 0 },
+    catches: { type: Number, default: 0 },
+    runOuts: { type: Number, default: 0 },
   },
   { timestamps: true },
 );
 
-const BattingStat = model<_IBattingStat_>("batting_stat", BattingStatSchema);
+const BattingStat = model<_IBattingStat_>('batting_stat', BattingStatSchema);
 
 export default BattingStat;
