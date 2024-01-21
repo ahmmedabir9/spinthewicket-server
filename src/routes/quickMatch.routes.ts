@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const { startQuickMatch, getMatchData } = require('../controllers/dreamTeamMatch.controller');
+import { Router } from 'express';
+import { startQuickMatch, getMatchData } from '../controllers/dreamTeamMatch.controller';
 
 const router = Router();
 
@@ -7,4 +7,4 @@ const router = Router();
 router.post('/start-quick-match', startQuickMatch);
 router.get('/get-match-data/:id', getMatchData);
 
-module.exports = router;
+export default router;

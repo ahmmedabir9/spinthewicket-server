@@ -1,15 +1,13 @@
-const { StatusCodes } = require("http-status-codes");
-const { League } = require("../models/League.model");
-const { response } = require("../utils/response");
-const { v4: uuidv4 } = require("uuid");
-const { LeagueInvitation } = require("../models/LeagueInvitation.model");
+import { StatusCodes } from 'http-status-codes';
+import { response } from '../utils/response';
+import { LeagueInvitation } from '../models/LeagueInvitation.model';
 
 // create a league
 const createLeagueInvitation = async (req, res) => {
   const { invitedBy, invitedTo } = req.body;
 
   if (!invitedBy || !invitedTo) {
-    let msg = "provide all informations!";
+    const msg = 'provide all informations!';
     return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
   }
 
@@ -20,7 +18,7 @@ const createLeagueInvitation = async (req, res) => {
     });
 
     if (!leagueInvitation) {
-      let msg = "could not create league invitation!";
+      const msg = 'could not create league invitation!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -38,7 +36,7 @@ const rejectLeagueInvitation = async (req, res) => {
     const leagueInvitation = await LeagueInvitation.findByIdAndDelete(id);
 
     if (!leagueInvitation) {
-      let msg = "could not reject league invitation!";
+      const msg = 'could not reject league invitation!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -53,7 +51,7 @@ const getUserInvitations = async (req, res) => {
   const { user } = req.params;
 
   if (!user) {
-    let msg = "provide userID!";
+    const msg = 'provide userID!';
     return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
   }
 
@@ -61,17 +59,17 @@ const getUserInvitations = async (req, res) => {
     const leagueInvitations = await LeagueInvitation.find({
       invitedTo: user,
     })
-      .select("invitedBy createdAt")
+      .select('invitedBy createdAt')
       .sort({ createdAt: -1 })
       .populate([
         {
-          path: "invitedBy",
-          select: "title shortName country slug logo xp level",
+          path: 'invitedBy',
+          select: 'title shortName country slug logo xp level',
         },
       ]);
 
     if (!leagueInvitations || leagueInvitations.length === 0) {
-      let msg = "no invitations found!";
+      const msg = 'no invitations found!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -86,7 +84,7 @@ const getLeagueInvitations = async (req, res) => {
   const { league } = req.params;
 
   if (!league) {
-    let msg = "provide leagueID!";
+    const msg = 'provide leagueID!';
     return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
   }
 
@@ -94,17 +92,17 @@ const getLeagueInvitations = async (req, res) => {
     const leagueInvitations = await LeagueInvitation.find({
       invitedBy: league,
     })
-      .select("invitedTo createdAt")
+      .select('invitedTo createdAt')
       .sort({ createdAt: -1 })
       .populate([
         {
-          path: "invitedTo",
-          select: "name photo",
+          path: 'invitedTo',
+          select: 'name photo',
         },
       ]);
 
     if (!leagueInvitations || leagueInvitations.length === 0) {
-      let msg = "no invitations found!";
+      const msg = 'no invitations found!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -114,9 +112,4 @@ const getLeagueInvitations = async (req, res) => {
   }
 };
 
-module.exports = {
-  createLeagueInvitation,
-  rejectLeagueInvitation,
-  getUserInvitations,
-  getLeagueInvitations,
-};
+export { createLeagueInvitation, rejectLeagueInvitation, getUserInvitations, getLeagueInvitations };

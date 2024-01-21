@@ -1,17 +1,16 @@
-const { StatusCodes } = require("http-status-codes");
-const { BattingStat } = require("../models/BattingStat.model");
-const { BowlingStat } = require("../models/BowlingStat.model");
-const { League } = require("../models/League.model");
-const { LeaguePlayer } = require("../models/LeaguePlayer.model");
-const { PlayerInfo } = require("../models/PlayerInfo.model");
-const { createLeagueTeam } = require("./leagueTeam.controller");
+import { StatusCodes } from 'http-status-codes';
+import BattingStat from '../models/BattingStat.model';
+import BowlingStat from '../models/BowlingStat.model';
+import { LeaguePlayer } from '../models/LeaguePlayer.model';
+import { PlayerInfo } from '../models/PlayerInfo.model';
+import { response } from '../utils/response';
 
 //add player to league
 const addPlayerToLeague = async (req, res) => {
   const { playerID, leagueID } = req.body;
 
   if (!playerID || !leagueID) {
-    let msg = "provide all informations!";
+    const msg = 'provide all informations!';
     return response(res, StatusCodes.BAD_REQUEST, false, {}, msg);
   }
 
@@ -19,7 +18,7 @@ const addPlayerToLeague = async (req, res) => {
     const leaguePlayer = await createLeaguePlayer(playerID, leagueID);
 
     if (!leaguePlayer) {
-      let msg = "could not create league player!";
+      const msg = 'could not create league player!';
       return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
     }
 
@@ -42,13 +41,13 @@ const createLeaguePlayer = async (playerID, leagueID) => {
     const oldPlayer = await LeaguePlayer.findOne({
       playerID: playerID,
       league: leagueID,
-    }).select("playerID");
+    }).select('playerID');
 
     if (oldPlayer) {
       return false;
     }
 
-    const playerInfo = await PlayerInfo.findOne({ playerID: PlayerID });
+    const playerInfo: any = await PlayerInfo.findOne({ playerID: playerID });
 
     if (!playerInfo) {
       return false;
@@ -73,8 +72,8 @@ const createLeaguePlayer = async (playerID, leagueID) => {
     }
     return leaguePlayer;
   } catch (error) {
-    return response(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, error.message);
+    return error;
   }
 };
 
-module.exports = { addPlayerToLeague };
+export { addPlayerToLeague };

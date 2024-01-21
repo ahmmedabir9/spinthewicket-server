@@ -371,11 +371,4 @@ const calculateTeamRating = async (playingXI: _IDreamPlayer_[]): Promise<number>
   return totalRating / 11;
 };
 
-module.exports = {
-  createDreamTeam,
-  getUserDreamTeam,
-  getDreamTeamById,
-  updateTeam,
-  getDreamTeamSquad,
-  createBotTeam,
-};
+export { createDreamTeam, getUserDreamTeam, getDreamTeamById, updateTeam, getDreamTeamSquad, createBotTeam };

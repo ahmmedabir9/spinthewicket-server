@@ -1,5 +1,9 @@
 import path from 'path';
-
+import userRoute from '../routes/user.routes';
+import themeRoute from '../routes/theme.routes';
+import playerRoute from '../routes/player.routes';
+import dreamTeamRoute from '../routes/dreamTeam.routes';
+import quickMatchRoute from '../routes/quickMatch.routes';
 import { SpinTheWicket } from '../index';
 const socketIO = require('socket.io');
 
@@ -38,12 +42,6 @@ export class HTTPServer {
       }),
     );
     this.express.use(bodyParser.urlencoded({ extended: false }));
-
-    const userRoute = require('../routes/user.routes');
-    const themeRoute = require('../routes/theme.routes');
-    const playerRoute = require('../routes/player.routes');
-    const dreamTeamRoute = require('../routes/dreamTeam.routes');
-    const quickMatchRoute = require('../routes/quickMatch.routes');
 
     this.server = http.createServer(this.express);
     this.io = new socketIO.Server(this.server, {

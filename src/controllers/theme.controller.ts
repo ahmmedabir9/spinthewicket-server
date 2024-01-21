@@ -23,4 +23,4 @@ const getAllThemes = async (req: Request, res: Response) => {
   }
 };
 
-module.exports = { getAllThemes };
+export { getAllThemes };

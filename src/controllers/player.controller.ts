@@ -168,4 +168,4 @@ const shufflePlayers = (players) => {
   return players;
 };
 
-module.exports = { getRandomCaptains, shufflePlayers, getAllPlayers };
+export { getRandomCaptains, shufflePlayers, getAllPlayers };
