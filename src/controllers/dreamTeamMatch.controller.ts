@@ -405,6 +405,10 @@ const playMatch = async (data: any, app: any) => {
         new: true,
       });
 
+      if (matchData.status === 'completed') {
+        saveMatch(matchData);
+      }
+
       //BROADCAST THE UPDATED DATA
 
       setTimeout(() => {

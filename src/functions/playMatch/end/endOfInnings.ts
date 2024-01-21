@@ -144,13 +144,9 @@ const endOfInnings = async (matchData: Partial<_IMatch_>, battingTeam: string, b
       }
     }
 
-    const newMatchData = await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, {
+    await DreamTeamMatch.findByIdAndUpdate(matchData._id, dataToUpdate, {
       new: true,
     });
-
-    if (newMatchData.status === 'completed') {
-      await saveMatch(newMatchData);
-    }
 
     return { success: true };
   } catch (error) {
