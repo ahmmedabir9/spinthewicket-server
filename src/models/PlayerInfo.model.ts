@@ -1,6 +1,6 @@
-import { Schema, SchemaTypes, model } from "mongoose";
+import { Schema, SchemaTypes, model } from 'mongoose';
 
-import { _IPlayerInfo_ } from "./_ModelTypes_";
+import { _IPlayerInfo_ } from './_ModelTypes_';
 
 const PlayerInfoSchema = new Schema<_IPlayerInfo_>(
   {
@@ -9,7 +9,7 @@ const PlayerInfoSchema = new Schema<_IPlayerInfo_>(
       required: true,
     },
     nationality: {
-      ref: "country",
+      ref: 'country',
       type: SchemaTypes.ObjectId,
     },
     slug: {
@@ -19,7 +19,7 @@ const PlayerInfoSchema = new Schema<_IPlayerInfo_>(
     activePlayer: { type: Boolean, default: true },
     teams: [
       {
-        ref: "team",
+        ref: 'team',
         type: SchemaTypes.ObjectId,
       },
     ],
@@ -35,10 +35,18 @@ const PlayerInfoSchema = new Schema<_IPlayerInfo_>(
       type: Number,
       default: 0,
     },
+    ovr: {
+      type: Number,
+      default: 0,
+    },
+    fans: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );
 
-const PlayerInfo = model<_IPlayerInfo_>("player_info", PlayerInfoSchema);
+const PlayerInfo = model<_IPlayerInfo_>('player_info', PlayerInfoSchema);
 
 export { PlayerInfo };

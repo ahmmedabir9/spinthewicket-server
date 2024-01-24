@@ -173,6 +173,8 @@ interface _IPlayerInfo_ {
   bowlingStyle: string;
   battingLevel: number;
   bowlingLevel: number;
+  fans: number;
+  ovr: number;
 }
 
 interface _ILiveTeamData_ {
@@ -288,7 +290,7 @@ interface _IDreamTeam_ extends Document {
   points: number;
   trophies: { trophy: Types.ObjectId; date: Date }[];
   playingXI: Types.ObjectId[];
-  rating: number;
+  ovr: number;
   achievements: { achievement: Types.ObjectId; date: Date }[];
   matches: {
     played: number;
@@ -302,6 +304,7 @@ interface _IDreamTeam_ extends Document {
     runRate: number;
   };
   isBot: boolean;
+  fans: number;
 }
 
 interface _IGlobalLeague_ extends Document {

@@ -4,6 +4,7 @@ import themeRoute from '../routes/theme.routes';
 import playerRoute from '../routes/player.routes';
 import dreamTeamRoute from '../routes/dreamTeam.routes';
 import quickMatchRoute from '../routes/quickMatch.routes';
+import publicServiceRoute from '../routes/publicService.routes';
 import { SpinTheWicket } from '../index';
 const socketIO = require('socket.io');
 
@@ -54,6 +55,7 @@ export class HTTPServer {
     this.express.use('/player', playerRoute);
     this.express.use('/theme', themeRoute);
     this.express.use('/user', userRoute);
+    this.express.use('/public-service', publicServiceRoute);
 
     this.express.get('/', (req: any, res: any) => {
       res.send('<div><h1>The Server is Running</h1></div>');

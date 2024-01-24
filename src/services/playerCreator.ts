@@ -1,3 +1,5 @@
+import { calculateTeamOvr } from '../controllers/dreamTeam.controller';
+import { DreamTeam } from '../models/DreamTeam.model';
 import { PlayerInfo } from '../models/PlayerInfo.model';
 
 export const addPlayers = async () => {
@@ -1589,5 +1591,46 @@ export const addPlayers = async () => {
     await PlayerInfo.create(_player);
 
     console.log('CREATED ===>', _player.name);
+  }
+};
+
+export const updateAllPlayerOvr = async () => {
+  const players = await PlayerInfo.find().select('_id name battingLevel bowlingLevel role');
+
+  for (const player of players) {
+    let ovr = 0;
+
+    if (player.role?.toLowerCase() === 'batsman') {
+      ovr = player?.battingLevel + player?.bowlingLevel / 10;
+    } else if (player.role?.toLowerCase() === 'bowler') {
+      ovr = player?.bowlingLevel + player?.battingLevel / 8;
+    } else if (player.role?.toLowerCase() === 'all-rounder') {
+      ovr = (player?.battingLevel + player?.bowlingLevel) / 2 + (player?.battingLevel + player?.bowlingLevel) / 50;
+    } else {
+      ovr = player?.battingLevel;
+    }
+
+    console.log('💡 | ovr:', player.name, '=>', ovr);
+
+    await PlayerInfo.updateOne({ _id: player._id }, { ovr: ovr });
+  }
+};
+
+export const updateAllTeamOvr = async () => {
+  const teams: any = await DreamTeam.find()
+    .select('_id title playingXI')
+    .populate({
+      path: 'playingXI',
+      select: 'playerInfo',
+      populate: {
+        path: 'playerInfo',
+      },
+    });
+
+  for (const team of teams) {
+    const teamOvr: number = await calculateTeamOvr(team.playingXI);
+    console.log('💡 | teamOvr:', team.title, '=>', teamOvr);
+
+    await DreamTeam.updateOne({ _id: team._id }, { ovr: teamOvr });
   }
 };

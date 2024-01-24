@@ -68,12 +68,12 @@ const createDreamTeam = async (req: Request, res: Response) => {
 
     const playingXI: any = await createPlayingXI(squad);
 
-    const teamRating: number = await calculateTeamRating(playingXI);
+    const teamOvr: number = await calculateTeamOvr(playingXI);
 
     const newTeam: _IDreamTeam_ | null = await DreamTeam.findByIdAndUpdate(
       team?._id,
       {
-        // rating: teamRating,
+        ovr: teamOvr,
         captain: captainPlayer?._id,
         playingXI: playingXI.map((item) => item._id),
       },
@@ -221,12 +221,12 @@ const createBotTeam = async (req: Request, res: Response) => {
 
     const playingXI: any = await createPlayingXI(squad);
 
-    const teamRating: number = await calculateTeamRating(playingXI);
+    const teamOvr: number = await calculateTeamOvr(playingXI);
 
     const newTeam: _IDreamTeam_ | null = await DreamTeam.findByIdAndUpdate(
       team?._id,
       {
-        // rating: teamRating,
+        ovr: teamOvr,
         captain: captainPlayer?._id,
         playingXI: playingXI.map((item) => item._id),
       },
@@ -359,13 +359,12 @@ const createPlayingXI = async (squad: _IDreamPlayer_[]) => {
   return playingXI;
 };
 
-const calculateTeamRating = async (playingXI: _IDreamPlayer_[]): Promise<number> => {
+export const calculateTeamOvr = async (playingXI: _IDreamPlayer_[]): Promise<number> => {
   let totalRating = 0;
 
   for (let index = 0; index < playingXI.length; index++) {
     const player = playingXI[index];
-    totalRating +=
-      player.playerInfo?.battingLevel > player.playerInfo?.bowlingLevel ? player.playerInfo?.battingLevel : player.playerInfo?.bowlingLevel;
+    totalRating += player.playerInfo?.ovr;
   }
 
   return totalRating / 11;

@@ -44,7 +44,7 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
         type: SchemaTypes.ObjectId,
       },
     ],
-    rating: { type: Number, default: 0 },
+    ovr: { type: Number, default: 0 },
     achievements: [
       {
         achievement: {
@@ -74,6 +74,7 @@ const DreamTeamSchema = new Schema<_IDreamTeam_>(
       runRate: { type: Number, default: 0 },
     },
     points: { type: Number, default: 0 },
+    fans: { type: Number, default: 0 },
     isBot: { type: Boolean, default: false },
   },
   { timestamps: true },
